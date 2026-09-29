@@ -1,82 +1,95 @@
 using UnityEngine;
-using UnityEngine.UI; // ★ 이 부분이 꼭 있어야 Image 타입을 쓸 수 있습니다!
 using UnityEngine.EventSystems;
-using TMPro;
+using UnityEngine.UI;
+using TMPro; // TextMeshPro 사용 시 (일반 Text 사용 시 Text로 변경)
 
-public class CardUI : MonoBehaviour, IPointerClickHandler
+public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("Data & Manager")]
-    public CardData cardData;
-    private TurnBasedGameManager gameManager;
+    [Header("UI References")]
+    public Image cardImage;
+    public TextMeshProUGUI cardNameText; // 일반 Text는 'public Text cardNameText;'
 
-    [Header("UI Components")]
-    public TextMeshProUGUI nameText;
-    public TextMeshProUGUI valueText;
-    public TextMeshProUGUI typeText;
+    [HideInInspector] public CardData cardData; // 현재 카드의 데이터 저장
+    [HideInInspector] public Transform parentToReturnTo = null;
 
-    // ★ 이 줄이 빠져있어서 인스펙터에 안 나왔던 것입니다!
-    public Image cardImageComponent;
+    private CanvasGroup canvasGroup;
+    private RectTransform rectTransform;
 
-    [Header("Selection Visual")]
-    public bool isSelected = false;
-    private Vector3 originalPosition;
-    public float selectOffsetY = 30f;
-
-    private void Start()
+    private void Awake()
     {
-        gameManager = FindObjectOfType<TurnBasedGameManager>();
-        originalPosition = transform.localPosition;
+        // CanvasGroup이 붙어있지 않다면 코드로 자동 추가하여 에러 방지
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+        {
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
+        }
+
+        rectTransform = GetComponent<RectTransform>();
+        if (cardImage == null) cardImage = GetComponent<Image>();
     }
 
-    public void Setup(CardData data)
+    // ScriptableObject 데이터를 UI에 바인딩
+    public void SetupCard(CardData data)
     {
-        cardData = data;
-        if (nameText != null) nameText.text = data.cardName;
-        if (valueText != null) valueText.text = data.value.ToString();
-        if (typeText != null) typeText.text = data.cardType.ToString();
+        if (data == null) return;
 
-        // ★ CardData의 이미지를 UI Image에 적용
-        if (cardImageComponent != null && data.cardIcon != null)
+        this.cardData = data;
+
+        if (cardNameText != null)
+            cardNameText.text = data.cardName;
+
+        if (cardImage != null)
         {
-            cardImageComponent.sprite = data.cardIcon;
-        }
-    }
-
-    // 카드를 클릭했을 때 실행되는 함수 (IPointerClickHandler)
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (gameManager == null || cardData == null) return;
-
-        // 이미 3장이 선택되었고, 현재 카드가 선택 안 된 상태라면 클릭 무시
-        if (!isSelected && gameManager.selectedCards.Count >= 3)
-        {
-            Debug.Log("이미 3장의 카드를 모두 선택했습니다!");
-            return;
-        }
-
-        // 토글 방식 (선택 <-> 해제)
-        isSelected = !isSelected;
-
-        if (isSelected)
-        {
-            // GameManager 선택 리스트에 추가
-            gameManager.SelectCard(cardData);
-            // 시각 효과: 카드가 위로 살짝 올라감
-            transform.localPosition = originalPosition + new Vector3(0, selectOffsetY, 0);
-        }
-        else
-        {
-            // GameManager 선택 리스트에서 제거
-            gameManager.selectedCards.Remove(cardData);
-            // 시각 효과: 원래 위치로 복귀
-            transform.localPosition = originalPosition;
+            if (data.cardIcon != null)
+            {
+                cardImage.sprite = data.cardIcon;
+                cardImage.color = Color.white; // 원본 이미지 색상 노출
+            }
         }
     }
 
-    // 턴이 끝난 후 선택 상태 초기화
-    public void ResetSelection()
+    public void OnBeginDrag(PointerEventData eventData)
     {
-        isSelected = false;
-        transform.localPosition = originalPosition;
+        parentToReturnTo = this.transform.parent;
+
+        // 드래그 중 최상위 Canvas로 이동하여 레이어 가림 방지
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas != null)
+        {
+            this.transform.SetParent(canvas.transform, true);
+        }
+
+        canvasGroup.blocksRaycasts = false; // 드롭 위치(Slot/Hand) 레이캐스트 감지 허용
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        Vector2 localPointerPos;
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            this.transform.parent as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out localPointerPos))
+        {
+            rectTransform.localPosition = localPointerPos;
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        canvasGroup.blocksRaycasts = true;
+
+        // 드롭 구역(슬롯 또는 HandPanel)으로 부모 설정
+        this.transform.SetParent(parentToReturnTo);
+
+        // [핵심] 부모의 중앙(0,0,0)에 오도록 위치 및 크기 강제 정렬
+        this.transform.localScale = Vector3.one;
+
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchoredPosition = Vector2.zero; // 자식으로서 중앙 정렬
+            rect.anchoredPosition3D = Vector3.zero;
+        }
     }
 }
