@@ -53,9 +53,26 @@ public class AttackManager : MonoBehaviour
                     if (cardUI.cardData.cardType == CardType.Attack)
                     {
                         enemyCurrentHP -= cardUI.cardData.value;
+
                         if (enemyCurrentHP < 0) enemyCurrentHP = 0;
+
                         UpdateUI();
+
                         Debug.Log($"[공격] 적에게 {cardUI.cardData.value} 데미지를 주었습니다!");
+                    }
+                    else if (cardUI.cardData.cardType == CardType.Heal)
+                    {
+                        Debug.Log(
+                            $"[힐] {cardUI.cardData.cardName} → " +
+                            $"{cardUI.cardData.value}만큼 회복!"
+                        );
+                    }
+                    else if (cardUI.cardData.cardType == CardType.Debuff)
+                    {
+                        Debug.Log(
+                            $"[디버프] {cardUI.cardData.cardName} → " +
+                            $"적에게 {cardUI.cardData.statusEffect}!"
+                        );
                     }
 
                     // 카드를 사용했으므로 GameObject 파괴
