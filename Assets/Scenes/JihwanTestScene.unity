@@ -256,6 +256,63 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &423436535
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 423436537}
+  - component: {fileID: 423436536}
+  m_Layer: 0
+  m_Name: AttackManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &423436536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423436535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f0c883dff0771948ae7236abfd45373, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AttackManager
+  gameManager: {fileID: 2131407800}
+  dropSlots:
+  - {fileID: 476181073}
+  - {fileID: 892654086}
+  - {fileID: 1167011934}
+  enemyName: "\uBAAC\uC2A4\uD130"
+  enemyMaxHP: 100
+  enemyCurrentHP: 0
+  enemyAttackDamage: 10
+  enemyHPText: {fileID: 0}
+  playerMaxHP: 100
+  playerCurrentHP: 0
+  playerHPText: {fileID: 0}
+--- !u!4 &423436537
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423436535}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 292.7448, y: 176.2599, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &476181072
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,9 +511,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2131407798}
-        m_TargetAssemblyTypeName: TurnBasedGameManager, Assembly-CSharp
-        m_MethodName: OnTurnEndButtonClicked
+      - m_Target: {fileID: 423436536}
+        m_TargetAssemblyTypeName: AttackManager, Assembly-CSharp
+        m_MethodName: OnAttackButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1201,25 +1258,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afbbd6fc7f436f74a9cecf791a5321ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnBasedGameManager
-  cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
-  handPanelTransform: {fileID: 2030090440}
-  deckList:
-  - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
-  - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
-  - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
-  - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
-  - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
-  - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
-  - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
-  - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
-  - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
-  playerHand: []
-  selectedCards: []
-  playerMaxHp: 100
-  playerHp: 0
-  monsterMaxHp: 100
-  monsterHp: 0
-  monsterHasStartDebuff: 1
 --- !u!4 &2131407799
 Transform:
   m_ObjectHideFlags: 0
@@ -1265,3 +1303,4 @@ SceneRoots:
   - {fileID: 2131407799}
   - {fileID: 712148955}
   - {fileID: 2049223450}
+  - {fileID: 423436537}
