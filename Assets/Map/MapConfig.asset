@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 412bd8a896e59c140a88fa6145aa8bfe, type: 3}
+  m_Name: MapConfig
+  m_EditorClassIdentifier: Assembly-CSharp::MapConfig
+  floors:
+  - floorName: "\uB9C8\uBC95\uC0AC\uC758 \uC785\uBB38"
+    columnCount: 7
+    shopColumn: 3
+    eliteStartColumn: 2
+    restStartColumn: 3
+    roomChances:
+    - type: 0
+      weight: 55
+    - type: 2
+      weight: 17
+    - type: 4
+      weight: 12
+    - type: 1
+      weight: 8
+    - type: 3
+      weight: 8
+  - floorName: "\uB9C8\uBC95\uC758 \uD655\uC7A5"
+    columnCount: 8
+    shopColumn: 3
+    eliteStartColumn: 1
+    restStartColumn: 3
+    roomChances:
+    - type: 0
+      weight: 45
+    - type: 2
+      weight: 22
+    - type: 4
+      weight: 13
+    - type: 1
+      weight: 12
+    - type: 3
+      weight: 8
+  - floorName: "\uB9C8\uBC95\uC0AC\uC758 \uC601\uC5ED"
+    columnCount: 9
+    shopColumn: 4
+    eliteStartColumn: 1
+    restStartColumn: 3
+    roomChances:
+    - type: 0
+      weight: 40
+    - type: 2
+      weight: 22
+    - type: 4
+      weight: 14
+    - type: 1
+      weight: 16
+    - type: 3
+      weight: 8
