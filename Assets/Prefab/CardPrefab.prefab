@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardUI
   cardImage: {fileID: 2874586938555293876}
-  cardNameText: {fileID: 1516590421015453660}
+  cardNameText: {fileID: 0}
   cardData: {fileID: 0}
   parentToReturnTo: {fileID: 0}
 --- !u!114 &7223740598814788648
