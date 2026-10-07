@@ -23,6 +23,8 @@ public class MapView : MonoBehaviour
     public RectTransform mapContent;
     [Tooltip("MapNodeButton이 붙은 노드 프리팹")]
     public MapNodeButton nodePrefab;
+    [Tooltip("노드를 눌렀을 때 뜨는 확인창 (비워 두면 바로 들어감)")]
+    public MapConfirmPopup confirmPopup;
 
     [Header("배치")]
     public float padding = 80f;
@@ -223,6 +225,20 @@ public class MapView : MonoBehaviour
     {
         if (!IsReachable(node)) return;
 
+        if (confirmPopup != null)
+        {
+            string title = node.type == RoomType.Boss ? "보스" : $"{node.column + 1}열 · {RoomName(node.type)}";
+            confirmPopup.Show(title, RoomDescription(node.type) + "\n\n이 방으로 들어갈까요?", () => EnterNode(node));
+        }
+        else
+        {
+            EnterNode(node);
+        }
+    }
+
+    // 확인창에서 "들어가기"를 눌렀을 때 실제로 이동한다
+    private void EnterNode(MapNode node)
+    {
         currentNode = node;
         visited.Add(node);
         RunState.Instance.MoveTo(node);
@@ -268,6 +284,35 @@ public class MapView : MonoBehaviour
             RectTransform rt = line.image.rectTransform;
             rt.sizeDelta = new Vector2(rt.sizeDelta.x, width);
         }
+    }
+
+    private string RoomName(RoomType type)
+    {
+        switch (type)
+        {
+            case RoomType.Enemy: return "일반 몬스터";
+            case RoomType.Elite: return "엘리트 몬스터";
+            case RoomType.Event: return "이벤트";
+            case RoomType.Shop: return "상점";
+            case RoomType.Rest: return "휴식/강화";
+            case RoomType.Boss: return "보스";
+        }
+        return "";
+    }
+
+    // 기획서 4. 방 종류별 보상 기준
+    private string RoomDescription(RoomType type)
+    {
+        switch (type)
+        {
+            case RoomType.Enemy: return "일반 몬스터와 전투합니다.\n보상: 골드, 카드 선택";
+            case RoomType.Elite: return "강한 엘리트 몬스터와 전투합니다.\n보상: 골드, 장비, 카드 선택";
+            case RoomType.Event: return "선택에 따라 보상이나 대가가 생깁니다.";
+            case RoomType.Shop: return "골드로 카드, 장비, 회복 아이템을 삽니다.";
+            case RoomType.Rest: return "체력을 회복하거나 카드를 강화합니다.";
+            case RoomType.Boss: return "이 층의 보스와 전투합니다.\n보상: 희귀 카드, 희귀 장비";
+        }
+        return "";
     }
 
     private RoomVisual FindVisual(RoomType type)
