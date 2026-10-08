@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: CardRecipeDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::CardRecipeDatabase
+  recipes:
+  - cardA: {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
+    cardB: {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
+    resultCard: {fileID: 11400000, guid: fc24f68ceb1c9964a91abf90917e9e9b, type: 2}
+  - cardA: {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
+    cardB: {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
+    resultCard: {fileID: 11400000, guid: 47663afc5a8b2f34ab291d4d29e39d5d, type: 2}
+  - cardA: {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+    cardB: {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+    resultCard: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
