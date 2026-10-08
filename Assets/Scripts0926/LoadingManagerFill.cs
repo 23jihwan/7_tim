@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro; // TextMeshPro를 사용할 경우
 
-public class LoadingManager : MonoBehaviour
+public class LoadingManagerFill : MonoBehaviour
 {
     [Header("UI 연결")]
     public Image progressBar;          // 양피지 게이지 Fill 이미지
