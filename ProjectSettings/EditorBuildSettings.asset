@@ -15,8 +15,14 @@ EditorBuildSettings:
     path: Assets/Scenes/JihwanTestScene2.unity
     guid: 1b8f6fd405d0cae4fbce5a19da7df1fe
   - enabled: 1
-    path: Assets/Scenes/minhyeok MapTestScene.unity
+    path: Assets/Scenes/minhyeokMapTestScene.unity
     guid: c68101e53f8c2164c80455b1e89c57d0
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: 67365d821c22acc47a246fd2a23ab2d1
+  - enabled: 1
+    path: Assets/Scenes/MapLoding.unity
+    guid: 6b6eadd95e1413b4fa35bb7307dd47eb
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

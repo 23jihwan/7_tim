@@ -10,7 +10,7 @@ public class RunState : MonoBehaviour
     public static RunState Instance { get; private set; }
 
     [Header("씬 이름 (Build Profiles의 Scene List에 있어야 함)")]
-    public string mapSceneName = "minhyeok MapTestScene";
+    public string mapSceneName = "minhyeokMapTestScene";
     public string battleSceneName = "JihwanTestScene";
 
     [Header("진행 상태")]
