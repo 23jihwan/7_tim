@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Attack
   cardType: 0
-  value: 10000
+  value: 10
   damageValue: 0
   statusEffect: 
   combineId: 0
