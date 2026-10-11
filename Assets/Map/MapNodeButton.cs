@@ -60,6 +60,7 @@ public class MapNodeButton : MonoBehaviour
 
         if (icon != null)
         {
+            icon.rectTransform.sizeDelta = Vector2.one * size * 0.6f;        // 노드 크기에 맞춰 아이콘 크기 조절
             icon.rectTransform.localRotation = Quaternion.Euler(0, 0, -45);  // 아이콘은 똑바로
             icon.raycastTarget = false;
             icon.enabled = iconSprite != null;   // 아이콘 이미지가 없으면 색깔만 표시
