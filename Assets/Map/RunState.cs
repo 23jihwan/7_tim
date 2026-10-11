@@ -26,6 +26,13 @@ public class RunState : MonoBehaviour
     public int playerHP = 100;
     public int gold = 0;
 
+    [Header("보상")]
+    [Tooltip("보상으로 얻은 카드 (덱 저장 기능이 생기면 덱에 넣는다)")]
+    public List<CardData> obtainedCards = new List<CardData>();
+    public bool hasPendingReward = false;   // 맵에서 보여줄 보상이 남아 있는지
+    public int pendingGold;
+    public RoomType pendingRoomType;
+
     [Header("엘리트/보스 적 체력 배율")]
     public float eliteHpMultiplier = 1.5f;
     public float bossHpMultiplier = 2.5f;
@@ -71,6 +78,8 @@ public class RunState : MonoBehaviour
         visited.Clear();
         playerHP = playerMaxHP;
         gold = 0;
+        obtainedCards.Clear();
+        hasPendingReward = false;
         Debug.Log($"새 런을 시작해요. (시드 {seed})");
     }
 
@@ -151,7 +160,7 @@ public class RunState : MonoBehaviour
     private IEnumerator EndBattle(bool won)
     {
         battleEnding = true;
-        yield return new WaitForSeconds(1.5f);   // 결과를 잠깐 보여주고 넘어간다
+        yield return new WaitForSeconds(1f);   // 쓰러지는 모습을 잠깐 보여준다
 
         playerHP = Mathf.Max(0, battle.playerCurrentHP);
 
@@ -161,16 +170,79 @@ public class RunState : MonoBehaviour
             gold += reward;
             Debug.Log($"전투 승리! 골드 +{reward} (보유 {gold}, 체력 {playerHP}/{playerMaxHP})");
 
+            // 보상 창에 보여줄 내용
+            string title = "전투 승리!";
+            if (currentRoomType == RoomType.Elite) title = "엘리트 처치!";
+            if (currentRoomType == RoomType.Boss) title = $"{floorIndex + 1}층 보스 처치!";
+
+            List<string> lines = new List<string>();
+            lines.Add($"골드 +{reward}   (보유 {gold})");
+            if (currentRoomType == RoomType.Elite || currentRoomType == RoomType.Boss)
+                lines.Add("장비 1개 획득 (장비 시스템 준비 중)");
+            lines.Add($"남은 체력 {playerHP} / {playerMaxHP}");
+
+            // 확인을 누를 때까지 기다린다
+            bool confirmed = false;
+            BattleRewardPopup.Show(title, lines, PickCardChoices(3), picked =>
+            {
+                if (picked != null)
+                {
+                    obtainedCards.Add(picked);
+                    Debug.Log($"카드 보상: {picked.cardName} 획득! (지금까지 얻은 카드 {obtainedCards.Count}장)");
+                }
+                else
+                {
+                    Debug.Log("카드 보상을 건너뛰었어요.");
+                }
+                confirmed = true;
+            });
+            while (!confirmed) yield return null;
+
             if (currentRoomType == RoomType.Boss) ClearFloor();
         }
         else
         {
+            yield return new WaitForSeconds(0.5f);
             Debug.Log("게임 오버! 새 런을 시작해요.");
             NewRun();
         }
 
         battle = null;
         SceneManager.LoadScene(mapSceneName);
+    }
+
+    // 전투 씬 GameManager의 카드 목록에서 서로 다른 카드를 골라 보상 후보로 만든다
+    private List<CardData> PickCardChoices(int count)
+    {
+        List<CardData> result = new List<CardData>();
+        GameManager gm = FindFirstObjectByType<GameManager>();
+        if (gm == null || gm.cardDatabase == null) return result;
+
+        List<CardData> pool = new List<CardData>(gm.cardDatabase);
+        while (result.Count < count && pool.Count > 0)
+        {
+            int r = Random.Range(0, pool.Count);
+            if (pool[r] != null) result.Add(pool[r]);
+            pool.RemoveAt(r);
+        }
+        return result;
+    }
+
+    // ---------------- 테스트용 ----------------
+    // Play 중 Hierarchy의 DontDestroyOnLoad → RunState를 선택하고 점 세 개 메뉴에서 실행
+
+    [ContextMenu("테스트: 전투 승리")]
+    private void DebugWin()
+    {
+        if (battle != null && !battleEnding) StartCoroutine(EndBattle(true));
+        else Debug.LogWarning("전투 씬에서만 쓸 수 있어요.");
+    }
+
+    [ContextMenu("테스트: 전투 패배")]
+    private void DebugLose()
+    {
+        if (battle != null && !battleEnding) StartCoroutine(EndBattle(false));
+        else Debug.LogWarning("전투 씬에서만 쓸 수 있어요.");
     }
 
     private void ClearFloor()
