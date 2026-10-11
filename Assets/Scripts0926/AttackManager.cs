@@ -8,6 +8,10 @@ public class AttackManager : MonoBehaviour
     public GameManager gameManager;   // 기존 GameManager 연결
     public Transform[] dropSlots;     // 기존 CardSlot들이 위치한 슬롯 배열 (3개)
 
+    [Header("Enemy Data Asset (선택 사항)")]
+    [Tooltip("연결하면 해당 몬스터 수치가 적용되고, 비워두면 아래 기본 수치가 적용됩니다.")]
+    public EnemyData currentEnemyData; // 몬스터 데이터 에셋
+
     [Header("Enemy Stats")]
     public string enemyName = "몬스터";
     public int enemyMaxHP = 100;
@@ -21,16 +25,21 @@ public class AttackManager : MonoBehaviour
     public TextMeshProUGUI playerHPText;
 
     [Header("Debuff (적 공격력 감소)")]
-    [Tooltip("적 공격력을 표시할 글자 (비워 둬도 동작함)")]
     public TextMeshProUGUI enemyAttackText;
 
-    // 이번 턴에 디버프 카드로 깎인 적 공격력. 적의 공격이 끝나면 0으로 돌아간다
     private int attackReduction = 0;
-
     private bool isAttacking = false;
 
     private void Start()
     {
+        // ★ [안전장치] 몬스터 데이터 에셋이 드래그되어 있다면 에셋 값으로 초기화
+        if (currentEnemyData != null)
+        {
+            enemyName = currentEnemyData.enemyName;
+            enemyMaxHP = currentEnemyData.maxHP;
+            enemyAttackDamage = currentEnemyData.attackDamage;
+        }
+
         enemyCurrentHP = enemyMaxHP;
         playerCurrentHP = playerMaxHP;
         UpdateUI();
@@ -66,7 +75,6 @@ public class AttackManager : MonoBehaviour
                     }
                     else if (cardUI.cardData.cardType == CardType.Heal)
                     {
-                        // 최대 체력을 넘지 않게 회복
                         int before = playerCurrentHP;
                         playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + cardUI.cardData.value);
                         int healed = playerCurrentHP - before;
@@ -75,22 +83,20 @@ public class AttackManager : MonoBehaviour
                     }
                     else if (cardUI.cardData.cardType == CardType.Debuff)
                     {
-                        // 이번 턴에만 적 공격력 감소 (카드의 value만큼, 기본 3)
                         attackReduction += cardUI.cardData.value;
                         UpdateUI();
                         Debug.Log($"[디버프] 적 공격력 -{cardUI.cardData.value} (이번 턴 공격력: {GetCurrentEnemyAttack()})");
                     }
 
-                    // 카드를 사용했으므로 GameObject 파괴
                     Destroy(cardUI.gameObject);
-                    yield return new WaitForSeconds(0.5f); // 연출 간격 대기
+                    yield return new WaitForSeconds(0.5f);
                 }
             }
         }
 
         yield return new WaitForSeconds(0.5f);
 
-        // 2. 적의 반격 (적이 살아있는 경우) - 디버프로 깎인 만큼 약해진다
+        // 2. 적의 반격
         if (enemyCurrentHP > 0)
         {
             int damage = GetCurrentEnemyAttack();
@@ -106,7 +112,7 @@ public class AttackManager : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
         }
 
-        // 3. 적의 공격이 끝났으므로 디버프 효과 해제
+        // 3. 디버프 해제
         if (attackReduction > 0)
         {
             attackReduction = 0;
@@ -114,7 +120,7 @@ public class AttackManager : MonoBehaviour
             Debug.Log("[디버프] 효과가 끝나 적 공격력이 원래대로 돌아왔습니다.");
         }
 
-        // 4. 기존 GameManager의 StartTurn()을 호출하여 부족한 손패(7장) 재보충
+        // 4. 턴 보충
         if (gameManager != null)
         {
             gameManager.StartTurn();
@@ -123,7 +129,6 @@ public class AttackManager : MonoBehaviour
         isAttacking = false;
     }
 
-    // 디버프를 반영한 이번 턴 적 공격력 (0보다 작아지지 않음)
     private int GetCurrentEnemyAttack()
     {
         return Mathf.Max(0, enemyAttackDamage - attackReduction);
@@ -142,12 +147,12 @@ public class AttackManager : MonoBehaviour
             if (attackReduction > 0)
             {
                 enemyAttackText.text = $"공격력: {GetCurrentEnemyAttack()} (-{attackReduction})";
-                enemyAttackText.color = new Color32(0x7F, 0xD8, 0xEA, 0xFF);   // 약해짐: 하늘색
+                enemyAttackText.color = new Color32(0x7F, 0xD8, 0xEA, 0xFF);
             }
             else
             {
                 enemyAttackText.text = $"공격력: {enemyAttackDamage}";
-                enemyAttackText.color = Color.white;                           // 평소: 흰색
+                enemyAttackText.color = Color.white;
             }
         }
     }

@@ -564,6 +564,7 @@ MonoBehaviour:
   - {fileID: 476181073}
   - {fileID: 892654086}
   - {fileID: 1167011934}
+  currentEnemyData: {fileID: 11400000, guid: 9bc82373f566b2b4aaad0aa89d35d3d2, type: 2}
   enemyName: "\uC2A4\uCF08\uB808\uD1A4"
   enemyMaxHP: 100
   enemyCurrentHP: 0
