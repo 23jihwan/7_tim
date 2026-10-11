@@ -22,3 +22,12 @@ MonoBehaviour:
   - cardA: {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
     cardB: {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
     resultCard: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
+  - cardA: {fileID: 11400000, guid: fc24f68ceb1c9964a91abf90917e9e9b, type: 2}
+    cardB: {fileID: 11400000, guid: fc24f68ceb1c9964a91abf90917e9e9b, type: 2}
+    resultCard: {fileID: 11400000, guid: 5ef9ad66c35ddcf4789984d8721c308d, type: 2}
+  - cardA: {fileID: 11400000, guid: 47663afc5a8b2f34ab291d4d29e39d5d, type: 2}
+    cardB: {fileID: 11400000, guid: 47663afc5a8b2f34ab291d4d29e39d5d, type: 2}
+    resultCard: {fileID: 11400000, guid: 96ad6197a9a17b541bb7854d445bc307, type: 2}
+  - cardA: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
+    cardB: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
+    resultCard: {fileID: 11400000, guid: 17a5fc3f57f1e004aa2063a1dbcbc89b, type: 2}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2834e1013b9006418f465dc300991ad, type: 3}
   m_Name: EnemyData_Goblin
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyName: "\uBAAC\uC2A4\uD130"
+  enemyName: "\uB9AC\uCE58\uC758 \uC794\uC7AC"
   maxHP: 300
   attackDamage: 20
   enemySprite: {fileID: 9021094628121601641, guid: 268bc9bda74091141ac59a8ded26b32f, type: 3}

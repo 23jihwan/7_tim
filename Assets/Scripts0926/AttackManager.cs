@@ -75,11 +75,21 @@ public class AttackManager : MonoBehaviour
                     }
                     else if (cardUI.cardData.cardType == CardType.Heal)
                     {
+                        // 1. 플레이어 체력 회복
                         int before = playerCurrentHP;
                         playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + cardUI.cardData.value);
                         int healed = playerCurrentHP - before;
-                        UpdateUI();
                         Debug.Log($"[힐] {cardUI.cardData.cardName} → 체력 {healed} 회복! ({before} → {playerCurrentHP})");
+
+                        // 2. [추가된 부분] damageValue가 0보다 크면 적에게 추가 데미지 부여
+                        if (cardUI.cardData.damageValue > 0)
+                        {
+                            enemyCurrentHP -= cardUI.cardData.damageValue;
+                            if (enemyCurrentHP < 0) enemyCurrentHP = 0;
+                            Debug.Log($"[신성한 힐!] 적에게 {cardUI.cardData.damageValue} 데미지를 추가로 주었습니다!");
+                        }
+
+                        UpdateUI();
                     }
                     else if (cardUI.cardData.cardType == CardType.Debuff)
                     {
