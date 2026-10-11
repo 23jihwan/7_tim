@@ -18,6 +18,9 @@ MonoBehaviour:
     shopColumn: 3
     eliteStartColumn: 2
     restStartColumn: 3
+    shopStartColumn: 2
+    maxShops: 2
+    minElites: 1
     roomChances:
     - type: 0
       weight: 55
@@ -29,11 +32,20 @@ MonoBehaviour:
       weight: 8
     - type: 3
       weight: 8
+    normalEnemies:
+    - {fileID: 11400000, guid: 9bc82373f566b2b4aaad0aa89d35d3d2, type: 2}
+    eliteEnemies:
+    - {fileID: 11400000, guid: 6578331af598de44596208fb8e7c70a5, type: 2}
+    bossEnemies:
+    - {fileID: 11400000, guid: 6ef5190110abc79448a5305a1c92bd2d, type: 2}
   - floorName: "\uB9C8\uBC95\uC758 \uD655\uC7A5"
     columnCount: 8
     shopColumn: 3
     eliteStartColumn: 1
     restStartColumn: 3
+    shopStartColumn: 2
+    maxShops: 2
+    minElites: 1
     roomChances:
     - type: 0
       weight: 45
@@ -45,11 +57,17 @@ MonoBehaviour:
       weight: 12
     - type: 3
       weight: 8
+    normalEnemies: []
+    eliteEnemies: []
+    bossEnemies: []
   - floorName: "\uB9C8\uBC95\uC0AC\uC758 \uC601\uC5ED"
     columnCount: 9
     shopColumn: 4
     eliteStartColumn: 1
     restStartColumn: 3
+    shopStartColumn: 2
+    maxShops: 2
+    minElites: 1
     roomChances:
     - type: 0
       weight: 40
@@ -61,3 +79,6 @@ MonoBehaviour:
       weight: 16
     - type: 3
       weight: 8
+    normalEnemies: []
+    eliteEnemies: []
+    bossEnemies: []

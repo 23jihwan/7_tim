@@ -98,6 +98,7 @@ public class MapView : MonoBehaviour
 
         // RunState에 저장된 층과 시드로 맵을 만든다 (전투에서 돌아와도 같은 맵)
         RunState run = RunState.GetOrCreate();
+        run.config = config;   // 층별 몬스터 정보를 RunState도 쓸 수 있게
         run.EnsureRunStarted();
         currentMap = MapGenerator.Generate(config, run.floorIndex, run.seed);
 

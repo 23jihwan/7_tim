@@ -55,6 +55,11 @@ public class FloorSettings
 
     [Tooltip("고정 방을 제외한 방의 등장 확률(%)")]
     public RoomChance[] roomChances;
+
+    [Header("이 층에 나오는 몬스터 (여러 개면 무작위)")]
+    public EnemyData[] normalEnemies;
+    public EnemyData[] eliteEnemies;
+    public EnemyData[] bossEnemies;
 }
 
 // 유니티 Project 창에서 우클릭 → Create → 마법사의 탑 → Map Config 로 만들 수 있다

@@ -12,6 +12,13 @@ public class RunState : MonoBehaviour
     [Header("씬 이름 (Build Profiles의 Scene List에 있어야 함)")]
     public string mapSceneName = "minhyeokMapTestScene";
     public string battleSceneName = "JihwanTestScene";
+    [Tooltip("엘리트 전투 씬 이름. 비워 두면 일반 전투 씬을 같이 쓴다")]
+    public string eliteSceneName = "TestScene";
+    [Tooltip("보스 전투 씬 이름. 비워 두면 일반 전투 씬을 같이 쓴다")]
+    public string bossSceneName = "";
+
+    [Tooltip("맵 설정 (MapView가 자동으로 넣어 준다). 층별 등장 몬스터를 여기서 가져온다")]
+    public MapConfig config;
 
     [Header("진행 상태")]
     public int floorIndex = 0;            // 0 = 1층
@@ -40,6 +47,7 @@ public class RunState : MonoBehaviour
     public const int FloorCount = 3;
 
     private AttackManager battle;
+    private EnemyData pendingEnemy;        // 이번 전투에 나올 몬스터
     private bool battleReady;
     private bool battleEnding;
 
@@ -96,15 +104,41 @@ public class RunState : MonoBehaviour
         currentRoomType = node.type;
     }
 
-    // 전투 방이면 전투 씬으로 이동하고 true를 돌려준다
+    // 전투 방이면 몬스터를 고르고 전투 씬으로 이동한 뒤 true를 돌려준다
     public bool EnterRoom(RoomType type)
     {
-        if (type == RoomType.Enemy || type == RoomType.Elite || type == RoomType.Boss)
-        {
-            SceneManager.LoadScene(battleSceneName);
-            return true;
-        }
-        return false;   // 상점, 이벤트, 휴식은 아직 구현 전
+        if (type != RoomType.Enemy && type != RoomType.Elite && type != RoomType.Boss)
+            return false;   // 상점, 이벤트, 휴식은 아직 구현 전
+
+        pendingEnemy = PickEnemy(type);
+        SceneManager.LoadScene(GetBattleScene(type));
+        return true;
+    }
+
+    private string GetBattleScene(RoomType type)
+    {
+        if (type == RoomType.Elite && !string.IsNullOrEmpty(eliteSceneName)) return eliteSceneName;
+        if (type == RoomType.Boss && !string.IsNullOrEmpty(bossSceneName)) return bossSceneName;
+        return battleSceneName;
+    }
+
+    private bool IsBattleScene(string sceneName)
+    {
+        return sceneName == battleSceneName || sceneName == eliteSceneName || sceneName == bossSceneName;
+    }
+
+    // MapConfig에서 지금 층, 방 종류에 맞는 몬스터를 하나 고른다 (없으면 null)
+    private EnemyData PickEnemy(RoomType type)
+    {
+        if (config == null || config.floors == null || floorIndex >= config.floors.Length) return null;
+        FloorSettings floor = config.floors[floorIndex];
+
+        EnemyData[] list = floor.normalEnemies;
+        if (type == RoomType.Elite) list = floor.eliteEnemies;
+        if (type == RoomType.Boss) list = floor.bossEnemies;
+
+        if (list == null || list.Length == 0) return null;
+        return list[Random.Range(0, list.Length)];
     }
 
     // ---------------- 전투 연결 ----------------
@@ -113,7 +147,7 @@ public class RunState : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         battle = null;
-        if (scene.name != battleSceneName) return;
+        if (!IsBattleScene(scene.name)) return;
 
         battle = FindFirstObjectByType<AttackManager>();
         if (battle == null)
@@ -127,10 +161,21 @@ public class RunState : MonoBehaviour
 
         // AttackManager의 Start()가 실행되기 전에 값을 바꿔 둔다
         battle.playerMaxHP = playerMaxHP;
-        float multiplier = 1f;
-        if (currentRoomType == RoomType.Elite) multiplier = eliteHpMultiplier;
-        if (currentRoomType == RoomType.Boss) multiplier = bossHpMultiplier;
-        battle.enemyMaxHP = Mathf.RoundToInt(battle.enemyMaxHP * multiplier);
+
+        if (pendingEnemy != null)
+        {
+            // MapConfig에서 고른 몬스터를 넣으면 AttackManager가 이름·체력·공격력·그림을 적용한다
+            battle.currentEnemyData = pendingEnemy;
+        }
+        else if (battle.currentEnemyData == null)
+        {
+            // 몬스터 데이터가 아무 데도 없을 때만 예전처럼 체력 배율을 쓴다
+            float multiplier = 1f;
+            if (currentRoomType == RoomType.Elite) multiplier = eliteHpMultiplier;
+            if (currentRoomType == RoomType.Boss) multiplier = bossHpMultiplier;
+            battle.enemyMaxHP = Mathf.RoundToInt(battle.enemyMaxHP * multiplier);
+        }
+        // 씬에 이미 몬스터 데이터가 들어 있으면 그대로 둔다 (체력이 두 번 오르지 않게)
 
         StartCoroutine(SetupBattleNextFrame());
     }
@@ -146,7 +191,7 @@ public class RunState : MonoBehaviour
             battle.playerHPText.text = $"Player HP: {playerHP}/{playerMaxHP}";
 
         battleReady = true;
-        Debug.Log($"{floorIndex + 1}층 {MapGenerator.KoreanName(currentRoomType)} 전투 시작 (적 체력 {battle.enemyMaxHP})");
+        Debug.Log($"{floorIndex + 1}층 {MapGenerator.KoreanName(currentRoomType)} 전투 시작: {battle.enemyName} (체력 {battle.enemyMaxHP}, 공격력 {battle.enemyAttackDamage})");
     }
 
     private void Update()
