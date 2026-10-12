@@ -3,11 +3,12 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro; // TextMeshPro 사용 시 (일반 Text 사용 시 Text로 변경)
 
-public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("UI References")]
     public Image cardImage;
     public TextMeshProUGUI cardNameText; // 일반 Text는 'public Text cardNameText;'
+    public TextMeshProUGUI descriptionText;  // 카드 효과 설명
 
     [HideInInspector] public CardData cardData; // 현재 카드의 데이터 저장
     [HideInInspector] public Transform parentToReturnTo = null;
@@ -37,6 +38,8 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
         if (cardNameText != null)
             cardNameText.text = data.cardName;
+        if (descriptionText != null)
+            descriptionText.text = GetDescription(data);
 
         if (cardImage != null)
         {
@@ -50,6 +53,7 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        CardHoverPreview.Hide();
         parentToReturnTo = this.transform.parent;
 
         // 드래그 중 최상위 Canvas로 이동하여 레이어 가림 방지
@@ -91,5 +95,43 @@ public class CardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             rect.anchoredPosition = Vector2.zero; // 자식으로서 중앙 정렬
             rect.anchoredPosition3D = Vector3.zero;
         }
+    }
+    // ---------------- 마우스를 올리면 크게 보여주기 ----------------
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (eventData.dragging) return;   // 다른 카드를 끌고 있을 때는 무시
+        CardHoverPreview.Show(this);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        CardHoverPreview.Hide(this);
+    }
+
+    private void OnDisable()
+    {
+        // 카드를 사용해서 사라질 때 미리보기도 같이 지운다
+        CardHoverPreview.Hide(this);
+    }
+
+    // ---------------- 효과 설명 만들기 ----------------
+
+    public static string GetDescription(CardData data)
+    {
+        if (!string.IsNullOrEmpty(data.description)) return data.description;
+
+        switch (data.cardType)
+        {
+            case CardType.Attack:
+                return $"적에게 {data.value} 피해를 준다.";
+            case CardType.Heal:
+                string text = $"체력을 {data.value} 회복한다.";
+                if (data.damageValue > 0) text += $"\n적에게 {data.damageValue} 피해를 준다.";
+                return text;
+            case CardType.Debuff:
+                return $"이번 턴 적의 공격력을 {data.value} 낮춘다.";
+        }
+        return "";
     }
 }

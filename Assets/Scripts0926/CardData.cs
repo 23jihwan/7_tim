@@ -20,6 +20,8 @@ public class CardData : ScriptableObject
 
     public string statusEffect;
     public int combineId;
+    [Tooltip("비워 두면 카드 종류와 Value로 설명이 자동으로 만들어진다")]
+    [TextArea(2, 4)] public string description;
 
     [Header("Visual Asset")]
     public Sprite cardIcon;
