@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: EnemyData_Skeleton
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   enemyName: "\uC2A4\uCF08\uB808\uD1A4 \uBCD1\uC0AC"
-  maxHP: 100
+  maxHP: 30
   attackDamage: 10
   enemySprite: {fileID: 2273967064964724390, guid: 42701c3da44fecf4da082e023b298449, type: 3}
