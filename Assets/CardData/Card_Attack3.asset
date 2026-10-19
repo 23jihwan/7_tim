@@ -12,10 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
   m_Name: Card_Attack3
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Attack3
+  cardName: "\uBA54\uD14C\uC624"
+  description: 
   cardType: 0
+  elementType: 0
   value: 30
   damageValue: 0
+  bonusDamageAgainstElemental: 0
+  dotElementType: 0
+  dotDamagePerTurn: 0
+  dotDuration: 0
   statusEffect: 
   combineId: 0
-  cardIcon: {fileID: 21300000, guid: 5e62a1b5d6a1f41d88206e5d3cd57855, type: 3}
+  cardIcon: {fileID: 21300000, guid: 8ec5b52b09d90074a83d61c1334190f9, type: 3}

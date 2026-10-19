@@ -31,3 +31,6 @@ MonoBehaviour:
   - cardA: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
     cardB: {fileID: 11400000, guid: 16302f0d90e87c844946cf1f6579b9e8, type: 2}
     resultCard: {fileID: 11400000, guid: 17a5fc3f57f1e004aa2063a1dbcbc89b, type: 2}
+  - cardA: {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+    cardB: {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
+    resultCard: {fileID: 11400000, guid: 17a5fc3f57f1e004aa2063a1dbcbc89b, type: 2}
