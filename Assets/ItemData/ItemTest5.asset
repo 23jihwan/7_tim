@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dd22dab5161c3e409cb89fd05deeb58, type: 3}
+  m_Name: ItemTest5
+  m_EditorClassIdentifier: Assembly-CSharp::RelicData
+  relicId: relic_005
+  relicName: "\uD669\uAE08 \uBC40\uC758 \uB208"
+  description: "\uC804\uD22C \uC2B9\uB9AC \uBC0F \uBAAC\uC2A4\uD130 \uCC98\uCE58
+    \uC2DC \uD68D\uB4DD\uD558\uB294 \uC7AC\uD654(\uACE8\uB4DC/\uC7AC\uB8CC)\uC758
+    \uC591\uC774 25% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  icon: {fileID: 23121403190668631, guid: cb60fb866faf10c4b8a48581cd78b9ea, type: 3}
+  type: 3
+  value: 25
