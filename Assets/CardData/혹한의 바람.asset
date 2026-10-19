@@ -10,18 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
-  m_Name: Card_Attack
+  m_Name: "\uD639\uD55C\uC758 \uBC14\uB78C"
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: "\uD30C\uC774\uC5B4\uBCFC"
-  description: 
+  cardName: "\uD639\uD55C\uC758 \uBC14\uB78C"
+  description: "\uC0C1\uB300\uC5D0\uAC8C 15\uC758 \uB370\uBBF8\uC9C0\uB97C \uC8FC\uACE0
+    \uBE59\uACB0 \uC0C1\uD0DC\uD6A8\uACFC\uB97C \uBD80\uC5EC\uD55C\uB2E4"
   cardType: 0
   elementType: 0
-  value: 10
+  value: 15
   damageValue: 0
   bonusDamageAgainstElemental: 0
-  dotElementType: 0
+  causesStun: 1
+  dotElementType: 6
   dotDamagePerTurn: 0
   dotDuration: 0
   statusEffect: 
   combineId: 0
-  cardIcon: {fileID: 21300000, guid: 2d0997ac1b1fd664e98202450e7ea2d7, type: 3}
+  cardIcon: {fileID: 21300000, guid: eced15bb959edc54c8457ab75f9a45b5, type: 3}

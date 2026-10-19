@@ -12,14 +12,12 @@ public class CombineSlot : MonoBehaviour, IDropHandler
 
         if (draggedCard == null || draggedCard.cardData == null) return;
 
-        // 이미 카드가 있는 경우에만 드롭 거부
         if (GetComponentInChildren<CardUI>() != null)
         {
             Debug.Log("[조합 슬롯] 이미 카드가 올려져 있습니다.");
             return;
         }
 
-        // 제한 없이 드롭 허용
         draggedCard.parentToReturnTo = this.transform;
     }
 }

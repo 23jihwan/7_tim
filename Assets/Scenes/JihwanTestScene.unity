@@ -566,6 +566,7 @@ MonoBehaviour:
   - {fileID: 1167011934}
   currentEnemyData: {fileID: 11400000, guid: 9bc82373f566b2b4aaad0aa89d35d3d2, type: 2}
   enemyName: "\uC2A4\uCF08\uB808\uD1A4"
+  enemyElement: 0
   enemyMaxHP: 100
   enemyCurrentHP: 0
   enemyAttackDamage: 10
@@ -2207,7 +2208,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2131407799}
-  - component: {fileID: 2131407798}
   - component: {fileID: 2131407800}
   - component: {fileID: 2131407801}
   m_Layer: 0
@@ -2217,18 +2217,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2131407798
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2131407797}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afbbd6fc7f436f74a9cecf791a5321ed, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TurnBasedGameManager
 --- !u!4 &2131407799
 Transform:
   m_ObjectHideFlags: 0
@@ -2266,6 +2254,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
   - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
   - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+  - {fileID: 11400000, guid: 0e2fbb5e8f5d378438be3e6bcfa2b828, type: 2}
+  - {fileID: 11400000, guid: fac4a65d45d682d46b828fd592a988a2, type: 2}
 --- !u!114 &2131407801
 MonoBehaviour:
   m_ObjectHideFlags: 0

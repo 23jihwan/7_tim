@@ -94,11 +94,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3151c1b188383c64da91095b68bcea92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardUI
-  cardImage: {fileID: 2874586938555293876}
-  cardNameText: {fileID: 1516590421015453660}
-  descriptionText: {fileID: 1733432224202708239}
   cardData: {fileID: 0}
   parentToReturnTo: {fileID: 0}
+  cardNameText: {fileID: 1516590421015453660}
+  cardTypeText: {fileID: 0}
+  valueText: {fileID: 0}
+  descriptionText: {fileID: 1733432224202708239}
+  cardIconImage: {fileID: 2874586938555293876}
 --- !u!114 &7223740598814788648
 MonoBehaviour:
   m_ObjectHideFlags: 0

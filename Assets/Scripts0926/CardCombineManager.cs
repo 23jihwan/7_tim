@@ -34,7 +34,6 @@ public class CardCombineManager : MonoBehaviour
             return;
         }
 
-        // 타입 상관없이 레시피 검사
         CardData resultData = recipeDatabase.GetRecipeResult(card1.cardData, card2.cardData);
 
         if (resultData != null)

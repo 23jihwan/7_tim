@@ -18,7 +18,6 @@ public class CardRecipeDatabase : ScriptableObject
     {
         if (a == null || b == null) return null;
 
-        // 순서 상관없이 (A+B) 또는 (B+A) 검색
         foreach (var recipe in recipes)
         {
             if ((recipe.cardA == a && recipe.cardB == b) || (recipe.cardA == b && recipe.cardB == a))

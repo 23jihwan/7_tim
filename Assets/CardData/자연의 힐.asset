@@ -10,12 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
-  m_Name: Card_Heal3
+  m_Name: "\uC790\uC5F0\uC758 \uD790"
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Heal3
+  cardName: "\uC790\uC5F0\uC758 \uD790"
+  description: "HP\uB97C 20 \uD68C\uBCF5\uD55C\uB2E4"
   cardType: 1
-  value: 30
-  damageValue: 5
+  elementType: 0
+  value: 20
+  damageValue: 0
+  bonusDamageAgainstElemental: 0
+  causesStun: 0
+  dotElementType: 0
+  dotDamagePerTurn: 0
+  dotDuration: 0
   statusEffect: 
   combineId: 0
-  cardIcon: {fileID: 21300000, guid: 12c3356bccdb940ba874623bd1b7133d, type: 3}
+  cardIcon: {fileID: 21300000, guid: d45b3c4e87f2c4e38a88656c5ba184d1, type: 3}

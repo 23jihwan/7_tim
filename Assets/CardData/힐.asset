@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
+  m_Name: "\uD790"
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: "\uD790"
+  description: "HP 10\uC744 \uD68C\uBCF5\uD55C\uB2E4"
+  cardType: 1
+  elementType: 0
+  value: 10
+  damageValue: 0
+  bonusDamageAgainstElemental: 0
+  causesStun: 0
+  dotElementType: 0
+  dotDamagePerTurn: 0
+  dotDuration: 0
+  statusEffect: 
+  combineId: 0
+  cardIcon: {fileID: 21300000, guid: 8e42a364f9d2c432283fe87d1c7460ae, type: 3}
