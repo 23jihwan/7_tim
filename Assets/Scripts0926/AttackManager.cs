@@ -65,6 +65,18 @@ public class AttackManager : MonoBehaviour
 
         enemyCurrentHP = enemyMaxHP;
         playerCurrentHP = playerMaxHP;
+
+        // ★ GameManager 초기 체력 설정 및 연동
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.playerMaxHP = playerMaxHP;
+            GameManager.Instance.playerCurrentHP = playerCurrentHP;
+            GameManager.Instance.enemyMaxHP = enemyMaxHP;
+            GameManager.Instance.enemyCurrentHP = enemyCurrentHP;
+            GameManager.Instance.UpdatePlayerHPUI();
+            GameManager.Instance.UpdateEnemyHPUI();
+        }
+
         UpdateUI();
     }
 
@@ -112,8 +124,16 @@ public class AttackManager : MonoBehaviour
                         float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                         int finalDamage = Mathf.RoundToInt(baseDamage * multiplier);
 
-                        enemyCurrentHP -= finalDamage;
-                        if (enemyCurrentHP < 0) enemyCurrentHP = 0;
+                        // ★ GameManager를 통해 적 HP 감축 (구체/텍스트 연동)
+                        if (GameManager.Instance != null)
+                        {
+                            GameManager.Instance.TakeEnemyDamage(finalDamage);
+                            enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
+                        }
+                        else
+                        {
+                            enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
+                        }
 
                         UpdateUI();
                         Debug.Log($"[공격] {card.cardName}({card.elementType}) -> {enemyName}({enemyElement})에게 {finalDamage} 데미지!");
@@ -122,7 +142,18 @@ public class AttackManager : MonoBehaviour
                     else if (card.cardType == CardType.Heal)
                     {
                         int before = playerCurrentHP;
-                        playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + card.value);
+
+                        // ★ GameManager를 통해 플레이어 HP 회복 (구체 체력바 채워짐)
+                        if (GameManager.Instance != null)
+                        {
+                            GameManager.Instance.HealPlayer(card.value);
+                            playerCurrentHP = (int)GameManager.Instance.playerCurrentHP;
+                        }
+                        else
+                        {
+                            playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + card.value);
+                        }
+
                         int healed = playerCurrentHP - before;
                         Debug.Log($"[힐] {card.cardName} → 체력 {healed} 회복!");
 
@@ -139,8 +170,16 @@ public class AttackManager : MonoBehaviour
                             float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                             int finalDamage = Mathf.RoundToInt(baseDamage * multiplier);
 
-                            enemyCurrentHP -= finalDamage;
-                            if (enemyCurrentHP < 0) enemyCurrentHP = 0;
+                            // ★ 신성 힐 공격 추가 데미지 연동
+                            if (GameManager.Instance != null)
+                            {
+                                GameManager.Instance.TakeEnemyDamage(finalDamage);
+                                enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
+                            }
+                            else
+                            {
+                                enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
+                            }
 
                             Debug.Log($"[신성 힐 공격] 적에게 {finalDamage} 데미지!");
                         }
@@ -187,8 +226,16 @@ public class AttackManager : MonoBehaviour
                 float multiplier = GetElementMultiplier(effect.element, enemyElement);
                 int finalDotDamage = Mathf.RoundToInt(effect.damagePerTurn * multiplier);
 
-                enemyCurrentHP -= finalDotDamage;
-                if (enemyCurrentHP < 0) enemyCurrentHP = 0;
+                // ★ GameManager 지속 피해 연동
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.TakeEnemyDamage(finalDotDamage);
+                    enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
+                }
+                else
+                {
+                    enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDotDamage);
+                }
 
                 effect.remainingTurns--;
                 UpdateUI();
@@ -219,8 +266,18 @@ public class AttackManager : MonoBehaviour
             else
             {
                 int damage = GetCurrentEnemyAttack();
-                playerCurrentHP -= damage;
-                if (playerCurrentHP < 0) playerCurrentHP = 0;
+
+                // ★ 적이 플레이어를 공격할 때 GameManager를 호출하여 피 구체 감소!
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.TakePlayerDamage(damage);
+                    playerCurrentHP = (int)GameManager.Instance.playerCurrentHP;
+                }
+                else
+                {
+                    playerCurrentHP = Mathf.Max(0, playerCurrentHP - damage);
+                }
+
                 UpdateUI();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -236,16 +293,18 @@ public class AttackManager : MonoBehaviour
         {
             gameManager.StartTurn();
         }
+        else if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartTurn();
+        }
 
         isAttacking = false;
     }
 
-    // 속성 상성 배율 계산
     private float GetElementMultiplier(ElementType attacker, ElementType defender)
     {
         if (attacker == ElementType.None || defender == ElementType.None) return 1.0f;
 
-        // 불 > 풀 > 물 > 불
         if (attacker == ElementType.Fire && defender == ElementType.Grass) return 1.5f;
         if (attacker == ElementType.Fire && defender == ElementType.Water) return 0.5f;
 
@@ -255,18 +314,15 @@ public class AttackManager : MonoBehaviour
         if (attacker == ElementType.Grass && defender == ElementType.Water) return 1.5f;
         if (attacker == ElementType.Grass && defender == ElementType.Fire) return 0.5f;
 
-        // 빛 <-> 어둠
         if ((attacker == ElementType.Light && defender == ElementType.Dark) ||
             (attacker == ElementType.Dark && defender == ElementType.Light))
         {
             return 1.5f;
         }
 
-        // 빙결 (Ice): 풀에 강함(1.5배), 불에 약함(0.5배)
         if (attacker == ElementType.Ice && defender == ElementType.Grass) return 1.5f;
         if (attacker == ElementType.Ice && defender == ElementType.Fire) return 0.5f;
 
-        // 전기 (Electric): 물에 강함(1.5배), 풀에 약함(0.5배)
         if (attacker == ElementType.Electric && defender == ElementType.Water) return 1.5f;
         if (attacker == ElementType.Electric && defender == ElementType.Grass) return 0.5f;
 
