@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c552bdf70a6c2b4c85fdb0ad7057f62, type: 3}
+  m_Name: SoundLibrary
+  m_EditorClassIdentifier: Assembly-CSharp::SoundLibrary
+  mixer: {fileID: 24100000, guid: f6b422e40ec5c714ea2a3af6f97fbc62, type: 2}
+  bgmGroup: {fileID: -2527595348565946349, guid: f6b422e40ec5c714ea2a3af6f97fbc62, type: 2}
+  sfxGroup: {fileID: -5831244861020598675, guid: f6b422e40ec5c714ea2a3af6f97fbc62, type: 2}
+  sceneBgms:
+  - sceneName: Main
+    clip: {fileID: 8300000, guid: e7e9c9f8edda9a3469229ba1944fe877, type: 3}
+    volume: 1
+  sfx: []
