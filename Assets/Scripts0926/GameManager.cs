@@ -86,7 +86,8 @@ public class GameManager : MonoBehaviour
             {
                 // 3종류의 CardData 중 하나를 무작위로 선택하여 적용
                 CardData randomData = cardDatabase[Random.Range(0, cardDatabase.Count)];
-                card.SetupCard(randomData);
+                card.SetupCard(randomData);                  // 카드에 데이터 넣기 (원래 있던 줄)
+                CardAnimator.PlayDraw(card, i * 0.08f);   // 한 장씩 0.08초 간격으로 날아오기
             }
         }
     }

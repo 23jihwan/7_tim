@@ -187,6 +187,12 @@ public class RunState : MonoBehaviour
         if (battle == null) yield break;
 
         battle.playerCurrentHP = playerHP;
+        // GameManager도 체력을 관리하므로 같이 맞춰 준다
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.playerCurrentHP = playerHP;
+            GameManager.Instance.UpdatePlayerHPUI();
+        }
         if (battle.playerHPText != null)
             battle.playerHPText.text = $"Player HP: {playerHP}/{playerMaxHP}";
 

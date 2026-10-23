@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class CardUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class CardUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [Header("Card Data Reference")]
     public CardData cardData;
@@ -60,20 +60,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, ID
         if (valueText != null)
             valueText.text = cardData.value.ToString();
 
-        // 4. 카드 설명 (자동 생성 및 예외 처리)
+        // 4. 카드 설명 (CardData에 직접 쓴 설명이 있으면 그대로, 없으면 자동으로 만든다)
         if (descriptionText != null)
-        {
-            // CardData에 설명글이 수동으로 써있다면 그대로 출력
-            if (!string.IsNullOrEmpty(cardData.description))
-            {
-                descriptionText.text = cardData.description;
-            }
-            else
-            {
-                // 설명글이 없으면 속성과 수치를 조합해 자동으로 생성 (예: "파이어 10")
-                descriptionText.text = $"{cardData.cardType} {cardData.value}";
-            }
-        }
+            descriptionText.text = GetDescription(cardData);
 
         // 5. 카드 일러스트 아이콘
         if (cardIconImage != null && cardData.cardIcon != null)
@@ -91,6 +80,9 @@ public class CardUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, ID
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        CardHoverPreview.Hide();          // 카드를 잡으면 확대 미리보기 숨기기
+        CardAnimator.ClearHover(this);    // 떠오른 상태 지우기
+
         parentToReturnTo = transform.parent;
 
         Canvas rootCanvas = GetComponentInParent<Canvas>();
@@ -109,7 +101,63 @@ public class CardUI : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, ID
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        transform.SetParent(parentToReturnTo);
         canvasGroup.blocksRaycasts = true;
+        Vector3 dropPosition = this.transform.position;   // 손을 놓은 위치 기억
+
+        // 드롭 구역(슬롯 또는 HandPanel)으로 부모 설정
+        this.transform.SetParent(parentToReturnTo);
+
+        // 부모의 중앙에 오도록 위치 및 크기 정렬
+        this.transform.localScale = Vector3.one;
+
+        RectTransform rect = GetComponent<RectTransform>();
+        if (rect != null)
+        {
+            rect.anchoredPosition = Vector2.zero;
+            rect.anchoredPosition3D = Vector3.zero;
+        }
+
+        // 놓은 자리에서 부드럽게 이동. 손패가 아니면(슬롯이면) '탁' 튕기기
+        bool intoHand = parentToReturnTo != null && parentToReturnTo.GetComponent<HandPanelZone>() != null;
+        CardAnimator.PlaySettle(this, dropPosition, !intoHand);
+    }
+
+    // --- 마우스를 올리면: 크게 보여주기 + 손패에서 살짝 떠오르기 ---
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (eventData.dragging) return;   // 다른 카드를 끌고 있을 때는 무시
+        CardHoverPreview.Show(this);
+        CardAnimator.SetHover(this, true);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        CardHoverPreview.Hide(this);
+        CardAnimator.SetHover(this, false);
+    }
+
+    private void OnDisable()
+    {
+        // 카드를 사용해서 사라질 때 미리보기도 같이 지운다
+        CardHoverPreview.Hide(this);
+    }
+
+    // --- 효과 설명 자동 만들기 ---
+    public static string GetDescription(CardData data)
+    {
+        if (!string.IsNullOrEmpty(data.description)) return data.description;
+
+        switch (data.cardType)
+        {
+            case CardType.Attack:
+                return $"적에게 {data.value} 피해를 준다.";
+            case CardType.Heal:
+                string text = $"체력을 {data.value} 회복한다.";
+                if (data.damageValue > 0) text += $"\n적에게 {data.damageValue} 피해를 준다.";
+                return text;
+            case CardType.Debuff:
+                return $"이번 턴 적의 공격력을 {data.value} 낮춘다.";
+        }
+        return $"{data.cardType} {data.value}";
     }
 }

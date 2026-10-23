@@ -26,6 +26,10 @@ public class AttackManager : MonoBehaviour
     public GameManager gameManager;
     public Transform[] dropSlots;
 
+    [Header("Animation")]
+    [Tooltip("카드가 날아가고 흔들릴 몬스터 그림 (Monster_Skeleton 등). 비워 두면 흔들림 없이 진행")]
+    public RectTransform monsterVisual;
+
     [Header("Enemy Data Asset (선택 사항)")]
     public EnemyData currentEnemyData;
 
@@ -52,6 +56,12 @@ public class AttackManager : MonoBehaviour
     private bool isEnemyStunned = false;
 
     private List<ActiveStatusEffect> activeEnemyEffects = new List<ActiveStatusEffect>();
+
+    // 애니메이션 색
+    private static readonly Color AttackColor = new Color32(0xE8, 0x5A, 0x3C, 0xFF);
+    private static readonly Color HealColor = new Color32(0x6F, 0xD8, 0x7A, 0xFF);
+    private static readonly Color DebuffColor = new Color32(0x6F, 0xB8, 0xF0, 0xFF);
+    private static readonly Color HolyColor = new Color32(0xFF, 0xF0, 0x9A, 0xFF);
 
     private void Start()
     {
@@ -103,6 +113,13 @@ public class AttackManager : MonoBehaviour
                 {
                     CardData card = cardUI.cardData;
 
+                    // ★ [애니메이션] 카드가 목표로 날아간다 (힐은 내 체력 쪽, 나머지는 몬스터 쪽)
+                    Color glow = card.cardType == CardType.Attack ? AttackColor
+                               : card.cardType == CardType.Heal ? HealColor
+                               : DebuffColor;
+                    RectTransform target = (card.cardType == CardType.Heal && playerHPText != null) ? playerHPText.rectTransform : monsterVisual;
+                    yield return StartCoroutine(CardAnimator.UseCard(cardUI, target, glow));
+
                     // (0) 카드 효과로 행동 불가(Causes Stun) 옵션이 있다면 활성화
                     if (card.causesStun)
                     {
@@ -135,6 +152,7 @@ public class AttackManager : MonoBehaviour
                             enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
                         }
 
+                        CardAnimator.Hit(monsterVisual, AttackColor);   // ★ [애니메이션] 몬스터 피격
                         UpdateUI();
                         Debug.Log($"[공격] {card.cardName}({card.elementType}) -> {enemyName}({enemyElement})에게 {finalDamage} 데미지!");
                     }
@@ -153,6 +171,8 @@ public class AttackManager : MonoBehaviour
                         {
                             playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + card.value);
                         }
+
+                        if (playerHPText != null) CardAnimator.Pulse(playerHPText.rectTransform, HealColor);   // ★ [애니메이션] 회복
 
                         int healed = playerCurrentHP - before;
                         Debug.Log($"[힐] {card.cardName} → 체력 {healed} 회복!");
@@ -181,6 +201,7 @@ public class AttackManager : MonoBehaviour
                                 enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
                             }
 
+                            CardAnimator.Hit(monsterVisual, HolyColor);   // ★ [애니메이션] 신성한 빛 피격
                             Debug.Log($"[신성 힐 공격] 적에게 {finalDamage} 데미지!");
                         }
                         UpdateUI();
@@ -189,6 +210,7 @@ public class AttackManager : MonoBehaviour
                     else if (card.cardType == CardType.Debuff)
                     {
                         attackReduction += card.value;
+                        CardAnimator.Hit(monsterVisual, DebuffColor);   // ★ [애니메이션] 저주 받음
                         UpdateUI();
                         Debug.Log($"[디버프] 적 공격력 -{card.value}");
                     }
@@ -207,7 +229,7 @@ public class AttackManager : MonoBehaviour
                     }
 
                     Destroy(cardUI.gameObject);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.3f);   // 애니메이션 시간이 생겨서 0.5 → 0.3초로 줄임
                 }
             }
         }
@@ -237,6 +259,7 @@ public class AttackManager : MonoBehaviour
                     enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDotDamage);
                 }
 
+                CardAnimator.Hit(monsterVisual, AttackColor);   // ★ [애니메이션] 지속 피해
                 effect.remainingTurns--;
                 UpdateUI();
 
@@ -278,6 +301,7 @@ public class AttackManager : MonoBehaviour
                     playerCurrentHP = Mathf.Max(0, playerCurrentHP - damage);
                 }
 
+                if (playerHPText != null) CardAnimator.Hit(playerHPText.rectTransform, AttackColor);   // ★ [애니메이션] 플레이어 피격
                 UpdateUI();
                 yield return new WaitForSeconds(0.5f);
             }
