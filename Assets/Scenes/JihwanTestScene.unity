@@ -1514,8 +1514,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -314.75342, y: -148}
-  m_SizeDelta: {x: 196.4932, y: 182.946}
+  m_AnchoredPosition: {x: -270, y: -160}
+  m_SizeDelta: {x: 240, y: 95}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1416118694
 MonoBehaviour:
@@ -1593,7 +1593,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -3686060208244045295, guid: 664e2ae716b944c40a9ff078d5a05f04, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1999,7 +1999,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uC870\uD569 "
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c46bce8f1fa46cf409129101f2e1c32a, type: 2}
   m_sharedMaterial: {fileID: 2946741057158105351, guid: c46bce8f1fa46cf409129101f2e1c32a, type: 2}
