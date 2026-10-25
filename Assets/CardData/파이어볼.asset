@@ -19,9 +19,13 @@ MonoBehaviour:
   value: 10
   damageValue: 0
   bonusDamageAgainstElemental: 0
+  causesStun: 0
+  stunDuration: 1
   dotElementType: 0
   dotDamagePerTurn: 0
   dotDuration: 0
   statusEffect: 
   combineId: 0
+  attack: 10
+  health: 0
   cardIcon: {fileID: 21300000, guid: 2d0997ac1b1fd664e98202450e7ea2d7, type: 3}

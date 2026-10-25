@@ -48,11 +48,21 @@ public class CardBookUI : MonoBehaviour
 
     public void RefreshBook()
     {
+        if (!Application.isPlaying) return;
         if (gridContainer == null || slotPrefab == null) return;
+
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
 
         foreach (Transform child in gridContainer)
         {
-            Destroy(child.gameObject);
+            if (child != null && child.gameObject != null)
+            {
+                child.gameObject.SetActive(false);
+                Destroy(child.gameObject);
+            }
         }
 
         foreach (CardData card in allCards)
@@ -65,7 +75,6 @@ public class CardBookUI : MonoBehaviour
         }
     }
 
-    // ★ CS1061 해결 포인트: ShowCardDetail 함수 정의
     public void ShowCardDetail(CardData card)
     {
         if (card == null || detailModalPanel == null) return;

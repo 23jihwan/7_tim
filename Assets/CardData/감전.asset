@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
-  m_Name: "\uCC9C\uB465"
+  m_Name: "\uAC10\uC804"
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: "\uAC10\uC804"
   description: "\uC801\uC5D0\uAC8C 30\uC758 \uB370\uBBF8\uC9C0\uB97C \uC785\uD788\uACE0
@@ -21,9 +21,12 @@ MonoBehaviour:
   damageValue: 0
   bonusDamageAgainstElemental: 0
   causesStun: 1
+  stunDuration: 1
   dotElementType: 7
   dotDamagePerTurn: 0
   dotDuration: 0
   statusEffect: 
   combineId: 0
+  attack: 30
+  health: 0
   cardIcon: {fileID: 21300000, guid: 2456dd2824f5ec540830760922f5bac6, type: 3}

@@ -1,49 +1,49 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// ¹æ Á¾·ùº° °Ñ¸ğ½À (»ö, ¾ÆÀÌÄÜ)
+// ë°© ì¢…ë¥˜ë³„ ê²‰ëª¨ìŠµ (ìƒ‰, ì•„ì´ì½˜)
 [Serializable]
 public class RoomVisual
 {
     public RoomType type;
     public Color color = Color.white;
-    public Sprite icon;   // ³ªÁß¿¡ ¾ÆÀÌÄÜ ±×¸²ÀÌ »ı±â¸é ¿©±â¿¡ ³Ö´Â´Ù
+    public Sprite icon;   // ë‚˜ì¤‘ì— ì•„ì´ì½˜ ê·¸ë¦¼ì´ ìƒê¸°ë©´ ì—¬ê¸°ì— ë„£ëŠ”ë‹¤
 }
 
-// MapGenerator·Î ¸¸µç ¸ÊÀ» È­¸é(Canvas)¿¡ ±×¸®´Â ½ºÅ©¸³Æ®
+// MapGeneratorë¡œ ë§Œë“  ë§µì„ í™”ë©´(Canvas)ì— ê·¸ë¦¬ëŠ” ìŠ¤í¬ë¦½íŠ¸
 public class MapView : MonoBehaviour
 {
-    [Header("¸Ê µ¥ÀÌÅÍ")]
+    [Header("ë§µ ë°ì´í„°")]
     public MapConfig config;
 
-    [Header("È­¸é ¿¬°á")]
-    [Tooltip("³ëµå¿Í ¿¬°á¼±ÀÌ ±×·ÁÁú ¿µ¿ª (Ã¥ ÆäÀÌÁö ¾ÈÂÊ)")]
+    [Header("í™”ë©´ ì—°ê²°")]
+    [Tooltip("ë…¸ë“œì™€ ì—°ê²°ì„ ì´ ê·¸ë ¤ì§ˆ ì˜ì—­ (ì±… í˜ì´ì§€ ì•ˆìª½)")]
     public RectTransform mapContent;
-    [Tooltip("MapNodeButtonÀÌ ºÙÀº ³ëµå ÇÁ¸®ÆÕ")]
+    [Tooltip("MapNodeButtonì´ ë¶™ì€ ë…¸ë“œ í”„ë¦¬íŒ¹")]
     public MapNodeButton nodePrefab;
-    [Tooltip("³ëµå¸¦ ´­·¶À» ¶§ ¶ß´Â È®ÀÎÃ¢ (ºñ¿ö µÎ¸é ¹Ù·Î µé¾î°¨)")]
+    [Tooltip("ë…¸ë“œë¥¼ ëˆŒë €ì„ ë•Œ ëœ¨ëŠ” í™•ì¸ì°½ (ë¹„ì›Œ ë‘ë©´ ë°”ë¡œ ë“¤ì–´ê°)")]
     public MapConfirmPopup confirmPopup;
-    [Tooltip("ÀÌº¥Æ® ³ëµå¿¡ µé¾î°¡¸é ¶ß´Â ÀÌº¥Æ® Ã¢")]
-    public EventPopup eventPopup;   // ¡Ú ÀÌº¥Æ® Ã¢
+    [Tooltip("ì´ë²¤íŠ¸ ë…¸ë“œì— ë“¤ì–´ê°€ë©´ ëœ¨ëŠ” ì´ë²¤íŠ¸ ì°½")]
+    public EventPopup eventPopup;   // â˜… ì´ë²¤íŠ¸ ì°½
 
-    [Header("¹èÄ¡")]
+    [Header("ë°°ì¹˜")]
     public float padding = 80f;
     public float nodeSize = 56f;
     public float bossSize = 84f;
     public float lineWidth = 4f;
 
-    [Header("¸ğ¾ç")]
+    [Header("ëª¨ì–‘")]
     public Color lineColor = new Color32(0x8A, 0x74, 0x54, 0xFF);
     public RoomVisual[] roomVisuals;
 
-    [Header("ÁøÇà Ç¥½Ã")]
-    public Color walkedLineColor = new Color32(0x8F, 0x2A, 0x1E, 0xFF);   // Áö³ª¿Â ±æ (ºÓÀº À×Å©)
-    public Color nextLineColor = new Color32(0x3A, 0x2C, 0x1A, 0xFF);     // Áö±İ °¥ ¼ö ÀÖ´Â ±æ
+    [Header("ì§„í–‰ í‘œì‹œ")]
+    public Color walkedLineColor = new Color32(0x8F, 0x2A, 0x1E, 0xFF);   // ì§€ë‚˜ì˜¨ ê¸¸ (ë¶‰ì€ ì‰í¬)
+    public Color nextLineColor = new Color32(0x3A, 0x2C, 0x1A, 0xFF);     // ì§€ê¸ˆ ê°ˆ ìˆ˜ ìˆëŠ” ê¸¸
 
     private MapData currentMap;
-    private MapNode currentNode;                                   // ÇöÀç À§Ä¡ (null = ¾ÆÁ÷ Ãâ¹ß Àü)
+    private MapNode currentNode;                                    // í˜„ì¬ ìœ„ì¹˜ (null = ì•„ì§ ì¶œë°œ ì „)
     private readonly HashSet<MapNode> visited = new HashSet<MapNode>();
 
     private class LineInfo
@@ -58,7 +58,6 @@ public class MapView : MonoBehaviour
     private readonly Dictionary<MapNode, MapNodeButton> buttons = new Dictionary<MapNode, MapNodeButton>();
     private readonly Dictionary<Vector2Int, MapNode> nodeLookup = new Dictionary<Vector2Int, MapNode>();
 
-    // ÄÄÆ÷³ÍÆ®¸¦ Ã³À½ ºÙÀÏ ¶§ ±âº» »öÀÌ ÀÚµ¿À¸·Î Ã¤¿öÁø´Ù
     private void Reset()
     {
         roomVisuals = new RoomVisual[]
@@ -77,7 +76,7 @@ public class MapView : MonoBehaviour
         Build();
     }
 
-    [ContextMenu("»õ ·± ½ÃÀÛ (Å×½ºÆ®¿ë, Play Áß¿¡¸¸)")]
+    [ContextMenu("ìƒˆ ëŸ° ì‹œì‘ (í…ŒìŠ¤íŠ¸ìš©, Play ì¤‘ì—ë§Œ)")]
     public void StartNewRunForTest()
     {
         if (!Application.isPlaying) return;
@@ -89,25 +88,24 @@ public class MapView : MonoBehaviour
     {
         if (!Application.isPlaying)
         {
-            Debug.LogWarning("MapView: Play ¸ğµå¿¡¼­¸¸ ´Ù½Ã ±×¸± ¼ö ÀÖ¾î¿ä.");
+            Debug.LogWarning("MapView: Play ëª¨ë“œì—ì„œë§Œ ë‹¤ì‹œ ê·¸ë¦´ ìˆ˜ ìˆì–´ìš”.");
             return;
         }
         if (config == null || mapContent == null || nodePrefab == null)
         {
-            Debug.LogWarning("MapView: Config, Map Content, Node Prefab Ä­À» ¸ğµÎ Ã¤¿ö ÁÖ¼¼¿ä.");
+            Debug.LogWarning("MapView: Config, Map Content, Node Prefab ì¹¸ì„ ëª¨ë‘ ì±„ì›Œ ì£¼ì„¸ìš”.");
             return;
         }
 
-        // RunState¿¡ ÀúÀåµÈ Ãş°ú ½Ãµå·Î ¸ÊÀ» ¸¸µç´Ù (ÀüÅõ¿¡¼­ µ¹¾Æ¿Íµµ °°Àº ¸Ê)
         RunState run = RunState.GetOrCreate();
-        run.config = config;   // Ãşº° ¸ó½ºÅÍ Á¤º¸¸¦ RunStateµµ ¾µ ¼ö ÀÖ°Ô
+        run.config = config;   // ì¸µë³„ ëª¬ìŠ¤í„° ì •ë³´ë¥¼ RunStateë„ ì“¸ ìˆ˜ ìˆê²Œ
         run.EnsureRunStarted();
         currentMap = MapGenerator.Generate(config, run.floorIndex, run.seed);
 
         PrepareLayers();
         Clear();
 
-        // ¿¬°á¼±À» ¸ÕÀú ±×¸®°í, ³ëµå¸¦ ±× À§¿¡ ±×¸°´Ù
+        // ì—°ê²°ì„ ì„ ë¨¼ì € ê·¸ë¦¬ê³ , ë…¸ë“œë¥¼ ê·¸ ìœ„ì— ê·¸ë¦°ë‹¤
         foreach (List<MapNode> column in currentMap.columns)
             foreach (MapNode node in column)
                 foreach (MapNode target in node.next)
@@ -118,7 +116,7 @@ public class MapView : MonoBehaviour
                 CreateNode(node);
         CreateNode(currentMap.boss);
 
-        // ÀúÀåµÈ ÁøÇà »óÈ² µÇ»ì¸®±â
+        // ì €ì¥ëœ ì§„í–‰ ìƒí™© ë˜ì‚´ë¦¬ê¸°
         currentNode = null;
         visited.Clear();
         foreach (Vector2Int pos in run.visited)
@@ -127,24 +125,20 @@ public class MapView : MonoBehaviour
 
         RefreshVisuals();
 
-        Debug.Log($"{run.floorIndex + 1}Ãş ¸Ê (½Ãµå {run.seed}) ¡¤ Ã¼·Â {run.playerHP}/{run.playerMaxHP} ¡¤ °ñµå {run.gold}");
+        Debug.Log($"{run.floorIndex + 1}ì¸µ ë§µ (ì‹œë“œ {run.seed}) Â· ì²´ë ¥ {run.playerHP}/{run.playerMaxHP} Â· ê³¨ë“œ {run.gold}");
     }
-
-    // ---------------- À§Ä¡ °è»ê ----------------
 
     private Vector2 GetPosition(MapNode node)
     {
         Rect rect = mapContent.rect;
-        int steps = currentMap.columns.Count;           // ¸¶Áö¸· ¿­ ´ÙÀ½ÀÌ º¸½º
+        int steps = currentMap.columns.Count;           // ë§ˆì§€ë§‰ ì—´ ë‹¤ìŒì´ ë³´ìŠ¤
         float stepX = (rect.width - padding * 2f) / steps;
         float laneGap = (rect.height - padding * 2f) / 2f;
 
         float x = rect.xMin + padding + node.column * stepX;
-        float y = rect.center.y + (1 - node.lane) * laneGap;   // À§(0)°¡ È­¸é À§ÂÊ
+        float y = rect.center.y + (1 - node.lane) * laneGap;   // ìœ„(0)ê°€ í™”ë©´ ìœ„ìª½
         return new Vector2(x, y);
     }
-
-    // ---------------- ±×¸®±â ----------------
 
     private void PrepareLayers()
     {
@@ -168,8 +162,35 @@ public class MapView : MonoBehaviour
 
     private void Clear()
     {
-        foreach (Transform child in linesLayer) Destroy(child.gameObject);
-        foreach (Transform child in nodesLayer) Destroy(child.gameObject);
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        if (linesLayer != null)
+        {
+            foreach (Transform child in linesLayer)
+            {
+                if (child != null && child.gameObject != null)
+                {
+                    child.gameObject.SetActive(false);
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+
+        if (nodesLayer != null)
+        {
+            foreach (Transform child in nodesLayer)
+            {
+                if (child != null && child.gameObject != null)
+                {
+                    child.gameObject.SetActive(false);
+                    Destroy(child.gameObject);
+                }
+            }
+        }
+
         buttons.Clear();
         lines.Clear();
         nodeLookup.Clear();
@@ -192,7 +213,7 @@ public class MapView : MonoBehaviour
 
         Image image = go.GetComponent<Image>();
         image.color = lineColor;
-        image.raycastTarget = false;   // ¼±Àº Å¬¸¯À» ¸·Áö ¾Ê°Ô
+        image.raycastTarget = false;   // ì„ ì€ í´ë¦­ì„ ë§‰ì§€ ì•Šê²Œ
 
         lines.Add(new LineInfo { from = fromNode, to = toNode, image = image });
     }
@@ -215,9 +236,6 @@ public class MapView : MonoBehaviour
         nodeLookup[new Vector2Int(node.column, node.lane)] = node;
     }
 
-    // ---------------- ÀÌµ¿ ----------------
-
-    // Ã³À½¿¡´Â 1¿­¸¸, ±×´ÙÀ½ºÎÅÍ´Â ÇöÀç ¹æ°ú ¿¬°áµÈ ¹æ¸¸ °¥ ¼ö ÀÖ´Ù
     private bool IsReachable(MapNode node)
     {
         if (currentNode == null) return node.column == 0;
@@ -230,8 +248,8 @@ public class MapView : MonoBehaviour
 
         if (confirmPopup != null)
         {
-            string title = node.type == RoomType.Boss ? "º¸½º" : $"{node.column + 1}¿­ ¡¤ {RoomName(node.type)}";
-            confirmPopup.Show(title, RoomDescription(node.type) + "\n\nÀÌ ¹æÀ¸·Î µé¾î°¥±î¿ä?", () => EnterNode(node));
+            string title = node.type == RoomType.Boss ? "ë³´ìŠ¤" : $"{node.column + 1}ì—´ Â· {RoomName(node.type)}";
+            confirmPopup.Show(title, RoomDescription(node.type) + "\n\nì´ ë°©ìœ¼ë¡œ ë“¤ì–´ê°ˆê¹Œìš”?", () => EnterNode(node));
         }
         else
         {
@@ -239,26 +257,23 @@ public class MapView : MonoBehaviour
         }
     }
 
-    // È®ÀÎÃ¢¿¡¼­ "µé¾î°¡±â"¸¦ ´­·¶À» ¶§ ½ÇÁ¦·Î ÀÌµ¿ÇÑ´Ù
     private void EnterNode(MapNode node)
     {
         currentNode = node;
         visited.Add(node);
         RunState.Instance.MoveTo(node);
         RefreshVisuals();
-        Debug.Log($"{node.column + 1}¿­ {MapGenerator.KoreanName(node.type)} ¹æÀ¸·Î ÀÌµ¿Çß¾î¿ä.");
+        Debug.Log($"{node.column + 1}ì—´ {MapGenerator.KoreanName(node.type)} ë°©ìœ¼ë¡œ ì´ë™í–ˆì–´ìš”.");
 
-        // ¡Ú ÀüÅõ ¹æÀÌ¸é ÀüÅõ ¾ÀÀ¸·Î, ÀÌº¥Æ® ¹æÀÌ¸é ÀÌº¥Æ® Ã¢, ³ª¸ÓÁö´Â ¾ÆÁ÷ ±¸Çö ÀüÀÌ¶ó ±×³É Åë°ú
         if (!RunState.Instance.EnterRoom(node.type))
         {
             if (node.type == RoomType.Event && eventPopup != null)
                 eventPopup.Open();
             else
-                Debug.Log($"{MapGenerator.KoreanName(node.type)} ¹æÀº ¾ÆÁ÷ ±¸Çö ÀüÀÌ¶ó ¹Ù·Î Åë°úÇØ¿ä.");
+                Debug.Log($"{MapGenerator.KoreanName(node.type)} ë°©ì€ ì•„ì§ êµ¬í˜„ ì „ì´ë¼ ë°”ë¡œ í†µê³¼í•´ìš”.");
         }
     }
 
-    // ÇöÀç À§Ä¡¿¡ ¸ÂÃç ³ëµå¿Í ¿¬°á¼±ÀÇ ¸ğ½ÀÀ» ¹Ù²Û´Ù
     private void RefreshVisuals()
     {
         int currentColumn = currentNode == null ? -1 : currentNode.column;
@@ -298,27 +313,26 @@ public class MapView : MonoBehaviour
     {
         switch (type)
         {
-            case RoomType.Enemy: return "ÀÏ¹İ ¸ó½ºÅÍ";
-            case RoomType.Elite: return "¿¤¸®Æ® ¸ó½ºÅÍ";
-            case RoomType.Event: return "ÀÌº¥Æ®";
-            case RoomType.Shop: return "»óÁ¡";
-            case RoomType.Rest: return "ÈŞ½Ä/°­È­";
-            case RoomType.Boss: return "º¸½º";
+            case RoomType.Enemy: return "ì¼ë°˜ ëª¬ìŠ¤í„°";
+            case RoomType.Elite: return "ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°";
+            case RoomType.Event: return "ì´ë²¤íŠ¸";
+            case RoomType.Shop: return "ìƒì ";
+            case RoomType.Rest: return "íœ´ì‹/ê°•í™”";
+            case RoomType.Boss: return "ë³´ìŠ¤";
         }
         return "";
     }
 
-    // ±âÈ¹¼­ 4. ¹æ Á¾·ùº° º¸»ó ±âÁØ
     private string RoomDescription(RoomType type)
     {
         switch (type)
         {
-            case RoomType.Enemy: return "ÀÏ¹İ ¸ó½ºÅÍ¿Í ÀüÅõÇÕ´Ï´Ù.\nº¸»ó: °ñµå, Ä«µå ¼±ÅÃ";
-            case RoomType.Elite: return "°­ÇÑ ¿¤¸®Æ® ¸ó½ºÅÍ¿Í ÀüÅõÇÕ´Ï´Ù.\nº¸»ó: °ñµå, À¯¹°, Ä«µå ¼±ÅÃ";
-            case RoomType.Event: return "¼±ÅÃ¿¡ µû¶ó À¯¹°, °ñµå, Ä«µå¸¦ ¾ò°Å³ª ´ë°¡¸¦ Ä¡¸¨´Ï´Ù.";
-            case RoomType.Shop: return "°ñµå·Î Ä«µå, À¯¹°, È¸º¹ ¾ÆÀÌÅÛÀ» »ğ´Ï´Ù.";
-            case RoomType.Rest: return "Ã¼·ÂÀ» È¸º¹ÇÏ°Å³ª Ä«µå¸¦ °­È­ÇÕ´Ï´Ù.";
-            case RoomType.Boss: return "ÀÌ ÃşÀÇ º¸½º¿Í ÀüÅõÇÕ´Ï´Ù.\nº¸»ó: Èñ±Í Ä«µå, Èñ±Í À¯¹°";
+            case RoomType.Enemy: return "ì¼ë°˜ ëª¬ìŠ¤í„°ì™€ ì „íˆ¬í•©ë‹ˆë‹¤.\në³´ìƒ: ê³¨ë“œ, ì¹´ë“œ ì„ íƒ";
+            case RoomType.Elite: return "ê°•í•œ ì—˜ë¦¬íŠ¸ ëª¬ìŠ¤í„°ì™€ ì „íˆ¬í•©ë‹ˆë‹¤.\në³´ìƒ: ê³¨ë“œ, ìœ ë¬¼, ì¹´ë“œ ì„ íƒ";
+            case RoomType.Event: return "ì„ íƒì— ë”°ë¼ ìœ ë¬¼, ê³¨ë“œ, ì¹´ë“œë¥¼ ì–»ê±°ë‚˜ ëŒ€ê°€ë¥¼ ì¹˜ë¦…ë‹ˆë‹¤.";
+            case RoomType.Shop: return "ê³¨ë“œë¡œ ì¹´ë“œ, ìœ ë¬¼, íšŒë³µ ì•„ì´í…œì„ ì‚½ë‹ˆë‹¤.";
+            case RoomType.Rest: return "ì²´ë ¥ì„ íšŒë³µí•˜ê±°ë‚˜ ì¹´ë“œë¥¼ ê°•í™”í•©ë‹ˆë‹¤.";
+            case RoomType.Boss: return "ì´ ì¸µì˜ ë³´ìŠ¤ì™€ ì „íˆ¬í•©ë‹ˆë‹¤.\në³´ìƒ: í¬ê·€ ì¹´ë“œ, í¬ê·€ ìœ ë¬¼";
         }
         return "";
     }
