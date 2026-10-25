@@ -16,6 +16,7 @@ public class RunState : MonoBehaviour
     public string eliteSceneName = "TestScene";
     [Tooltip("보스 전투 씬 이름. 비워 두면 일반 전투 씬을 같이 쓴다")]
     public string bossSceneName = "BossScene";
+
     [Tooltip("맵 설정 (MapView가 자동으로 넣어 준다). 층별 등장 몬스터를 여기서 가져온다")]
     public MapConfig config;
 
@@ -38,6 +39,11 @@ public class RunState : MonoBehaviour
     public bool hasPendingReward = false;   // 맵에서 보여줄 보상이 남아 있는지
     public int pendingGold;
     public RoomType pendingRoomType;
+
+    [Header("유물 (InventoryManager가 함께 쓴다)")]
+    public List<RelicData> ownedRelics = new List<RelicData>();
+    public RelicData[] equippedRelics = new RelicData[5];
+    [HideInInspector] public bool startingRelicsGiven = false;
 
     [Header("엘리트/보스 적 체력 배율")]
     public float eliteHpMultiplier = 1.5f;
@@ -87,7 +93,19 @@ public class RunState : MonoBehaviour
         gold = 0;
         obtainedCards.Clear();
         hasPendingReward = false;
+        ownedRelics.Clear();
+        for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;   // 배열은 그대로 두고 비우기만
+        startingRelicsGiven = false;
         Debug.Log($"새 런을 시작해요. (시드 {seed})");
+    }
+
+    // 유물 얻기 (이벤트, 엘리트, 상점 보상 등). 이미 가진 유물이면 false
+    public bool AddRelic(RelicData relic)
+    {
+        if (relic == null || ownedRelics.Contains(relic)) return false;
+        ownedRelics.Add(relic);
+        Debug.Log($"유물 획득: {relic.relicName} (보유 {ownedRelics.Count}개)");
+        return true;
     }
 
     public void EnsureRunStarted()

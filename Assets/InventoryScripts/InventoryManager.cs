@@ -22,7 +22,9 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private GameObject relicSlotPrefab;
 
     [Header("Data List")]
+    [Tooltip("테스트용 시작 유물. 런을 시작할 때 RunState에 한 번 넣어 준다")]
     [SerializeField] private List<RelicData> ownedRelics = new List<RelicData>();
+    [SerializeField] private bool giveAsStartingRelics = true;
 
     // 내부 상태 관리
     private RelicData selectedRelic;               // 현재 선택된 유물
@@ -34,10 +36,28 @@ public class InventoryManager : MonoBehaviour
 
     private void Start()
     {
+        SyncWithRunState();
         InitEquipSlots();
         InitButtons();
         RefreshScrollList();
         UpdateDetailPanel(null);
+    }
+
+    // ★ 보유·장착 유물을 씬이 바뀌어도 유지되는 RunState의 목록과 연결한다
+    private void SyncWithRunState()
+    {
+        RunState run = RunState.GetOrCreate();
+
+        // Inspector에 넣어 둔 유물을 시작 유물로 한 번만 넣어 준다 (테스트용)
+        if (giveAsStartingRelics && !run.startingRelicsGiven)
+        {
+            foreach (RelicData relic in ownedRelics) run.AddRelic(relic);
+            run.startingRelicsGiven = true;
+        }
+
+        // 같은 목록을 함께 쓰므로, 여기서 장착하면 RunState에도 바로 기록된다
+        ownedRelics = run.ownedRelics;
+        equippedRelics = run.equippedRelics;
     }
 
     private void InitEquipSlots()
@@ -48,7 +68,7 @@ public class InventoryManager : MonoBehaviour
 
             int index = i;
             equipSlots[i].Init(OnEquipSlotClicked, index);
-            equipSlots[i].SetData(null);
+            equipSlots[i].SetData(i < equippedRelics.Length ? equippedRelics[i] : null);   // ★ 장착 중인 유물을 다시 보여준다
             equipSlots[i].SetHighlight(false);
         }
     }
@@ -71,6 +91,8 @@ public class InventoryManager : MonoBehaviour
     // 장착되지 않은 유물만 아래 스크롤 목록에 표시
     public void RefreshScrollList()
     {
+        SyncWithRunState();   // ★ 이벤트 등에서 새로 얻은 유물도 보이게
+
         foreach (var slot in spawnedScrollSlots)
         {
             if (slot != null) Destroy(slot.gameObject);
@@ -216,6 +238,7 @@ public class InventoryManager : MonoBehaviour
     private void OnEnable()
     {
         // 팝업 패널이 켜질 때마다 스크롤 목록 및 슬롯 초기화 실행
+        SyncWithRunState();
         InitEquipSlots();
         InitButtons();
         RefreshScrollList();

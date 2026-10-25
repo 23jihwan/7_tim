@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d599f0479cf0e054cb69dd5bb83e9175, type: 3}
+  m_Name: Event_InjuredMage
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  title: "\uBD80\uC0C1\uB2F9\uD55C \uB9C8\uBC95\uC0AC"
+  image: {fileID: 0}
+  story: "\uD0D1\uC758 \uACC4\uB2E8\uC5D0 \uC4F0\uB7EC\uC9C4 \uB9C8\uBC95\uC0AC\uAC00
+    \uD798\uACB9\uAC8C \uC190\uC744 \uB0B4\uBBFC\uB2E4. \uADF8\uC758 \uD488\uC5D0\uC11C
+    \uD76C\uBBF8\uD55C \uBE5B\uC774 \uC0C8\uC5B4 \uB098\uC628\uB2E4."
+  choices:
+  - text: "\uACE8\uB4DC\uB97C \uC8FC\uACE0 \uB3D5\uB294\uB2E4"
+    goldCost: 30
+    hpCost: 0
+    reward: 3
+    goldMin: 0
+    goldMax: 0
+    relic: {fileID: 0}
+    trapChance: 0
+    trapHpLoss: 0
+    resultText: "\uB9C8\uBC95\uC0AC\uAC00 \uACE0\uB9C8\uC6CC\uD558\uBA70 \uC8FC\uBB38\uC11C\uB97C
+      \uAC74\uB128\uB2E4."
+  - text: "\uCCB4\uB825\uC744 \uB098\uB220 \uCE58\uB8CC\uD55C\uB2E4"
+    goldCost: 0
+    hpCost: 10
+    reward: 1
+    goldMin: 0
+    goldMax: 0
+    relic: {fileID: 0}
+    trapChance: 0
+    trapHpLoss: 0
+    resultText: "\uAE30\uC6B4\uC744 \uB418\uCC3E\uC740 \uB9C8\uBC95\uC0AC\uAC00 \uC720\uBB3C\uC744
+      \uAC74\uB128\uB2E4."
+  - text: "\uC9C0\uB098\uAC04\uB2E4"
+    goldCost: 0
+    hpCost: 0
+    reward: 0
+    goldMin: 0
+    goldMax: 0
+    relic: {fileID: 0}
+    trapChance: 0
+    trapHpLoss: 0
+    resultText: "\uC870\uC6A9\uD788 \uADF8 \uACC1\uC744 \uC9C0\uB098\uCCE4\uB2E4."

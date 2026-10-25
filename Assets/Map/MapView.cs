@@ -25,6 +25,8 @@ public class MapView : MonoBehaviour
     public MapNodeButton nodePrefab;
     [Tooltip("노드를 눌렀을 때 뜨는 확인창 (비워 두면 바로 들어감)")]
     public MapConfirmPopup confirmPopup;
+    [Tooltip("이벤트 노드에 들어가면 뜨는 이벤트 창")]
+    public EventPopup eventPopup;   // ★ 이벤트 창
 
     [Header("배치")]
     public float padding = 80f;
@@ -246,9 +248,14 @@ public class MapView : MonoBehaviour
         RefreshVisuals();
         Debug.Log($"{node.column + 1}열 {MapGenerator.KoreanName(node.type)} 방으로 이동했어요.");
 
-        // 전투 방이면 전투 씬으로, 나머지는 아직 구현 전이라 그냥 통과
+        // ★ 전투 방이면 전투 씬으로, 이벤트 방이면 이벤트 창, 나머지는 아직 구현 전이라 그냥 통과
         if (!RunState.Instance.EnterRoom(node.type))
-            Debug.Log($"{MapGenerator.KoreanName(node.type)} 방은 아직 구현 전이라 바로 통과해요.");
+        {
+            if (node.type == RoomType.Event && eventPopup != null)
+                eventPopup.Open();
+            else
+                Debug.Log($"{MapGenerator.KoreanName(node.type)} 방은 아직 구현 전이라 바로 통과해요.");
+        }
     }
 
     // 현재 위치에 맞춰 노드와 연결선의 모습을 바꾼다
@@ -307,11 +314,11 @@ public class MapView : MonoBehaviour
         switch (type)
         {
             case RoomType.Enemy: return "일반 몬스터와 전투합니다.\n보상: 골드, 카드 선택";
-            case RoomType.Elite: return "강한 엘리트 몬스터와 전투합니다.\n보상: 골드, 장비, 카드 선택";
-            case RoomType.Event: return "선택에 따라 보상이나 대가가 생깁니다.";
-            case RoomType.Shop: return "골드로 카드, 장비, 회복 아이템을 삽니다.";
+            case RoomType.Elite: return "강한 엘리트 몬스터와 전투합니다.\n보상: 골드, 유물, 카드 선택";
+            case RoomType.Event: return "선택에 따라 유물, 골드, 카드를 얻거나 대가를 치릅니다.";
+            case RoomType.Shop: return "골드로 카드, 유물, 회복 아이템을 삽니다.";
             case RoomType.Rest: return "체력을 회복하거나 카드를 강화합니다.";
-            case RoomType.Boss: return "이 층의 보스와 전투합니다.\n보상: 희귀 카드, 희귀 장비";
+            case RoomType.Boss: return "이 층의 보스와 전투합니다.\n보상: 희귀 카드, 희귀 유물";
         }
         return "";
     }
