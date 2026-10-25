@@ -15,8 +15,7 @@ public class RunState : MonoBehaviour
     [Tooltip("엘리트 전투 씬 이름. 비워 두면 일반 전투 씬을 같이 쓴다")]
     public string eliteSceneName = "TestScene";
     [Tooltip("보스 전투 씬 이름. 비워 두면 일반 전투 씬을 같이 쓴다")]
-    public string bossSceneName = "";
-
+    public string bossSceneName = "BossScene";
     [Tooltip("맵 설정 (MapView가 자동으로 넣어 준다). 층별 등장 몬스터를 여기서 가져온다")]
     public MapConfig config;
 
