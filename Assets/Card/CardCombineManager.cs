@@ -40,6 +40,12 @@ public class CardCombineManager : MonoBehaviour
         {
             Debug.Log($"[조합 성공] {card1.cardData.cardName} + {card2.cardData.cardName} => {resultData.cardName}");
 
+            // ★ [추가] 조합으로 새로 조합해낸 결과 카드를 도감에 해금!
+            if (EncyclopediaManager.Instance != null)
+            {
+                EncyclopediaManager.Instance.UnlockCard(resultData.cardName);
+            }
+
             Destroy(card1.gameObject);
             Destroy(card2.gameObject);
 

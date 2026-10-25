@@ -45,7 +45,7 @@ public class CardData : ScriptableObject
     public bool causesStun = false;                     // 행동 불가 여부 스위치
 
     [Tooltip("행동 불가(기절/빙결/마비)가 유지될 턴 수 (1 = 1턴, 2 = 2턴 등)")]
-    public int stunDuration = 1;                        // ★ [새로 추가] 지속 턴 수 설정 변수
+    public int stunDuration = 1;                        // 지속 턴 수 설정 변수
 
     [Header("지속 속성 데미지 (DOT) 설정")]
     [Tooltip("지속 데미지의 속성 (Fire, Water, Grass, Ice, Electric 등)")]
@@ -59,6 +59,10 @@ public class CardData : ScriptableObject
 
     public string statusEffect;
     public int combineId;
+
+    [Header("도감 및 UI 표시용 스탯")]
+    public int attack;                                  // ★ [추가] 도감 상세 팝업용 공격력
+    public int health;                                  // ★ [추가] 도감 상세 팝업용 체력
 
     [Header("Visual Asset")]
     public Sprite cardIcon;                             // 카드 이미지

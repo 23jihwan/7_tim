@@ -257,6 +257,12 @@ public class RunState : MonoBehaviour
                 {
                     obtainedCards.Add(picked);
                     Debug.Log($"카드 보상: {picked.cardName} 획득! (지금까지 얻은 카드 {obtainedCards.Count}장)");
+
+                    // ★ [추가] 전투 보상으로 획득한 카드를 도감에 해금
+                    if (EncyclopediaManager.Instance != null)
+                    {
+                        EncyclopediaManager.Instance.UnlockCard(picked.cardName);
+                    }
                 }
                 else
                 {
