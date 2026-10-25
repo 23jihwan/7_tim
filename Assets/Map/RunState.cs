@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// 씬이 바뀌어도 사라지지 않고 진행 상황을 기억하는 스크립트
-// 맵 씬에서 자동으로 만들어지므로 씬에 직접 놓을 필요는 없다
 public class RunState : MonoBehaviour
 {
     public static RunState Instance { get; private set; }
@@ -21,17 +19,32 @@ public class RunState : MonoBehaviour
     public MapConfig config;
 
     [Header("진행 상태")]
-    public int floorIndex = 0;            // 0 = 1층
-    public int seed = 0;                  // 0 = 아직 런을 시작하지 않음
+    public int floorIndex = 0;              // 0 = 1층
+    public int seed = 0;                    // 0 = 아직 런을 시작하지 않음
     public bool hasPosition = false;      // false = 아직 1열을 고르기 전
-    public Vector2Int currentPos;         // x = 열, y = 레인
+    public Vector2Int currentPos;           // x = 열, y = 레인
     public List<Vector2Int> visited = new List<Vector2Int>();
     public RoomType currentRoomType;
 
     [Header("플레이어")]
     public int playerMaxHP = 100;
     public int playerHP = 100;
-    public int gold = 0;
+
+    // 골드를 GoldManager와 연동하여 프로퍼티로 관리 (중복 더하기 방지)
+    public int gold
+    {
+        get
+        {
+            if (GoldManager.Instance != null) return GoldManager.Instance.currentGold;
+            return _fallbackGold;
+        }
+        set
+        {
+            _fallbackGold = value;
+            if (GoldManager.Instance != null) GoldManager.Instance.currentGold = value;
+        }
+    }
+    private int _fallbackGold = 0;
 
     [Header("덱 (전투에서 이 카드들 중에서 뽑는다)")]
     public List<CardData> deck = new List<CardData>();
@@ -55,11 +68,10 @@ public class RunState : MonoBehaviour
     public const int FloorCount = 3;
 
     private AttackManager battle;
-    private EnemyData pendingEnemy;        // 이번 전투에 나올 몬스터
+    private EnemyData pendingEnemy;         // 이번 전투에 나올 몬스터
     private bool battleReady;
     private bool battleEnding;
 
-    // 있으면 그대로 쓰고, 없으면 새로 만든다
     public static RunState GetOrCreate()
     {
         if (Instance == null)
@@ -69,13 +81,18 @@ public class RunState : MonoBehaviour
 
     private void Awake()
     {
+        // 이미 씬에 살아있는 RunState가 존재한다면, 새로 생겨난 이 중복 객체는 즉시 파괴합니다.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        // 이벤트 중복 구독을 막기 위해 빼고 더해줍니다.
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -84,8 +101,6 @@ public class RunState : MonoBehaviour
         if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // ---------------- 런 관리 ----------------
-
     public void NewRun()
     {
         floorIndex = 0;
@@ -93,7 +108,19 @@ public class RunState : MonoBehaviour
         hasPosition = false;
         visited.Clear();
         playerHP = playerMaxHP;
-        gold = 0;
+
+        // 골드 초기화
+        if (GoldManager.Instance != null)
+        {
+            GoldManager.Instance.currentGold = 0;
+        }
+        _fallbackGold = 0;
+
+        if (CurrencyHUD.Instance != null)
+        {
+            CurrencyHUD.Instance.UpdateGoldUI();
+        }
+
         obtainedCards.Clear();
         hasPendingReward = false;
         deck.Clear();
@@ -101,12 +128,11 @@ public class RunState : MonoBehaviour
             foreach (CardData c in config.startingDeck)
                 if (c != null) { deck.Add(c); RegisterInBook(c); }
         ownedRelics.Clear();
-        for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;   // 배열은 그대로 두고 비우기만
+        for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;
         startingRelicsGiven = false;
         Debug.Log($"새 런을 시작해요. (시드 {seed})");
     }
 
-    // 카드 얻기 (전투 보상, 이벤트 등): 덱에 들어간다
     public void AddCard(CardData card)
     {
         if (card == null) return;
@@ -116,14 +142,12 @@ public class RunState : MonoBehaviour
         Debug.Log($"덱에 {card.cardName} 추가! (덱 {deck.Count}장)");
     }
 
-    // 얻은 카드는 모두 도감에 등록 (이미 등록된 카드면 아무 일도 없음)
     private void RegisterInBook(CardData card)
     {
         if (card != null && EncyclopediaManager.Instance != null)
             EncyclopediaManager.Instance.UnlockCard(card.cardName);
     }
 
-    // 유물 얻기 (이벤트, 엘리트, 상점 보상 등). 이미 가진 유물이면 false
     public bool AddRelic(RelicData relic)
     {
         if (relic == null || ownedRelics.Contains(relic)) return false;
@@ -145,11 +169,10 @@ public class RunState : MonoBehaviour
         currentRoomType = node.type;
     }
 
-    // 전투 방이면 몬스터를 고르고 전투 씬으로 이동한 뒤 true를 돌려준다
     public bool EnterRoom(RoomType type)
     {
         if (type != RoomType.Enemy && type != RoomType.Elite && type != RoomType.Boss)
-            return false;   // 상점, 이벤트, 휴식은 아직 구현 전
+            return false;
 
         pendingEnemy = PickEnemy(type);
         SceneManager.LoadScene(GetBattleScene(type));
@@ -168,7 +191,6 @@ public class RunState : MonoBehaviour
         return sceneName == battleSceneName || sceneName == eliteSceneName || sceneName == bossSceneName;
     }
 
-    // MapConfig에서 지금 층, 방 종류에 맞는 몬스터를 하나 고른다 (없으면 null)
     private EnemyData PickEnemy(RoomType type)
     {
         if (config == null || config.floors == null || floorIndex >= config.floors.Length) return null;
@@ -181,9 +203,6 @@ public class RunState : MonoBehaviour
         if (list == null || list.Length == 0) return null;
         return list[Random.Range(0, list.Length)];
     }
-
-    // ---------------- 전투 연결 ----------------
-    // 전투 담당의 AttackManager 코드는 고치지 않고, 여기서 값을 넣고 결과를 지켜본다
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -200,7 +219,6 @@ public class RunState : MonoBehaviour
         battleReady = false;
         battleEnding = false;
 
-        // 시작 덱이 비어 있으면, 처음 한 번은 전투 씬의 카드 목록으로 덱을 만든다
         if (deck.Count == 0)
         {
             GameManager gm = FindFirstObjectByType<GameManager>();
@@ -210,35 +228,29 @@ public class RunState : MonoBehaviour
             Debug.Log($"시작 덱 {deck.Count}장으로 전투를 시작해요.");
         }
 
-        // AttackManager의 Start()가 실행되기 전에 값을 바꿔 둔다
         battle.playerMaxHP = playerMaxHP;
 
         if (pendingEnemy != null)
         {
-            // MapConfig에서 고른 몬스터를 넣으면 AttackManager가 이름·체력·공격력·그림을 적용한다
             battle.currentEnemyData = pendingEnemy;
         }
         else if (battle.currentEnemyData == null)
         {
-            // 몬스터 데이터가 아무 데도 없을 때만 예전처럼 체력 배율을 쓴다
             float multiplier = 1f;
             if (currentRoomType == RoomType.Elite) multiplier = eliteHpMultiplier;
             if (currentRoomType == RoomType.Boss) multiplier = bossHpMultiplier;
             battle.enemyMaxHP = Mathf.RoundToInt(battle.enemyMaxHP * multiplier);
         }
-        // 씬에 이미 몬스터 데이터가 들어 있으면 그대로 둔다 (체력이 두 번 오르지 않게)
 
         StartCoroutine(SetupBattleNextFrame());
     }
 
     private IEnumerator SetupBattleNextFrame()
     {
-        // AttackManager의 Start()가 체력을 최대치로 채운 뒤에, 남아 있던 체력으로 바꾼다
         yield return null;
         if (battle == null) yield break;
 
         battle.playerCurrentHP = playerHP;
-        // GameManager도 체력을 관리하므로 같이 맞춰 준다
         if (GameManager.Instance != null)
         {
             GameManager.Instance.playerCurrentHP = playerHP;
@@ -261,6 +273,9 @@ public class RunState : MonoBehaviour
 
     private IEnumerator EndBattle(bool won)
     {
+        // [핵심 방어벽] 이미 전투 종료 처리가 진행 중이라면 중복 실행을 절대 허용하지 않음!
+        if (battleEnding) yield break;
+
         battleEnding = true;
         yield return new WaitForSeconds(1f);   // 쓰러지는 모습을 잠깐 보여준다
 
@@ -269,21 +284,36 @@ public class RunState : MonoBehaviour
         if (won)
         {
             int reward = RollGold(currentRoomType);
-            gold += reward;
+
+            // GoldManager를 통해 안전하게 1회만 골드 추가
+            if (GoldManager.Instance != null)
+            {
+                GoldManager.Instance.AddGold(reward);
+            }
+            else
+            {
+                _fallbackGold += reward;
+            }
+
+            // 상단 HUD 갱신 및 연출 1회 호출
+            if (CurrencyHUD.Instance != null)
+            {
+                CurrencyHUD.Instance.UpdateGoldUI();
+                CurrencyHUD.Instance.PlayGoldFlyEffect(Vector3.zero, reward);
+            }
+
             Debug.Log($"전투 승리! 골드 +{reward} (보유 {gold}, 체력 {playerHP}/{playerMaxHP})");
 
-            // 보상 창에 보여줄 내용
             string title = "전투 승리!";
             if (currentRoomType == RoomType.Elite) title = "엘리트 처치!";
             if (currentRoomType == RoomType.Boss) title = $"{floorIndex + 1}층 보스 처치!";
 
             List<string> lines = new List<string>();
-            lines.Add($"골드 +{reward}   (보유 {gold})");
+            lines.Add($"골드 +{reward}    (보유 {gold})");
             if (currentRoomType == RoomType.Elite || currentRoomType == RoomType.Boss)
                 lines.Add("장비 1개 획득 (장비 시스템 준비 중)");
             lines.Add($"남은 체력 {playerHP} / {playerMaxHP}");
 
-            // 확인을 누를 때까지 기다린다
             bool confirmed = false;
             BattleRewardPopup.Show(title, lines, PickCardChoices(3), picked =>
             {
@@ -312,13 +342,12 @@ public class RunState : MonoBehaviour
         SceneManager.LoadScene(mapSceneName);
     }
 
-    // 전투 씬 GameManager의 카드 목록에서 서로 다른 카드를 골라 보상 후보로 만든다
     private List<CardData> PickCardChoices(int count)
     {
         List<CardData> result = new List<CardData>();
         GameManager gm = FindFirstObjectByType<GameManager>();
         if (gm == null || gm.cardDatabase == null) return result;
-        if (gm.cardPrefab != null) BattleRewardPopup.cardPrefab = gm.cardPrefab;   // 보상 카드를 진짜 카드 모양으로
+        if (gm.cardPrefab != null) BattleRewardPopup.cardPrefab = gm.cardPrefab;
 
         List<CardData> pool = new List<CardData>(gm.cardDatabase);
         while (result.Count < count && pool.Count > 0)
@@ -329,9 +358,6 @@ public class RunState : MonoBehaviour
         }
         return result;
     }
-
-    // ---------------- 테스트용 ----------------
-    // Play 중 Hierarchy의 DontDestroyOnLoad → RunState를 선택하고 점 세 개 메뉴에서 실행
 
     [ContextMenu("테스트: 전투 승리")]
     private void DebugWin()
@@ -363,7 +389,6 @@ public class RunState : MonoBehaviour
         Debug.Log($"{floorIndex}층 클리어! {floorIndex + 1}층으로 올라가요.");
     }
 
-    // 기획서 4. 골드 획득량 (7단계에서 보상 시스템으로 옮길 예정)
     private int RollGold(RoomType type)
     {
         int[,] enemy = { { 15, 25 }, { 25, 35 }, { 35, 45 } };
