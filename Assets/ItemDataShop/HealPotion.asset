@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 797340708c58a7e44abe70f9c1f3a60b, type: 3}
+  m_Name: HealPotion
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
+  itemName: "\uD558\uAE09 \uD3EC\uC158"
+  itemDesc: "\uC0AC\uC6A9 \uC2DC \uCCB4\uB825\uC744 50 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  itemPrice: 150
+  itemIcon: {fileID: 3214231397813950450, guid: 7c91de7f2180cee409ccc601d47de627, type: 3}
