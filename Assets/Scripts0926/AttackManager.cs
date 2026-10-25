@@ -52,8 +52,8 @@ public class AttackManager : MonoBehaviour
     private int attackReduction = 0;
     private bool isAttacking = false;
 
-    // 적의 이번 턴 행동 불가(스턴/빙결/마비) 플래그
-    private bool isEnemyStunned = false;
+    // ★ [수정] 단순 bool 플래그 대신 남은 행동불가 턴 수를 저장하는 변수
+    private int enemyStunTurns = 0;
 
     private List<ActiveStatusEffect> activeEnemyEffects = new List<ActiveStatusEffect>();
 
@@ -100,7 +100,6 @@ public class AttackManager : MonoBehaviour
     {
         isAttacking = true;
         attackReduction = 0;
-        isEnemyStunned = false; // 턴 시작 시 스턴 상태 초기화
 
         // 1. 카드 실행 연산
         foreach (Transform slot in dropSlots)
@@ -120,11 +119,12 @@ public class AttackManager : MonoBehaviour
                     RectTransform target = (card.cardType == CardType.Heal && playerHPText != null) ? playerHPText.rectTransform : monsterVisual;
                     yield return StartCoroutine(CardAnimator.UseCard(cardUI, target, glow));
 
-                    // (0) 카드 효과로 행동 불가(Causes Stun) 옵션이 있다면 활성화
+                    // ★ [수정] 카드 효과로 행동 불가(Causes Stun) 옵션이 있다면 stunDuration 수치만큼 턴 누적
                     if (card.causesStun)
                     {
-                        isEnemyStunned = true;
-                        Debug.Log($"[상태이상] {card.cardName} 카드의 효과로 {enemyName}이(가) 이번 턴 행동 불가 상태가 되었습니다!");
+                        int addTurns = card.stunDuration > 0 ? card.stunDuration : 1;
+                        enemyStunTurns += addTurns;
+                        Debug.Log($"[상태이상] {card.cardName} 카드의 효과로 {enemyName}이(가) {addTurns}턴 동안 행동 불가 상태가 됩니다! (총 남은 턴: {enemyStunTurns}턴)");
                     }
 
                     // (1) 공격 카드
@@ -229,7 +229,7 @@ public class AttackManager : MonoBehaviour
                     }
 
                     Destroy(cardUI.gameObject);
-                    yield return new WaitForSeconds(0.3f);   // 애니메이션 시간이 생겨서 0.5 → 0.3초로 줄임
+                    yield return new WaitForSeconds(0.3f);   // 애니메이션 연출 감안 속도 조절
                 }
             }
         }
@@ -280,10 +280,12 @@ public class AttackManager : MonoBehaviour
         // 3. 적의 반격 (살아있는 경우)
         if (enemyCurrentHP > 0)
         {
-            // 행동 불가(스턴/빙결/마비) 상태면 이번 턴 공격 무효화
-            if (isEnemyStunned)
+            // ★ [수정] 행동 불가 턴 수(enemyStunTurns)가 남아있는 경우 공격 무효화 및 1턴 차감
+            if (enemyStunTurns > 0)
             {
-                Debug.Log($"[적 행동 불가] {enemyName}이(가) 스턴/빙결/마비 효과로 기절하여 이번 턴에 공격하지 못합니다!");
+                enemyStunTurns--;
+                Debug.Log($"[적 행동 불가] {enemyName}이(가) 스턴/빙결/마비 효과로 이번 턴에 공격하지 못합니다! (남은 행동불가: {enemyStunTurns}턴)");
+                UpdateUI();
                 yield return new WaitForSeconds(0.5f);
             }
             else
@@ -365,9 +367,10 @@ public class AttackManager : MonoBehaviour
             string elementTag = enemyElement != ElementType.None ? $"[{enemyElement}] " : "";
             string statusTag = activeEnemyEffects.Count > 0 ? $" (상태이상 {activeEnemyEffects.Count}개)" : "";
 
-            if (isEnemyStunned)
+            // ★ [수정] 행동 불가 남은 턴 수가 직관적으로 UI에 출력됨
+            if (enemyStunTurns > 0)
             {
-                statusTag += " [행동불가]";
+                statusTag += $" [행동불가 {enemyStunTurns}턴]";
             }
 
             enemyHPText.text = $"{elementTag}{enemyName} HP: {enemyCurrentHP}/{enemyMaxHP}{statusTag}";

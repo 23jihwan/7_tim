@@ -42,7 +42,10 @@ public class CardData : ScriptableObject
     public int bonusDamageAgainstElemental = 0;
 
     [Tooltip("체크 시 적을 이번 턴에 행동 불가(기절/빙결/마비) 상태로 만듭니다.")]
-    public bool causesStun = false;                     // ★ [필수] 에러 해결용 행동 불가 변수
+    public bool causesStun = false;                     // 행동 불가 여부 스위치
+
+    [Tooltip("행동 불가(기절/빙결/마비)가 유지될 턴 수 (1 = 1턴, 2 = 2턴 등)")]
+    public int stunDuration = 1;                        // ★ [새로 추가] 지속 턴 수 설정 변수
 
     [Header("지속 속성 데미지 (DOT) 설정")]
     [Tooltip("지속 데미지의 속성 (Fire, Water, Grass, Ice, Electric 등)")]
