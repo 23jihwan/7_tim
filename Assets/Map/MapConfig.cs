@@ -69,6 +69,10 @@ public class MapConfig : ScriptableObject
     [Tooltip("탑의 층 수만큼 설정한다")]
     public FloorSettings[] floors;
 
+    [Header("시작 덱 (새 런을 시작할 때 가지고 있는 카드)")]
+    [Tooltip("같은 카드를 여러 번 넣으면 여러 장이 된다. 비워 두면 전투 씬의 카드 목록 전체로 시작")]
+    public CardData[] startingDeck;
+
     // 에셋을 처음 만들 때 기획서 수치로 자동으로 채워진다
     private void Reset()
     {

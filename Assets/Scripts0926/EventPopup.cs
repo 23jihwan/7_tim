@@ -12,6 +12,8 @@ public class EventPopup : MonoBehaviour
     [Header("보상 후보")]
     public RelicData[] relicPool;
     public CardData[] cardPool;
+    [Tooltip("보상 카드를 진짜 카드 모양으로 보여줄 카드 프리팹 (Prefab 폴더의 CardPrefab)")]
+    public GameObject cardPrefab;
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
     private static readonly Color Ink = new Color32(0x3A, 0x2C, 0x1A, 0xFF);
@@ -20,6 +22,7 @@ public class EventPopup : MonoBehaviour
 
     private Font font;
     private GameObject root;
+    private RectTransform windowRect;
     private Image picture;
     private Text titleText;
     private Text storyText;
@@ -30,6 +33,7 @@ public class EventPopup : MonoBehaviour
 
     private void Awake()
     {
+        if (cardPrefab != null) BattleRewardPopup.cardPrefab = cardPrefab;
         BuildUI();
         root.SetActive(false);
     }
@@ -52,8 +56,10 @@ public class EventPopup : MonoBehaviour
 
         titleText.text = current.title;
         storyText.text = current.story;
-        picture.gameObject.SetActive(current.image != null);
-        if (current.image != null) picture.sprite = current.image;
+        bool hasImage = current.image != null;
+        picture.gameObject.SetActive(hasImage);
+        if (hasImage) picture.sprite = current.image;
+        Layout(hasImage);
 
         RunState run = RunState.GetOrCreate();
         for (int i = 0; i < choiceButtons.Length; i++)
@@ -70,6 +76,17 @@ public class EventPopup : MonoBehaviour
         }
 
         root.SetActive(true);
+    }
+
+    // 그림이 없으면 창을 줄이고 글자를 위로 올려서 빈 공간이 생기지 않게 한다
+    private void Layout(bool hasImage)
+    {
+        float shift = hasImage ? 0f : 120f;
+        windowRect.sizeDelta = new Vector2(960, hasImage ? 800 : 540);
+        titleText.rectTransform.anchoredPosition = new Vector2(0, 70 + shift);
+        storyText.rectTransform.anchoredPosition = new Vector2(0, -40 + shift);
+        for (int i = 0; i < choiceButtons.Length; i++)
+            ((RectTransform)choiceButtons[i].transform).anchoredPosition = new Vector2(0, -170 - i * 76 + shift);
     }
 
     private string Label(EventChoice c, bool canAfford)
@@ -143,8 +160,7 @@ public class EventPopup : MonoBehaviour
         {
             if (picked != null)
             {
-                run.obtainedCards.Add(picked);
-                Debug.Log($"이벤트 카드 보상: {picked.cardName} 획득!");
+                run.AddCard(picked);
             }
         });
     }
@@ -196,6 +212,7 @@ public class EventPopup : MonoBehaviour
 
         Image window = NewImage("Window", dim.transform, Parchment);
         window.rectTransform.sizeDelta = new Vector2(960, 800);
+        windowRect = window.rectTransform;
         Outline border = window.gameObject.AddComponent<Outline>();
         border.effectColor = Ink;
         border.effectDistance = new Vector2(4, -4);

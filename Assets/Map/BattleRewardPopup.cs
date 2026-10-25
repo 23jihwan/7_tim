@@ -13,6 +13,10 @@ public static class BattleRewardPopup
     private static readonly Color Gold = new Color32(0xF2, 0xB4, 0x5A, 0xFF);
     private static readonly Color Red = new Color32(0x8F, 0x2A, 0x1E, 0xFF);
 
+    // 전투에서 쓰는 카드 프리팹 (테두리, 이름, 설명이 있는 진짜 카드 모양)
+    // RunState와 EventPopup이 넣어 준다. 없으면 예전처럼 그림만 보여준다
+    public static GameObject cardPrefab;
+
     public static void Show(string title, List<string> lines, List<CardData> cardChoices, Action<CardData> onConfirm)
     {
         Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -68,19 +72,50 @@ public static class BattleRewardPopup
                 CardData card = cardChoices[i];
                 float x = (i - (cardChoices.Count - 1) / 2f) * 200f;
 
-                Image cardImage = CreateImage("Card", window.transform, Color.white);
-                cardImage.rectTransform.sizeDelta = new Vector2(140, 190);
-                cardImage.rectTransform.anchoredPosition = new Vector2(x, cardY);
-                if (card.cardIcon != null) cardImage.sprite = card.cardIcon;
+                Image cardImage;
+                if (cardPrefab != null)
+                {
+                    // 진짜 카드 모양: 금색 선택 테두리 + 카드 프리팹
+                    cardImage = CreateImage("Card", window.transform, Gold);
+                    cardImage.rectTransform.sizeDelta = new Vector2(162, 216);
+                    cardImage.rectTransform.anchoredPosition = new Vector2(x, cardY + 10);
+
+                    GameObject cardObj = UnityEngine.Object.Instantiate(cardPrefab, cardImage.transform);
+                    RectTransform crt = (RectTransform)cardObj.transform;
+                    crt.anchorMin = crt.anchorMax = new Vector2(0.5f, 0.5f);
+                    crt.pivot = new Vector2(0.5f, 0.5f);
+                    crt.anchoredPosition = Vector2.zero;
+                    crt.sizeDelta = new Vector2(150, 204);
+                    crt.localScale = Vector3.one;
+
+                    CardUI ui = cardObj.GetComponent<CardUI>();
+                    if (ui != null)
+                    {
+                        ui.SetupCard(card);
+                        ui.enabled = false;   // 보상 창에서는 끌기, 확대 미리보기를 끈다
+                    }
+                    CanvasGroup group = cardObj.GetComponent<CanvasGroup>();
+                    if (group == null) group = cardObj.AddComponent<CanvasGroup>();
+                    group.blocksRaycasts = false;   // 클릭은 바깥의 금색 테두리 버튼이 받는다
+                    LayoutElement layout = cardObj.GetComponent<LayoutElement>();
+                    if (layout != null) layout.ignoreLayout = true;
+
+                    cardImage.color = new Color(Gold.r, Gold.g, Gold.b, 0f);   // 선택 전에는 테두리 숨김
+                }
+                else
+                {
+                    cardImage = CreateImage("Card", window.transform, Color.white);
+                    cardImage.rectTransform.sizeDelta = new Vector2(140, 190);
+                    cardImage.rectTransform.anchoredPosition = new Vector2(x, cardY);
+                    if (card.cardIcon != null) cardImage.sprite = card.cardIcon;
+                    CreateText("Name", cardImage.transform, font, card.cardName, 24, FontStyle.Bold, Ink, new Vector2(0, -120), new Vector2(200, 36));
+                }
 
                 Outline glow = cardImage.gameObject.AddComponent<Outline>();
                 glow.effectColor = Gold;
                 glow.effectDistance = new Vector2(6, -6);
                 glow.enabled = false;
                 highlights.Add(glow);
-
-                CreateText("Name", cardImage.transform, font, card.cardName, 24, FontStyle.Bold, Ink, new Vector2(0, -120), new Vector2(200, 36));
-
                 Button cardButton = cardImage.gameObject.AddComponent<Button>();
                 int index = i;
                 cardButton.onClick.AddListener(() =>
@@ -92,6 +127,11 @@ public static class BattleRewardPopup
                         bool on = selected != null && k == index;
                         highlights[k].enabled = on;
                         highlights[k].transform.localScale = Vector3.one * (on ? 1.08f : 1f);
+                        if (cardPrefab != null)
+                        {
+                            Image frame = highlights[k].GetComponent<Image>();
+                            frame.color = new Color(Gold.r, Gold.g, Gold.b, on ? 1f : 0f);
+                        }
                     }
                 });
             }

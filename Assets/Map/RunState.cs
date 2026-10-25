@@ -33,6 +33,9 @@ public class RunState : MonoBehaviour
     public int playerHP = 100;
     public int gold = 0;
 
+    [Header("덱 (전투에서 이 카드들 중에서 뽑는다)")]
+    public List<CardData> deck = new List<CardData>();
+
     [Header("보상")]
     [Tooltip("보상으로 얻은 카드 (덱 저장 기능이 생기면 덱에 넣는다)")]
     public List<CardData> obtainedCards = new List<CardData>();
@@ -93,10 +96,31 @@ public class RunState : MonoBehaviour
         gold = 0;
         obtainedCards.Clear();
         hasPendingReward = false;
+        deck.Clear();
+        if (config != null && config.startingDeck != null)
+            foreach (CardData c in config.startingDeck)
+                if (c != null) { deck.Add(c); RegisterInBook(c); }
         ownedRelics.Clear();
         for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;   // 배열은 그대로 두고 비우기만
         startingRelicsGiven = false;
         Debug.Log($"새 런을 시작해요. (시드 {seed})");
+    }
+
+    // 카드 얻기 (전투 보상, 이벤트 등): 덱에 들어간다
+    public void AddCard(CardData card)
+    {
+        if (card == null) return;
+        deck.Add(card);
+        obtainedCards.Add(card);
+        RegisterInBook(card);
+        Debug.Log($"덱에 {card.cardName} 추가! (덱 {deck.Count}장)");
+    }
+
+    // 얻은 카드는 모두 도감에 등록 (이미 등록된 카드면 아무 일도 없음)
+    private void RegisterInBook(CardData card)
+    {
+        if (card != null && EncyclopediaManager.Instance != null)
+            EncyclopediaManager.Instance.UnlockCard(card.cardName);
     }
 
     // 유물 얻기 (이벤트, 엘리트, 상점 보상 등). 이미 가진 유물이면 false
@@ -175,6 +199,16 @@ public class RunState : MonoBehaviour
 
         battleReady = false;
         battleEnding = false;
+
+        // 시작 덱이 비어 있으면, 처음 한 번은 전투 씬의 카드 목록으로 덱을 만든다
+        if (deck.Count == 0)
+        {
+            GameManager gm = FindFirstObjectByType<GameManager>();
+            if (gm != null && gm.cardDatabase != null)
+                foreach (CardData c in gm.cardDatabase)
+                    if (c != null) { deck.Add(c); RegisterInBook(c); }
+            Debug.Log($"시작 덱 {deck.Count}장으로 전투를 시작해요.");
+        }
 
         // AttackManager의 Start()가 실행되기 전에 값을 바꿔 둔다
         battle.playerMaxHP = playerMaxHP;
@@ -255,14 +289,7 @@ public class RunState : MonoBehaviour
             {
                 if (picked != null)
                 {
-                    obtainedCards.Add(picked);
-                    Debug.Log($"카드 보상: {picked.cardName} 획득! (지금까지 얻은 카드 {obtainedCards.Count}장)");
-
-                    // ★ [추가] 전투 보상으로 획득한 카드를 도감에 해금
-                    if (EncyclopediaManager.Instance != null)
-                    {
-                        EncyclopediaManager.Instance.UnlockCard(picked.cardName);
-                    }
+                    AddCard(picked);
                 }
                 else
                 {
@@ -291,6 +318,7 @@ public class RunState : MonoBehaviour
         List<CardData> result = new List<CardData>();
         GameManager gm = FindFirstObjectByType<GameManager>();
         if (gm == null || gm.cardDatabase == null) return result;
+        if (gm.cardPrefab != null) BattleRewardPopup.cardPrefab = gm.cardPrefab;   // 보상 카드를 진짜 카드 모양으로
 
         List<CardData> pool = new List<CardData>(gm.cardDatabase);
         while (result.Count < count && pool.Count > 0)

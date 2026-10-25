@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Event_InjuredMage
   m_EditorClassIdentifier: Assembly-CSharp::EventData
   title: "\uBD80\uC0C1\uB2F9\uD55C \uB9C8\uBC95\uC0AC"
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: f8a5857cd506efd4399ce67b8e91f8df, type: 3}
   story: "\uD0D1\uC758 \uACC4\uB2E8\uC5D0 \uC4F0\uB7EC\uC9C4 \uB9C8\uBC95\uC0AC\uAC00
     \uD798\uACB9\uAC8C \uC190\uC744 \uB0B4\uBBFC\uB2E4. \uADF8\uC758 \uD488\uC5D0\uC11C
     \uD76C\uBBF8\uD55C \uBE5B\uC774 \uC0C8\uC5B4 \uB098\uC628\uB2E4."

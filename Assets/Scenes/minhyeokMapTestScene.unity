@@ -413,6 +413,7 @@ MonoBehaviour:
   mapContent: {fileID: 1506066718}
   nodePrefab: {fileID: 1332497883257682475, guid: ae63b911f1bc02242984dd3f440b99f2, type: 3}
   confirmPopup: {fileID: 1223172552}
+  eventPopup: {fileID: 670652260}
   padding: 80
   nodeSize: 56
   bossSize: 84
@@ -533,6 +534,70 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 575349334}
   m_CullTransparentMesh: 1
+--- !u!1 &670652259
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670652261}
+  - component: {fileID: 670652260}
+  m_Layer: 0
+  m_Name: EventPopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &670652260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670652259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0442542771cb35d48983a75d3dc5761f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventPopup
+  events:
+  - {fileID: 11400000, guid: db52d046b14ad784ebfe1b023f09551e, type: 2}
+  - {fileID: 11400000, guid: ac86324e50fb2f341bb4d5fbcc215ef3, type: 2}
+  - {fileID: 11400000, guid: f0795eff5d9fd86449805d7644c1e329, type: 2}
+  - {fileID: 11400000, guid: 05ac7ca9b713ac9498c0d1cca37fc487, type: 2}
+  - {fileID: 11400000, guid: 50f27408363e15e4fbade10aecf279a5, type: 2}
+  - {fileID: 11400000, guid: a0aca9ba3256e47428aae27cfc26669f, type: 2}
+  - {fileID: 11400000, guid: be3ca54d721c3f94c9103d583d9094a4, type: 2}
+  - {fileID: 11400000, guid: 6273347249c7a02489db0cec11e60b3a, type: 2}
+  relicPool:
+  - {fileID: 11400000, guid: 3bf009d3cf190c346a5fcee9a66afdb0, type: 2}
+  - {fileID: 11400000, guid: 3866bf9ff48839541b9121de6304332c, type: 2}
+  - {fileID: 11400000, guid: 809ac9d356cf6e94ea464e69ebcb0f72, type: 2}
+  - {fileID: 11400000, guid: bfd65471f1b5ac44288ce4cee593803f, type: 2}
+  - {fileID: 11400000, guid: aedde80d60ed7e4489b6b155d30905db, type: 2}
+  cardPool:
+  - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
+  - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
+  - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+  cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
+--- !u!4 &670652261
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670652259}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 835.09564, y: 330.52576, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &741879223
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,8 +1499,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -180, y: 0}
-  m_SizeDelta: {x: 300, y: -160}
+  m_AnchoredPosition: {x: -180, y: -25}
+  m_SizeDelta: {x: 300, y: -210}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1817570058
 MonoBehaviour:
@@ -1698,3 +1763,4 @@ SceneRoots:
   - {fileID: 324134383}
   - {fileID: 741879225}
   - {fileID: 24796620531755185}
+  - {fileID: 670652261}

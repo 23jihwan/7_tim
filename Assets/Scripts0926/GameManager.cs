@@ -85,7 +85,9 @@ public class GameManager : MonoBehaviour
             if (card != null)
             {
                 // 3종류의 CardData 중 하나를 무작위로 선택하여 적용
-                CardData randomData = cardDatabase[Random.Range(0, cardDatabase.Count)];
+                // 런 진행 중이면 내 덱에서, 아니면(전투 씬만 따로 테스트할 때) 원래 카드 목록에서 뽑는다
+                List<CardData> pool = (RunState.Instance != null && RunState.Instance.deck.Count > 0) ? RunState.Instance.deck : cardDatabase;
+                CardData randomData = pool[Random.Range(0, pool.Count)];
                 card.SetupCard(randomData);                  // 카드에 데이터 넣기 (원래 있던 줄)
                 CardAnimator.PlayDraw(card, i * 0.08f);   // 한 장씩 0.08초 간격으로 날아오기
             }

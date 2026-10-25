@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Event_TreasureChest
   m_EditorClassIdentifier: Assembly-CSharp::EventData
   title: "\uBC84\uB824\uC9C4 \uBCF4\uBB3C \uC0C1\uC790"
-  image: {fileID: 0}
+  image: {fileID: 21300000, guid: f5643c180328b42449a4981a73bbb426, type: 3}
   story: "\uBA3C\uC9C0 \uC313\uC778 \uC0C1\uC790\uC5D0\uC11C \uAE08\uBE5B\uC774 \uC0C8\uC5B4
     \uB098\uC628\uB2E4. \uC218\uC0C1\uD55C \uB9C8\uBC95\uC9C4\uC774 \uC0C8\uACA8\uC838
     \uC788\uB2E4."

@@ -46,6 +46,8 @@ public class CardCombineManager : MonoBehaviour
                 EncyclopediaManager.Instance.UnlockCard(resultData.cardName);
             }
 
+            // ★ 조합법(재료 → 결과)도 해금 기록 (덱에 마우스를 올리면 보이는 조합법 창)
+            RecipeBook.Unlock(card1.cardData, card2.cardData);
             Destroy(card1.gameObject);
             Destroy(card2.gameObject);
 

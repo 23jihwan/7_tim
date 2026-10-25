@@ -15,9 +15,9 @@ public class MapLegend : MonoBehaviour
     private static readonly (RoomType type, string name, string desc)[] Entries =
     {
         (RoomType.Enemy, "일반 몬스터", "기본 전투 · 골드와 카드"),
-        (RoomType.Elite, "엘리트 몬스터", "강한 적 · 장비 보상"),
+        (RoomType.Elite, "엘리트 몬스터", "강한 적 · 유물 보상"),
         (RoomType.Event, "이벤트", "선택에 따라 달라지는 사건"),
-        (RoomType.Shop,  "상점", "골드로 카드·장비 구매"),
+        (RoomType.Shop,  "상점", "골드로 카드·유물 구매"),
         (RoomType.Rest,  "휴식/강화", "체력 회복 또는 카드 강화"),
         (RoomType.Boss,  "보스", "이 층의 마지막 전투"),
     };

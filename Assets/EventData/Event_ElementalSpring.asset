@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d599f0479cf0e054cb69dd5bb83e9175, type: 3}
+  m_Name: Event_ElementalSpring
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  title: "\uC6D0\uC18C\uC758 \uC0D8"
+  image: {fileID: 21300000, guid: d2c1c01d2800f3044b8855153f35de97, type: 3}
+  story: "\uB124 \uAC00\uC9C0 \uBE5B\uAE54\uB85C \uC77C\uB801\uC774\uB294 \uC0D8\uBB3C\uC774
+    \uB9C8\uB825\uC744 \uBFDC\uC5B4\uB0B8\uB2E4.\n\uBD88, \uBB3C, \uBC14\uB78C, \uC5BC\uC74C\uC758
+    \uAE30\uC6B4\uC774 \uB4A4\uC11E\uC5EC \uC788\uB2E4."
+  choices:
+  - text: "\uC0D8\uBB3C\uC5D0 \uC190\uC744 \uB2F4\uADFC\uB2E4"
+    goldCost: 0
+    hpCost: 0
+    reward: 3
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    trapChance: 0.2
+    trapHpLoss: 6
+    resultText: "\uC0D8\uC774 \uC0C8\uB85C\uC6B4 \uC8FC\uBB38\uC744 \uC18D\uC0AD\uC778\uB2E4."
+  - text: "\uAE08\uD654\uB97C \uB358\uC838 \uC18C\uC6D0\uC744 \uBE48\uB2E4"
+    goldCost: 20
+    hpCost: 0
+    reward: 2
+    goldMin: 25
+    goldMax: 60
+    relic: {fileID: 0}
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uC0D8\uBB3C\uC774 \uBC18\uC9DD\uC774\uBA70 \uAE08\uD654\uB97C \uB3CC\uB824\uBCF4\uB0C8\uB2E4."
+  - text: "\uC9C0\uB098\uAC04\uB2E4"
+    goldCost: 0
+    hpCost: 0
+    reward: 0
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uC0D8\uBB3C \uC18C\uB9AC\uAC00 \uB4F1 \uB4A4\uB85C \uBA40\uC5B4\uC84C\uB2E4."
