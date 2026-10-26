@@ -259,10 +259,10 @@ public class SettingsMenu : MonoBehaviour
         // 1. 오른쪽 위 톱니바퀴 (인벤토리 아이콘 왼쪽)
         Image gear = NewImage("GearButton", transform, Color.white);
         RectTransform gearRt = gear.rectTransform;
-        gearRt.anchorMin = gearRt.anchorMax = new Vector2(1f, 1f);
-        gearRt.pivot = new Vector2(1f, 1f);
+        gearRt.anchorMin = gearRt.anchorMax = new Vector2(0f, 1f);   // 왼쪽 위 기준
+        gearRt.pivot = new Vector2(0f, 1f);
         gearRt.sizeDelta = new Vector2(72, 72);
-        gearRt.anchoredPosition = new Vector2(-190, -40);
+        gearRt.anchoredPosition = new Vector2(28, -28);
         Sprite gearSprite = Resources.Load<Sprite>("SettingsGear");
         if (gearSprite != null) gear.sprite = gearSprite; else gear.color = Brown;
         Shadow shadow = gear.gameObject.AddComponent<Shadow>();

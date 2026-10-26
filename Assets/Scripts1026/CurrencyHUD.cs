@@ -15,18 +15,17 @@ public class CurrencyHUD : MonoBehaviour
     public GameObject floatingIconPrefab; // 날아가는 골드 아이콘 이미지 프리팹 (UI Image)
     public Transform canvasTransform;     // UI Canvas Transform
 
+    private int shownGold = -1;   // 지금 화면에 보이는 골드 (바뀌었을 때만 글자를 고친다)
+
     private void Awake()
     {
-        // 씬이 넘어가도 이 HUD 오브젝트가 파괴되지 않고 계속 유지되도록 설정
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject); // 중복 생성 방지
-        }
+        // 골드는 RunState에 있으므로 HUD는 씬마다 하나씩 있으면 된다 (씬을 넘어 유지할 필요 없음)
+        Instance = this;
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
     }
 
     private void Start()
@@ -34,26 +33,33 @@ public class CurrencyHUD : MonoBehaviour
         UpdateGoldUI();
     }
 
+    // 전투 보상, 이벤트, 상점 등 어디서 골드가 바뀌어도 자동으로 숫자를 맞춘다
+    private void Update()
+    {
+        if (GoldManager.Instance != null && GoldManager.Instance.currentGold != shownGold)
+            UpdateGoldUI();
+    }
+
     public void UpdateGoldUI()
     {
-        if (GoldManager.Instance != null)
-        {
-            goldText.text = GoldManager.Instance.currentGold.ToString("N0");
-        }
+        if (GoldManager.Instance == null || goldText == null) return;
+        shownGold = GoldManager.Instance.currentGold;
+        goldText.text = shownGold.ToString("N0");
     }
 
     // 몬스터 위치에서 상단 HUD로 아이콘이 날아가는 연출
-    public void PlayGoldFlyEffect(Vector3 startWorldPos, int goldAmount)
+    // addGold가 false면 연출만 하고 골드는 더하지 않는다 (실제 골드는 전투 보상에서 들어옴)
+    public void PlayGoldFlyEffect(Vector3 startWorldPos, int goldAmount, bool addGold = true)
     {
-        StartCoroutine(FlyEffectCoroutine(startWorldPos, goldAmount));
+        StartCoroutine(FlyEffectCoroutine(startWorldPos, goldAmount, addGold));
     }
 
-    private IEnumerator FlyEffectCoroutine(Vector3 startWorldPos, int goldAmount)
+    private IEnumerator FlyEffectCoroutine(Vector3 startWorldPos, int goldAmount, bool addGold)
     {
-        if (floatingIconPrefab == null || canvasTransform == null)
+        if (floatingIconPrefab == null || canvasTransform == null || goldIconRect == null || Camera.main == null)
         {
-            // 프리팹이 없으면 즉시 반영
-            GoldManager.Instance.AddGold(goldAmount);
+            // 연출에 필요한 것이 없으면 즉시 반영
+            if (addGold && GoldManager.Instance != null) GoldManager.Instance.AddGold(goldAmount);
             UpdateGoldUI();
             yield break;
         }
@@ -93,7 +99,7 @@ public class CurrencyHUD : MonoBehaviour
         iconRect.anchoredPosition = targetPos;
 
         // 4. 데이터 반영 및 UI 업데이트
-        GoldManager.Instance.AddGold(goldAmount);
+        if (addGold && GoldManager.Instance != null) GoldManager.Instance.AddGold(goldAmount);
         UpdateGoldUI();
 
         // 5. 임시 오브젝트 파괴

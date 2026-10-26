@@ -2571,7 +2571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee0485b0837eb14597122ebd6af0efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoldManager
-  currentGold: 500
+  testGold: 500
 --- !u!4 &857064201
 Transform:
   m_ObjectHideFlags: 0
@@ -5075,7 +5075,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 809ac9d356cf6e94ea464e69ebcb0f72, type: 2}
   - {fileID: 11400000, guid: bfd65471f1b5ac44288ce4cee593803f, type: 2}
   - {fileID: 11400000, guid: aedde80d60ed7e4489b6b155d30905db, type: 2}
-  giveAsStartingRelics: 1
+  giveAsStartingRelics: 0
 --- !u!4 &2014001140
 Transform:
   m_ObjectHideFlags: 0

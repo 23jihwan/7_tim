@@ -13,6 +13,10 @@ MonoBehaviour:
   m_Name: HealPotion
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
   itemName: "\uD558\uAE09 \uD3EC\uC158"
-  itemDesc: "\uC0AC\uC6A9 \uC2DC \uCCB4\uB825\uC744 50 \uD68C\uBCF5\uD569\uB2C8\uB2E4."
-  itemPrice: 150
+  itemDesc: "\"\uCCB4\uB825\uC744 50 \uD68C\uBCF5\uD569\uB2C8\uB2E4\""
+  itemPrice: 50
   itemIcon: {fileID: 3214231397813950450, guid: 7c91de7f2180cee409ccc601d47de627, type: 3}
+  itemType: 2
+  card: {fileID: 0}
+  relic: {fileID: 0}
+  healAmount: 50

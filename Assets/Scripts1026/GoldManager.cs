@@ -1,24 +1,37 @@
 using UnityEngine;
 
+// 골드를 쓰고 얻는 창구. 실제 골드는 RunState에 있어서
+// 전투 보상, 이벤트, 상점이 모두 같은 골드를 쓴다
 public class GoldManager : MonoBehaviour
 {
     public static GoldManager Instance;
 
-    [Header("Player Currency")]
-    public int currentGold = 500; // 시작 골드 (테스트용)
+    [Header("테스트용")]
+    [Tooltip("상점 씬만 따로 Play할 때 주는 골드. 맵에서 시작한 런에는 적용되지 않는다")]
+    public int testGold = 500;
+
+    // 예전처럼 GoldManager.Instance.currentGold 로 읽고 쓸 수 있다
+    public int currentGold
+    {
+        get { return RunState.GetOrCreate().gold; }
+        set { RunState.GetOrCreate().gold = Mathf.Max(0, value); }
+    }
 
     private void Awake()
     {
-        // 싱글톤 및 씬 전환 시 유지 설정
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 씬이 넘어가도 HUD가 사라지지 않고 유지됨!
+            Destroy(gameObject);   // 이미 있으면 중복 생성 방지
+            return;
         }
-        else
-        {
-            Destroy(gameObject); // 이미 존재한다면 중복 생성 방지
-        }
+        Instance = this;
+
+        // 맨 바깥 오브젝트일 때만 씬이 바뀌어도 유지 (자식이면 경고가 나므로 하지 않음)
+        if (transform.parent == null) DontDestroyOnLoad(gameObject);
+
+        // 런을 시작하지 않은 상태(상점 씬만 따로 테스트)면 테스트 골드를 준다
+        RunState run = RunState.GetOrCreate();
+        if (run.seed == 0 && run.gold == 0) run.gold = testGold;
     }
 
     public void AddGold(int amount)
@@ -35,10 +48,8 @@ public class GoldManager : MonoBehaviour
             Debug.Log($"골드 사용: -{amount} / 잔여 골드: {currentGold}");
             return true;
         }
-        else
-        {
-            Debug.Log("골드가 부족합니다.");
-            return false;
-        }
+
+        Debug.Log("골드가 부족합니다.");
+        return false;
     }
 }
