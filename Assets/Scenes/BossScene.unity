@@ -1297,7 +1297,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 161}
-  m_SizeDelta: {x: 300, y: 400}
+  m_SizeDelta: {x: 780, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1147819756
 MonoBehaviour:
@@ -1319,9 +1319,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1692361892735267575, guid: 73b799ed2908f2e48a472f572084e08e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b7028df1a3173ae4fa9274d8899e4b2c, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2167,7 +2167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ee0485b0837eb14597122ebd6af0efb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GoldManager
-  currentGold: 500
+  testGold: 500
 --- !u!4 &1617572720
 Transform:
   m_ObjectHideFlags: 0
@@ -2595,6 +2595,7 @@ MonoBehaviour:
   handPanel: {fileID: 2030090440}
   cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
   recipeDatabase: {fileID: 11400000, guid: 6f039b05ed84b624886e21376084dbf5, type: 2}
+  craftPreview: {fileID: 0}
 --- !u!1 &2137273547
 GameObject:
   m_ObjectHideFlags: 0

@@ -1086,7 +1086,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 161}
-  m_SizeDelta: {x: 300, y: 400}
+  m_SizeDelta: {x: 520, y: 480}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1147819756
 MonoBehaviour:
@@ -1108,9 +1108,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 9021094628121601641, guid: 268bc9bda74091141ac59a8ded26b32f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ce8134bb8b24a3d4a96f5f5093e455c5, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2275,6 +2275,7 @@ MonoBehaviour:
   handPanel: {fileID: 2030090440}
   cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
   recipeDatabase: {fileID: 11400000, guid: 6f039b05ed84b624886e21376084dbf5, type: 2}
+  craftPreview: {fileID: 0}
 --- !u!1 &2137273547
 GameObject:
   m_ObjectHideFlags: 0
