@@ -19,4 +19,49 @@ MonoBehaviour:
   - sceneName: Main
     clip: {fileID: 8300000, guid: e7e9c9f8edda9a3469229ba1944fe877, type: 3}
     volume: 1
-  sfx: []
+  sfx:
+  - name: card_draw
+    clip: {fileID: 8300000, guid: 962ad0eeb2b82fd4182649f1bbfbe296, type: 3}
+    volume: 1
+  - name: card_hover
+    clip: {fileID: 8300000, guid: c53854d379ae91e4b815b03ef957765d, type: 3}
+    volume: 1
+  - name: card_place
+    clip: {fileID: 8300000, guid: 3c5eb4bd3ebcebd459bba6ae9db45703, type: 3}
+    volume: 1
+  - name: card_use
+    clip: {fileID: 8300000, guid: 2e6ead596199102419570de596595903, type: 3}
+    volume: 1
+  - name: click
+    clip: {fileID: 8300000, guid: 91b2d16391ed19d41ba13d5f17812767, type: 3}
+    volume: 1
+  - name: coin
+    clip: {fileID: 8300000, guid: b4a1186a7f3899c4281b7a9828ca415d, type: 3}
+    volume: 1
+  - name: combine
+    clip: {fileID: 8300000, guid: 734de85ac1b0f4b45a7ae70c71061b37, type: 3}
+    volume: 1
+  - name: debuff
+    clip: {fileID: 8300000, guid: 2d24708c9c6c10848bf8beab3dd1d3fa, type: 3}
+    volume: 1
+  - name: defeat
+    clip: {fileID: 8300000, guid: 8528273ca5771b3479ff287e31e043b3, type: 3}
+    volume: 1
+  - name: door
+    clip: {fileID: 8300000, guid: 68dff87347f1036489abc3a4fbf05548, type: 3}
+    volume: 1
+  - name: error
+    clip: {fileID: 8300000, guid: 84fe5dedd7cfe6e4aa7e290cac2affb5, type: 3}
+    volume: 1
+  - name: heal
+    clip: {fileID: 8300000, guid: 2819d4f2be2391f49bcdf5966045ef13, type: 3}
+    volume: 1
+  - name: hit
+    clip: {fileID: 8300000, guid: 3ecbd84471f61de4e8c6e6455cddf775, type: 3}
+    volume: 1
+  - name: page
+    clip: {fileID: 8300000, guid: 763ee5754aef2e242ac0a340816a368f, type: 3}
+    volume: 1
+  - name: victory
+    clip: {fileID: 8300000, guid: 88c98e83a9f398942bf084d1d679d571, type: 3}
+    volume: 1

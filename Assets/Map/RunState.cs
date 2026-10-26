@@ -3,62 +3,65 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// ì”¬ì´ ë°”ë€Œì–´ë„ ì‚¬ë¼ì§€ì§€ ì•Šê³  ì§„í–‰ ìƒí™©ì„ ê¸°ì–µí•˜ëŠ” ìŠ¤í¬ë¦½íŠ¸
+// ë§µ ì”¬ì—ì„œ ìë™ìœ¼ë¡œ ë§Œë“¤ì–´ì§€ë¯€ë¡œ ì”¬ì— ì§ì ‘ ë†“ì„ í•„ìš”ëŠ” ì—†ë‹¤
 public class RunState : MonoBehaviour
 {
     public static RunState Instance { get; private set; }
 
-    [Header("¾À ÀÌ¸§ (Build ProfilesÀÇ Scene List¿¡ ÀÖ¾î¾ß ÇÔ)")]
+    [Header("ì”¬ ì´ë¦„ (Build Profilesì˜ Scene Listì— ìˆì–´ì•¼ í•¨)")]
     public string mapSceneName = "minhyeokMapTestScene";
     public string battleSceneName = "JihwanTestScene";
-    [Tooltip("¿¤¸®Æ® ÀüÅõ ¾À ÀÌ¸§. ºñ¿ö µÎ¸é ÀÏ¹İ ÀüÅõ ¾ÀÀ» °°ÀÌ ¾´´Ù")]
+    [Tooltip("ì—˜ë¦¬íŠ¸ ì „íˆ¬ ì”¬ ì´ë¦„. ë¹„ì›Œ ë‘ë©´ ì¼ë°˜ ì „íˆ¬ ì”¬ì„ ê°™ì´ ì“´ë‹¤")]
     public string eliteSceneName = "TestScene";
-    [Tooltip("º¸½º ÀüÅõ ¾À ÀÌ¸§. ºñ¿ö µÎ¸é ÀÏ¹İ ÀüÅõ ¾ÀÀ» °°ÀÌ ¾´´Ù")]
+    [Tooltip("ë³´ìŠ¤ ì „íˆ¬ ì”¬ ì´ë¦„. ë¹„ì›Œ ë‘ë©´ ì¼ë°˜ ì „íˆ¬ ì”¬ì„ ê°™ì´ ì“´ë‹¤")]
     public string bossSceneName = "BossScene";
-    [Tooltip("»óÁ¡ ¾À ÀÌ¸§. ºñ¿ö µÎ¸é »óÁ¡ ¹æÀº ¹Ù·Î Åë°ú")]
+    [Tooltip("ìƒì  ì”¬ ì´ë¦„. ë¹„ì›Œ ë‘ë©´ ìƒì  ë°©ì€ ë°”ë¡œ í†µê³¼")]
     public string shopSceneName = "Shop";
 
-    [Tooltip("¸Ê ¼³Á¤ (MapView°¡ ÀÚµ¿À¸·Î ³Ö¾î ÁØ´Ù). Ãşº° µîÀå ¸ó½ºÅÍ¸¦ ¿©±â¼­ °¡Á®¿Â´Ù")]
+    [Tooltip("ë§µ ì„¤ì • (MapViewê°€ ìë™ìœ¼ë¡œ ë„£ì–´ ì¤€ë‹¤). ì¸µë³„ ë“±ì¥ ëª¬ìŠ¤í„°ë¥¼ ì—¬ê¸°ì„œ ê°€ì ¸ì˜¨ë‹¤")]
     public MapConfig config;
 
-    [Header("ÁøÇà »óÅÂ")]
-    public int floorIndex = 0;              // 0 = 1Ãş
-    public int seed = 0;                    // 0 = ¾ÆÁ÷ ·±À» ½ÃÀÛÇÏÁö ¾ÊÀ½
-    public bool hasPosition = false;        // false = ¾ÆÁ÷ 1¿­À» °í¸£±â Àü
-    public Vector2Int currentPos;           // x = ¿­, y = ·¹ÀÎ
+    [Header("ì§„í–‰ ìƒíƒœ")]
+    public int floorIndex = 0;            // 0 = 1ì¸µ
+    public int seed = 0;                  // 0 = ì•„ì§ ëŸ°ì„ ì‹œì‘í•˜ì§€ ì•ŠìŒ
+    public bool hasPosition = false;      // false = ì•„ì§ 1ì—´ì„ ê³ ë¥´ê¸° ì „
+    public Vector2Int currentPos;         // x = ì—´, y = ë ˆì¸
     public List<Vector2Int> visited = new List<Vector2Int>();
     public RoomType currentRoomType;
 
-    [Header("ÇÃ·¹ÀÌ¾î")]
+    [Header("í”Œë ˆì´ì–´")]
     public int playerMaxHP = 100;
     public int playerHP = 100;
     public int gold = 0;
 
-    [Header("µ¦ (ÀüÅõ¿¡¼­ ÀÌ Ä«µåµé Áß¿¡¼­ »Ì´Â´Ù)")]
+    [Header("ë± (ì „íˆ¬ì—ì„œ ì´ ì¹´ë“œë“¤ ì¤‘ì—ì„œ ë½‘ëŠ”ë‹¤)")]
     public List<CardData> deck = new List<CardData>();
 
-    [Header("º¸»ó")]
-    [Tooltip("º¸»óÀ¸·Î ¾òÀº Ä«µå (µ¦ ÀúÀå ±â´ÉÀÌ »ı±â¸é µ¦¿¡ ³Ö´Â´Ù)")]
+    [Header("ë³´ìƒ")]
+    [Tooltip("ë³´ìƒìœ¼ë¡œ ì–»ì€ ì¹´ë“œ (ë± ì €ì¥ ê¸°ëŠ¥ì´ ìƒê¸°ë©´ ë±ì— ë„£ëŠ”ë‹¤)")]
     public List<CardData> obtainedCards = new List<CardData>();
-    public bool hasPendingReward = false;   // ¸Ê¿¡¼­ º¸¿©ÁÙ º¸»óÀÌ ³²¾Æ ÀÖ´ÂÁö
+    public bool hasPendingReward = false;   // ë§µì—ì„œ ë³´ì—¬ì¤„ ë³´ìƒì´ ë‚¨ì•„ ìˆëŠ”ì§€
     public int pendingGold;
     public RoomType pendingRoomType;
 
-    [Header("À¯¹° (InventoryManager°¡ ÇÔ²² ¾´´Ù)")]
+    [Header("ìœ ë¬¼ (InventoryManagerê°€ í•¨ê»˜ ì“´ë‹¤)")]
     public List<RelicData> ownedRelics = new List<RelicData>();
     public RelicData[] equippedRelics = new RelicData[5];
     [HideInInspector] public bool startingRelicsGiven = false;
 
-    [Header("¿¤¸®Æ®/º¸½º Àû Ã¼·Â ¹èÀ²")]
+    [Header("ì—˜ë¦¬íŠ¸/ë³´ìŠ¤ ì  ì²´ë ¥ ë°°ìœ¨")]
     public float eliteHpMultiplier = 1.5f;
     public float bossHpMultiplier = 2.5f;
 
     public const int FloorCount = 3;
 
     private AttackManager battle;
-    private EnemyData pendingEnemy;         // ÀÌ¹ø ÀüÅõ¿¡ ³ª¿Ã ¸ó½ºÅÍ
+    private EnemyData pendingEnemy;        // ì´ë²ˆ ì „íˆ¬ì— ë‚˜ì˜¬ ëª¬ìŠ¤í„°
     private bool battleReady;
     private bool battleEnding;
 
+    // ìˆìœ¼ë©´ ê·¸ëŒ€ë¡œ ì“°ê³ , ì—†ìœ¼ë©´ ìƒˆë¡œ ë§Œë“ ë‹¤
     public static RunState GetOrCreate()
     {
         if (Instance == null)
@@ -83,7 +86,7 @@ public class RunState : MonoBehaviour
         if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // ---------------- À¯¹° º¸³Ê½º °è»ê ¸Ş¼­µå ----------------
+    // ---------------- ìœ ë¬¼ ë³´ë„ˆìŠ¤ ê³„ì‚° (íŒ€ì› ì½”ë“œ) ----------------
 
     public int GetTotalRelicBonus(StatBonusType targetType)
     {
@@ -104,7 +107,7 @@ public class RunState : MonoBehaviour
         return baseGold + bonusGold;
     }
 
-    // ---------------- ·± °ü¸® ----------------
+    // ---------------- ëŸ° ê´€ë¦¬ ----------------
 
     public void NewRun()
     {
@@ -112,10 +115,7 @@ public class RunState : MonoBehaviour
         seed = Random.Range(1000, 10000);
         hasPosition = false;
         visited.Clear();
-
-        playerMaxHP = 100 + GetTotalRelicBonus(StatBonusType.MaxHP);
         playerHP = playerMaxHP;
-
         gold = 0;
         obtainedCards.Clear();
         hasPendingReward = false;
@@ -124,39 +124,46 @@ public class RunState : MonoBehaviour
             foreach (CardData c in config.startingDeck)
                 if (c != null) { deck.Add(c); RegisterInBook(c); }
         ownedRelics.Clear();
-        for (int int_i = 0; int_i < equippedRelics.Length; int_i++) equippedRelics[int_i] = null;
+        for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;   // ë°°ì—´ì€ ê·¸ëŒ€ë¡œ ë‘ê³  ë¹„ìš°ê¸°ë§Œ
         startingRelicsGiven = false;
-        Debug.Log($"»õ ·±À» ½ÃÀÛÇØ¿ä. (½Ãµå {seed})");
+
+        playerMaxHP = 100 + GetTotalRelicBonus(StatBonusType.MaxHP);   // (íŒ€ì› ì½”ë“œ) ìœ ë¬¼ ìµœëŒ€ ì²´ë ¥ ë³´ë„ˆìŠ¤
+        playerHP = playerMaxHP;
+        Debug.Log($"ìƒˆ ëŸ°ì„ ì‹œì‘í•´ìš”. (ì‹œë“œ {seed})");
     }
 
+    // ì¹´ë“œ ì–»ê¸° (ì „íˆ¬ ë³´ìƒ, ì´ë²¤íŠ¸ ë“±): ë±ì— ë“¤ì–´ê°„ë‹¤
     public void AddCard(CardData card)
     {
         if (card == null) return;
         deck.Add(card);
         obtainedCards.Add(card);
         RegisterInBook(card);
-        Debug.Log($"µ¦¿¡ {card.cardName} Ãß°¡! (µ¦ {deck.Count}Àå)");
+        Debug.Log($"ë±ì— {card.cardName} ì¶”ê°€! (ë± {deck.Count}ì¥)");
     }
 
+    // ì–»ì€ ì¹´ë“œëŠ” ëª¨ë‘ ë„ê°ì— ë“±ë¡ (ì´ë¯¸ ë“±ë¡ëœ ì¹´ë“œë©´ ì•„ë¬´ ì¼ë„ ì—†ìŒ)
     private void RegisterInBook(CardData card)
     {
         if (card != null && EncyclopediaManager.Instance != null)
             EncyclopediaManager.Instance.UnlockCard(card.cardName);
     }
 
+    // ìœ ë¬¼ ì–»ê¸° (ì´ë²¤íŠ¸, ì—˜ë¦¬íŠ¸, ìƒì  ë³´ìƒ ë“±). ì´ë¯¸ ê°€ì§„ ìœ ë¬¼ì´ë©´ false
     public bool AddRelic(RelicData relic)
     {
         if (relic == null || ownedRelics.Contains(relic)) return false;
         ownedRelics.Add(relic);
 
+        // (íŒ€ì› ì½”ë“œ) ìµœëŒ€ ì²´ë ¥ ìœ ë¬¼ì€ ì–»ëŠ” ì¦‰ì‹œ ì ìš©
         if (relic.statBonusType == StatBonusType.MaxHP)
         {
             playerMaxHP += relic.value;
             playerHP += relic.value;
-            Debug.Log($"[À¯¹° È¿°ú] ÃÖ´ë Ã¼·Â Áõ°¡ +{relic.value} (ÇöÀç ÃÖ´ë Ã¼·Â: {playerMaxHP})");
+            Debug.Log($"[ìœ ë¬¼ íš¨ê³¼] ìµœëŒ€ ì²´ë ¥ ì¦ê°€ +{relic.value} (í˜„ì¬ ìµœëŒ€ ì²´ë ¥: {playerMaxHP})");
         }
 
-        Debug.Log($"À¯¹° È¹µæ: {relic.relicName} (º¸À¯ {ownedRelics.Count}°³)");
+        Debug.Log($"ìœ ë¬¼ íšë“: {relic.relicName} (ë³´ìœ  {ownedRelics.Count}ê°œ)");
         return true;
     }
 
@@ -173,8 +180,10 @@ public class RunState : MonoBehaviour
         currentRoomType = node.type;
     }
 
+    // ì „íˆ¬ ë°©ì´ë©´ ëª¬ìŠ¤í„°ë¥¼ ê³ ë¥´ê³  ì „íˆ¬ ì”¬ìœ¼ë¡œ ì´ë™í•œ ë’¤ trueë¥¼ ëŒë ¤ì¤€ë‹¤
     public bool EnterRoom(RoomType type)
     {
+        // ìƒì  ë°©: ìƒì  ì”¬ìœ¼ë¡œ ì´ë™ (ë‚˜ê°€ê¸° ë²„íŠ¼ì„ ëˆ„ë¥´ë©´ ë§µìœ¼ë¡œ ëŒì•„ì˜¨ë‹¤)
         if (type == RoomType.Shop && !string.IsNullOrEmpty(shopSceneName))
         {
             SceneManager.LoadScene(shopSceneName);
@@ -182,7 +191,7 @@ public class RunState : MonoBehaviour
         }
 
         if (type != RoomType.Enemy && type != RoomType.Elite && type != RoomType.Boss)
-            return false;
+            return false;   // ìƒì , ì´ë²¤íŠ¸, íœ´ì‹ì€ ì•„ì§ êµ¬í˜„ ì „
 
         pendingEnemy = PickEnemy(type);
         SceneManager.LoadScene(GetBattleScene(type));
@@ -201,6 +210,7 @@ public class RunState : MonoBehaviour
         return sceneName == battleSceneName || sceneName == eliteSceneName || sceneName == bossSceneName;
     }
 
+    // MapConfigì—ì„œ ì§€ê¸ˆ ì¸µ, ë°© ì¢…ë¥˜ì— ë§ëŠ” ëª¬ìŠ¤í„°ë¥¼ í•˜ë‚˜ ê³ ë¥¸ë‹¤ (ì—†ìœ¼ë©´ null)
     private EnemyData PickEnemy(RoomType type)
     {
         if (config == null || config.floors == null || floorIndex >= config.floors.Length) return null;
@@ -214,6 +224,9 @@ public class RunState : MonoBehaviour
         return list[Random.Range(0, list.Length)];
     }
 
+    // ---------------- ì „íˆ¬ ì—°ê²° ----------------
+    // ì „íˆ¬ ë‹´ë‹¹ì˜ AttackManager ì½”ë“œëŠ” ê³ ì¹˜ì§€ ì•Šê³ , ì—¬ê¸°ì„œ ê°’ì„ ë„£ê³  ê²°ê³¼ë¥¼ ì§€ì¼œë³¸ë‹¤
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         battle = null;
@@ -222,45 +235,52 @@ public class RunState : MonoBehaviour
         battle = FindFirstObjectByType<AttackManager>();
         if (battle == null)
         {
-            Debug.LogWarning("RunState: ÀüÅõ ¾À¿¡¼­ AttackManager¸¦ Ã£Áö ¸øÇß¾î¿ä.");
+            Debug.LogWarning("RunState: ì „íˆ¬ ì”¬ì—ì„œ AttackManagerë¥¼ ì°¾ì§€ ëª»í–ˆì–´ìš”.");
             return;
         }
 
         battleReady = false;
         battleEnding = false;
 
+        // ì‹œì‘ ë±ì´ ë¹„ì–´ ìˆìœ¼ë©´, ì²˜ìŒ í•œ ë²ˆì€ ì „íˆ¬ ì”¬ì˜ ì¹´ë“œ ëª©ë¡ìœ¼ë¡œ ë±ì„ ë§Œë“ ë‹¤
         if (deck.Count == 0)
         {
             GameManager gm = FindFirstObjectByType<GameManager>();
             if (gm != null && gm.cardDatabase != null)
                 foreach (CardData c in gm.cardDatabase)
                     if (c != null) { deck.Add(c); RegisterInBook(c); }
-            Debug.Log($"½ÃÀÛ µ¦ {deck.Count}ÀåÀ¸·Î ÀüÅõ¸¦ ½ÃÀÛÇØ¿ä.");
+            Debug.Log($"ì‹œì‘ ë± {deck.Count}ì¥ìœ¼ë¡œ ì „íˆ¬ë¥¼ ì‹œì‘í•´ìš”.");
         }
 
+        // AttackManagerì˜ Start()ê°€ ì‹¤í–‰ë˜ê¸° ì „ì— ê°’ì„ ë°”ê¿” ë‘”ë‹¤
         battle.playerMaxHP = playerMaxHP;
 
         if (pendingEnemy != null)
         {
+            // MapConfigì—ì„œ ê³ ë¥¸ ëª¬ìŠ¤í„°ë¥¼ ë„£ìœ¼ë©´ AttackManagerê°€ ì´ë¦„Â·ì²´ë ¥Â·ê³µê²©ë ¥Â·ê·¸ë¦¼ì„ ì ìš©í•œë‹¤
             battle.currentEnemyData = pendingEnemy;
         }
         else if (battle.currentEnemyData == null)
         {
+            // ëª¬ìŠ¤í„° ë°ì´í„°ê°€ ì•„ë¬´ ë°ë„ ì—†ì„ ë•Œë§Œ ì˜ˆì „ì²˜ëŸ¼ ì²´ë ¥ ë°°ìœ¨ì„ ì“´ë‹¤
             float multiplier = 1f;
             if (currentRoomType == RoomType.Elite) multiplier = eliteHpMultiplier;
             if (currentRoomType == RoomType.Boss) multiplier = bossHpMultiplier;
             battle.enemyMaxHP = Mathf.RoundToInt(battle.enemyMaxHP * multiplier);
         }
+        // ì”¬ì— ì´ë¯¸ ëª¬ìŠ¤í„° ë°ì´í„°ê°€ ë“¤ì–´ ìˆìœ¼ë©´ ê·¸ëŒ€ë¡œ ë‘”ë‹¤ (ì²´ë ¥ì´ ë‘ ë²ˆ ì˜¤ë¥´ì§€ ì•Šê²Œ)
 
         StartCoroutine(SetupBattleNextFrame());
     }
 
     private IEnumerator SetupBattleNextFrame()
     {
+        // AttackManagerì˜ Start()ê°€ ì²´ë ¥ì„ ìµœëŒ€ì¹˜ë¡œ ì±„ìš´ ë’¤ì—, ë‚¨ì•„ ìˆë˜ ì²´ë ¥ìœ¼ë¡œ ë°”ê¾¼ë‹¤
         yield return null;
         if (battle == null) yield break;
 
         battle.playerCurrentHP = playerHP;
+        // GameManagerë„ ì²´ë ¥ì„ ê´€ë¦¬í•˜ë¯€ë¡œ ê°™ì´ ë§ì¶° ì¤€ë‹¤
         if (GameManager.Instance != null)
         {
             GameManager.Instance.playerMaxHP = playerMaxHP;
@@ -271,7 +291,7 @@ public class RunState : MonoBehaviour
             battle.playerHPText.text = $"Player HP: {playerHP}/{playerMaxHP}";
 
         battleReady = true;
-        Debug.Log($"{floorIndex + 1}Ãş {MapGenerator.KoreanName(currentRoomType)} ÀüÅõ ½ÃÀÛ: {battle.enemyName} (Ã¼·Â {battle.enemyMaxHP}, °ø°İ·Â {battle.enemyAttackDamage})");
+        Debug.Log($"{floorIndex + 1}ì¸µ {MapGenerator.KoreanName(currentRoomType)} ì „íˆ¬ ì‹œì‘: {battle.enemyName} (ì²´ë ¥ {battle.enemyMaxHP}, ê³µê²©ë ¥ {battle.enemyAttackDamage})");
     }
 
     private void Update()
@@ -285,26 +305,29 @@ public class RunState : MonoBehaviour
     private IEnumerator EndBattle(bool won)
     {
         battleEnding = true;
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1f);   // ì“°ëŸ¬ì§€ëŠ” ëª¨ìŠµì„ ì ê¹ ë³´ì—¬ì¤€ë‹¤
 
         playerHP = Mathf.Max(0, battle.playerCurrentHP);
 
         if (won)
         {
+            SoundManager.Play("victory");
             int reward = RollGold(currentRoomType);
             gold += reward;
-            Debug.Log($"ÀüÅõ ½Â¸®! °ñµå +{reward} (º¸À¯ {gold}, Ã¼·Â {playerHP}/{playerMaxHP})");
+            Debug.Log($"ì „íˆ¬ ìŠ¹ë¦¬! ê³¨ë“œ +{reward} (ë³´ìœ  {gold}, ì²´ë ¥ {playerHP}/{playerMaxHP})");
 
-            string title = "ÀüÅõ ½Â¸®!";
-            if (currentRoomType == RoomType.Elite) title = "¿¤¸®Æ® Ã³Ä¡!";
-            if (currentRoomType == RoomType.Boss) title = $"{floorIndex + 1}Ãş º¸½º Ã³Ä¡!";
+            // ë³´ìƒ ì°½ì— ë³´ì—¬ì¤„ ë‚´ìš©
+            string title = "ì „íˆ¬ ìŠ¹ë¦¬!";
+            if (currentRoomType == RoomType.Elite) title = "ì—˜ë¦¬íŠ¸ ì²˜ì¹˜!";
+            if (currentRoomType == RoomType.Boss) title = $"{floorIndex + 1}ì¸µ ë³´ìŠ¤ ì²˜ì¹˜!";
 
             List<string> lines = new List<string>();
-            lines.Add($"°ñµå +{reward}   (º¸À¯ {gold})");
+            lines.Add($"ê³¨ë“œ +{reward}   (ë³´ìœ  {gold})");
             if (currentRoomType == RoomType.Elite || currentRoomType == RoomType.Boss)
-                lines.Add("Àåºñ 1°³ È¹µæ (Àåºñ ½Ã½ºÅÛ ÁØºñ Áß)");
-            lines.Add($"³²Àº Ã¼·Â {playerHP} / {playerMaxHP}");
+                lines.Add("ì¥ë¹„ 1ê°œ íšë“ (ì¥ë¹„ ì‹œìŠ¤í…œ ì¤€ë¹„ ì¤‘)");
+            lines.Add($"ë‚¨ì€ ì²´ë ¥ {playerHP} / {playerMaxHP}");
 
+            // í™•ì¸ì„ ëˆ„ë¥¼ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦°ë‹¤
             bool confirmed = false;
             BattleRewardPopup.Show(title, lines, PickCardChoices(3), picked =>
             {
@@ -314,7 +337,7 @@ public class RunState : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Ä«µå º¸»óÀ» °Ç³Ê¶Ù¾ú¾î¿ä.");
+                    Debug.Log("ì¹´ë“œ ë³´ìƒì„ ê±´ë„ˆë›°ì—ˆì–´ìš”.");
                 }
                 confirmed = true;
             });
@@ -324,8 +347,9 @@ public class RunState : MonoBehaviour
         }
         else
         {
+            SoundManager.Play("defeat");
             yield return new WaitForSeconds(0.5f);
-            Debug.Log("°ÔÀÓ ¿À¹ö! »õ ·±À» ½ÃÀÛÇØ¿ä.");
+            Debug.Log("ê²Œì„ ì˜¤ë²„! ìƒˆ ëŸ°ì„ ì‹œì‘í•´ìš”.");
             NewRun();
         }
 
@@ -333,35 +357,39 @@ public class RunState : MonoBehaviour
         SceneManager.LoadScene(mapSceneName);
     }
 
+    // ì „íˆ¬ ì”¬ GameManagerì˜ ì¹´ë“œ ëª©ë¡ì—ì„œ ì„œë¡œ ë‹¤ë¥¸ ì¹´ë“œë¥¼ ê³¨ë¼ ë³´ìƒ í›„ë³´ë¡œ ë§Œë“ ë‹¤
     private List<CardData> PickCardChoices(int count)
     {
         List<CardData> result = new List<CardData>();
         GameManager gm = FindFirstObjectByType<GameManager>();
         if (gm == null || gm.cardDatabase == null) return result;
-        if (gm.cardPrefab != null) BattleRewardPopup.cardPrefab = gm.cardPrefab;
+        if (gm.cardPrefab != null) BattleRewardPopup.cardPrefab = gm.cardPrefab;   // ë³´ìƒ ì¹´ë“œë¥¼ ì§„ì§œ ì¹´ë“œ ëª¨ì–‘ìœ¼ë¡œ
 
         List<CardData> pool = new List<CardData>(gm.cardDatabase);
         while (result.Count < count && pool.Count > 0)
         {
             int r = Random.Range(0, pool.Count);
-            if (pool[r] != null) result.Add(pool[r]); // ¡Ú ¿ÀÅ¸ ³­ ·Â() ÁÙÀº Áö¿ì°í ÀÌ ÁÙ¸¸ ³²°ÜÁÖ¼¼¿ä!
+            if (pool[r] != null) result.Add(pool[r]);
             pool.RemoveAt(r);
         }
         return result;
     }
 
-    [ContextMenu("Å×½ºÆ®: ÀüÅõ ½Â¸®")]
+    // ---------------- í…ŒìŠ¤íŠ¸ìš© ----------------
+    // Play ì¤‘ Hierarchyì˜ DontDestroyOnLoad â†’ RunStateë¥¼ ì„ íƒí•˜ê³  ì  ì„¸ ê°œ ë©”ë‰´ì—ì„œ ì‹¤í–‰
+
+    [ContextMenu("í…ŒìŠ¤íŠ¸: ì „íˆ¬ ìŠ¹ë¦¬")]
     private void DebugWin()
     {
         if (battle != null && !battleEnding) StartCoroutine(EndBattle(true));
-        else Debug.LogWarning("ÀüÅõ ¾À¿¡¼­¸¸ ¾µ ¼ö ÀÖ¾î¿ä.");
+        else Debug.LogWarning("ì „íˆ¬ ì”¬ì—ì„œë§Œ ì“¸ ìˆ˜ ìˆì–´ìš”.");
     }
 
-    [ContextMenu("Å×½ºÆ®: ÀüÅõ ÆĞ¹è")]
+    [ContextMenu("í…ŒìŠ¤íŠ¸: ì „íˆ¬ íŒ¨ë°°")]
     private void DebugLose()
     {
         if (battle != null && !battleEnding) StartCoroutine(EndBattle(false));
-        else Debug.LogWarning("ÀüÅõ ¾À¿¡¼­¸¸ ¾µ ¼ö ÀÖ¾î¿ä.");
+        else Debug.LogWarning("ì „íˆ¬ ì”¬ì—ì„œë§Œ ì“¸ ìˆ˜ ìˆì–´ìš”.");
     }
 
     private void ClearFloor()
@@ -369,7 +397,7 @@ public class RunState : MonoBehaviour
         floorIndex++;
         if (floorIndex >= FloorCount)
         {
-            Debug.Log("ÃÖÁ¾ º¸½º Ã³Ä¡! Å¾À» Á¤º¹Çß¾î¿ä.");
+            Debug.Log("ìµœì¢… ë³´ìŠ¤ ì²˜ì¹˜! íƒ‘ì„ ì •ë³µí–ˆì–´ìš”. (ì—”ë”©ì€ ë‚˜ì¤‘ì— êµ¬í˜„)");
             NewRun();
             return;
         }
@@ -377,10 +405,10 @@ public class RunState : MonoBehaviour
         seed = Random.Range(1000, 10000);
         hasPosition = false;
         visited.Clear();
-        Debug.Log($"{floorIndex}Ãş Å¬¸®¾î! {floorIndex + 1}ÃşÀ¸·Î ¿Ã¶ó°¡¿ä.");
+        Debug.Log($"{floorIndex}ì¸µ í´ë¦¬ì–´! {floorIndex + 1}ì¸µìœ¼ë¡œ ì˜¬ë¼ê°€ìš”.");
     }
 
-    // ±âÈ¹¼­ 4. °ñµå È¹µæ·® (7´Ü°è¿¡¼­ º¸»ó ½Ã½ºÅÛÀ¸·Î ¿Å±æ ¿¹Á¤)
+    // ê¸°íšì„œ 4. ê³¨ë“œ íšë“ëŸ‰ (7ë‹¨ê³„ì—ì„œ ë³´ìƒ ì‹œìŠ¤í…œìœ¼ë¡œ ì˜®ê¸¸ ì˜ˆì •)
     private int RollGold(RoomType type)
     {
         int[,] enemy = { { 15, 25 }, { 25, 35 }, { 35, 45 } };
@@ -396,6 +424,6 @@ public class RunState : MonoBehaviour
             case RoomType.Boss: baseGold = boss[f]; break;
         }
 
-        return GetModifiedGold(baseGold);
+        return GetModifiedGold(baseGold);   // (íŒ€ì› ì½”ë“œ) ê³¨ë“œ ë³´ë„ˆìŠ¤ ìœ ë¬¼ ì ìš©
     }
 }

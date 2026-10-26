@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// ÀüÅõ ¾À À§¿¡ º¸»ó Ã¢À» ÄÚµå·Î ¸¸µé¾î ¶ç¿î´Ù (ÀüÅõ ¾ÀÀ» µû·Î ¼öÁ¤ÇÒ ÇÊ¿ä ¾øÀ½)
-// Ä«µå¸¦ ÇÏ³ª °ñ¶ó µÎ°í(¼±ÅÃ »çÇ×) È®ÀÎÀ» ´©¸£¸é onConfirmÀÌ È£ÃâµÈ´Ù
+// ì „íˆ¬ ì”¬ ìœ„ì— ë³´ìƒ ì°½ì„ ì½”ë“œë¡œ ë§Œë“¤ì–´ ë„ìš´ë‹¤ (ì „íˆ¬ ì”¬ì„ ë”°ë¡œ ìˆ˜ì •í•  í•„ìš” ì—†ìŒ)
+// ì¹´ë“œë¥¼ í•˜ë‚˜ ê³¨ë¼ ë‘ê³ (ì„ íƒ ì‚¬í•­) í™•ì¸ì„ ëˆ„ë¥´ë©´ onConfirmì´ í˜¸ì¶œëœë‹¤
 public static class BattleRewardPopup
 {
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
@@ -13,15 +13,15 @@ public static class BattleRewardPopup
     private static readonly Color Gold = new Color32(0xF2, 0xB4, 0x5A, 0xFF);
     private static readonly Color Red = new Color32(0x8F, 0x2A, 0x1E, 0xFF);
 
-    // ÀüÅõ¿¡¼­ ¾²´Â Ä«µå ÇÁ¸®ÆÕ (Å×µÎ¸®, ÀÌ¸§, ¼³¸íÀÌ ÀÖ´Â ÁøÂ¥ Ä«µå ¸ğ¾ç)
-    // RunState¿Í EventPopupÀÌ ³Ö¾î ÁØ´Ù. ¾øÀ¸¸é ¿¹ÀüÃ³·³ ±×¸²¸¸ º¸¿©ÁØ´Ù
+    // ì „íˆ¬ì—ì„œ ì“°ëŠ” ì¹´ë“œ í”„ë¦¬íŒ¹ (í…Œë‘ë¦¬, ì´ë¦„, ì„¤ëª…ì´ ìˆëŠ” ì§„ì§œ ì¹´ë“œ ëª¨ì–‘)
+    // RunStateì™€ EventPopupì´ ë„£ì–´ ì¤€ë‹¤. ì—†ìœ¼ë©´ ì˜ˆì „ì²˜ëŸ¼ ê·¸ë¦¼ë§Œ ë³´ì—¬ì¤€ë‹¤
     public static GameObject cardPrefab;
 
     public static void Show(string title, List<string> lines, List<CardData> cardChoices, Action<CardData> onConfirm)
     {
         Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-        // 1. ¸Ç À§¿¡ ±×·ÁÁö´Â Canvas
+        // 1. ë§¨ ìœ„ì— ê·¸ë ¤ì§€ëŠ” Canvas
         GameObject canvasGO = new GameObject("RewardCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         Canvas canvas = canvasGO.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -31,7 +31,7 @@ public static class BattleRewardPopup
         scaler.referenceResolution = new Vector2(1920, 1080);
         scaler.matchWidthOrHeight = 0.5f;
 
-        // 2. ¾îµÎ¿î ¹è°æ (µÚÀÇ ÀüÅõ È­¸éÀ» ´©¸¦ ¼ö ¾ø°Ô ¸·´Â´Ù)
+        // 2. ì–´ë‘ìš´ ë°°ê²½ (ë’¤ì˜ ì „íˆ¬ í™”ë©´ì„ ëˆ„ë¥¼ ìˆ˜ ì—†ê²Œ ë§‰ëŠ”ë‹¤)
         Image dim = CreateImage("Dim", canvasGO.transform, new Color(0, 0, 0, 0.67f));
         RectTransform dimRt = dim.rectTransform;
         dimRt.anchorMin = Vector2.zero;
@@ -39,7 +39,7 @@ public static class BattleRewardPopup
         dimRt.offsetMin = Vector2.zero;
         dimRt.offsetMax = Vector2.zero;
 
-        // 3. Ã¢
+        // 3. ì°½
         bool hasCards = cardChoices != null && cardChoices.Count > 0;
         float height = hasCards ? 680 : 420;
         Image window = CreateImage("Window", dim.transform, Parchment);
@@ -58,13 +58,13 @@ public static class BattleRewardPopup
             y -= 44;
         }
 
-        // 4. Ä«µå °í¸£±â (¼±ÅÃ »çÇ×)
+        // 4. ì¹´ë“œ ê³ ë¥´ê¸° (ì„ íƒ ì‚¬í•­)
         CardData selected = null;
         List<Outline> highlights = new List<Outline>();
 
         if (hasCards)
         {
-            CreateText("Guide", window.transform, font, "Ä«µå¸¦ 1Àå °í¸£¼¼¿ä (°í¸£Áö ¾ÊÀ¸¸é °Ç³Ê¶Ü)", 22, FontStyle.Normal, InkLight, new Vector2(0, y - 10), new Vector2(800, 36));
+            CreateText("Guide", window.transform, font, "ì¹´ë“œë¥¼ 1ì¥ ê³ ë¥´ì„¸ìš” (ê³ ë¥´ì§€ ì•Šìœ¼ë©´ ê±´ë„ˆëœ€)", 22, FontStyle.Normal, InkLight, new Vector2(0, y - 10), new Vector2(800, 36));
 
             float cardY = y - 150;
             for (int i = 0; i < cardChoices.Count; i++)
@@ -75,7 +75,7 @@ public static class BattleRewardPopup
                 Image cardImage;
                 if (cardPrefab != null)
                 {
-                    // ÁøÂ¥ Ä«µå ¸ğ¾ç: ±İ»ö ¼±ÅÃ Å×µÎ¸® + Ä«µå ÇÁ¸®ÆÕ
+                    // ì§„ì§œ ì¹´ë“œ ëª¨ì–‘: ê¸ˆìƒ‰ ì„ íƒ í…Œë‘ë¦¬ + ì¹´ë“œ í”„ë¦¬íŒ¹
                     cardImage = CreateImage("Card", window.transform, Gold);
                     cardImage.rectTransform.sizeDelta = new Vector2(162, 216);
                     cardImage.rectTransform.anchoredPosition = new Vector2(x, cardY + 10);
@@ -92,15 +92,15 @@ public static class BattleRewardPopup
                     if (ui != null)
                     {
                         ui.SetupCard(card);
-                        ui.enabled = false;   // º¸»ó Ã¢¿¡¼­´Â ²ø±â, È®´ë ¹Ì¸®º¸±â¸¦ ²ö´Ù
+                        ui.enabled = false;   // ë³´ìƒ ì°½ì—ì„œëŠ” ëŒê¸°, í™•ëŒ€ ë¯¸ë¦¬ë³´ê¸°ë¥¼ ëˆë‹¤
                     }
                     CanvasGroup group = cardObj.GetComponent<CanvasGroup>();
                     if (group == null) group = cardObj.AddComponent<CanvasGroup>();
-                    group.blocksRaycasts = false;   // Å¬¸¯Àº ¹Ù±ùÀÇ ±İ»ö Å×µÎ¸® ¹öÆ°ÀÌ ¹Ş´Â´Ù
+                    group.blocksRaycasts = false;   // í´ë¦­ì€ ë°”ê¹¥ì˜ ê¸ˆìƒ‰ í…Œë‘ë¦¬ ë²„íŠ¼ì´ ë°›ëŠ”ë‹¤
                     LayoutElement layout = cardObj.GetComponent<LayoutElement>();
                     if (layout != null) layout.ignoreLayout = true;
 
-                    cardImage.color = new Color(Gold.r, Gold.g, Gold.b, 0f);   // ¼±ÅÃ Àü¿¡´Â Å×µÎ¸® ¼û±è
+                    cardImage.color = new Color(Gold.r, Gold.g, Gold.b, 0f);   // ì„ íƒ ì „ì—ëŠ” í…Œë‘ë¦¬ ìˆ¨ê¹€
                 }
                 else
                 {
@@ -120,8 +120,9 @@ public static class BattleRewardPopup
                 int index = i;
                 cardButton.onClick.AddListener(() =>
                 {
-                    // °°Àº Ä«µå¸¦ ´Ù½Ã ´©¸£¸é ¼±ÅÃ Ãë¼Ò
+                    // ê°™ì€ ì¹´ë“œë¥¼ ë‹¤ì‹œ ëˆ„ë¥´ë©´ ì„ íƒ ì·¨ì†Œ
                     selected = (selected == card) ? null : card;
+                    SoundManager.Play(selected != null ? "card_place" : "click");
                     for (int k = 0; k < highlights.Count; k++)
                     {
                         bool on = selected != null && k == index;
@@ -137,14 +138,15 @@ public static class BattleRewardPopup
             }
         }
 
-        // 5. È®ÀÎ ¹öÆ°
+        // 5. í™•ì¸ ë²„íŠ¼
         Image confirmImage = CreateImage("ConfirmButton", window.transform, Red);
         confirmImage.rectTransform.sizeDelta = new Vector2(240, 66);
         confirmImage.rectTransform.anchoredPosition = new Vector2(0, -top + 60);
-        CreateText("Label", confirmImage.transform, font, "È®ÀÎ", 30, FontStyle.Bold, Color.white, Vector2.zero, new Vector2(240, 66));
+        CreateText("Label", confirmImage.transform, font, "í™•ì¸", 30, FontStyle.Bold, Color.white, Vector2.zero, new Vector2(240, 66));
         Button confirmButton = confirmImage.gameObject.AddComponent<Button>();
         confirmButton.onClick.AddListener(() =>
         {
+            SoundManager.Play("click");
             UnityEngine.Object.Destroy(canvasGO);
             onConfirm?.Invoke(selected);
         });

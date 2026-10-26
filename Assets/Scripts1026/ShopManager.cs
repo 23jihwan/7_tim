@@ -42,6 +42,7 @@ public class ShopManager : MonoBehaviour
     {
         selectedItem = clickedItem;
         selectedSlot = slot;
+        SoundManager.Play("page");
 
         // 팝업 UI에 데이터 반영
         if (popupItemIcon != null) popupItemIcon.sprite = clickedItem.itemIcon;
@@ -70,13 +71,14 @@ public class ShopManager : MonoBehaviour
         if (selectedItem == null) return;
 
         // 살 수 없는 경우는 골드를 내기 전에 먼저 막는다
-        if (!CanReceive(selectedItem)) return;
+        if (!CanReceive(selectedItem)) { SoundManager.Play("error"); return; }
 
         bool success = GoldManager.Instance.UseGold(selectedItem.itemPrice);
 
         if (success)
         {
             Debug.Log($"{selectedItem.itemName} 구매 성공!");
+            SoundManager.Play("coin");
             GiveItem(selectedItem);                               // 산 물건 지급 (덱, 유물, 체력)
             if (selectedSlot != null) selectedSlot.MarkSold();    // 판매 완료 표시
             UpdateShopGoldUI();
@@ -87,6 +89,7 @@ public class ShopManager : MonoBehaviour
         else
         {
             // 재화 부족 경고 띄우기
+            SoundManager.Play("error");
             ShowNotEnoughGoldWarning();
         }
     }

@@ -31,6 +31,7 @@ public class DoorOpenEffect : MonoBehaviour
 
     private float timer;
     private float shown;      // 화면에 보이는 진행도 (부드럽게 따라간다)
+    private bool doorSoundPlayed;
 
     private void Start()
     {
@@ -64,6 +65,7 @@ public class DoorOpenEffect : MonoBehaviour
 
         // 2. 문: openStart 이후 양쪽으로 열린다 (경첩 쪽으로 납작해지며 회전하는 느낌)
         float open = Smooth(Mathf.InverseLerp(openStart, 0.9f, p));
+        if (open > 0.01f && !doorSoundPlayed) { doorSoundPlayed = true; SoundManager.Play("door"); }
         float sx = Mathf.Lerp(1f, 0.08f, open);
         if (leftDoor != null) leftDoor.localScale = new Vector3(sx, 1f, 1f);
         if (rightDoor != null) rightDoor.localScale = new Vector3(sx, 1f, 1f);

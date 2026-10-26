@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// ¸Ê¿¡¼­ ÀÌº¥Æ® ³ëµå¿¡ µé¾î°¡¸é ÀÌ¾ß±â¿Í ¼±ÅÃÁö¸¦ º¸¿©ÁÖ°í, °í¸¥ °á°ú¸¦ RunState¿¡ Àû¿ëÇÑ´Ù
-// ¸Ê ¾ÀÀÇ ºó ¿ÀºêÁ§Æ®¿¡ ºÙÀÌ°í ÀÌº¥Æ® ¸ñ·Ï°ú º¸»ó ÈÄº¸¸¦ Ã¤¿ö µÎ¸é µÈ´Ù (È­¸éÀº ÄÚµå°¡ ¸¸µç´Ù)
+// ë§µì—ì„œ ì´ë²¤íŠ¸ ë…¸ë“œì— ë“¤ì–´ê°€ë©´ ì´ì•¼ê¸°ì™€ ì„ íƒì§€ë¥¼ ë³´ì—¬ì£¼ê³ , ê³ ë¥¸ ê²°ê³¼ë¥¼ RunStateì— ì ìš©í•œë‹¤
+// ë§µ ì”¬ì˜ ë¹ˆ ì˜¤ë¸Œì íŠ¸ì— ë¶™ì´ê³  ì´ë²¤íŠ¸ ëª©ë¡ê³¼ ë³´ìƒ í›„ë³´ë¥¼ ì±„ì›Œ ë‘ë©´ ëœë‹¤ (í™”ë©´ì€ ì½”ë“œê°€ ë§Œë“ ë‹¤)
 public class EventPopup : MonoBehaviour
 {
-    [Header("ÀÌº¥Æ® ¸ñ·Ï (ÀÌ Áß ÇÏ³ª°¡ ¹«ÀÛÀ§·Î ³ª¿Â´Ù)")]
+    [Header("ì´ë²¤íŠ¸ ëª©ë¡ (ì´ ì¤‘ í•˜ë‚˜ê°€ ë¬´ìž‘ìœ„ë¡œ ë‚˜ì˜¨ë‹¤)")]
     public EventData[] events;
 
-    [Header("º¸»ó ÈÄº¸")]
+    [Header("ë³´ìƒ í›„ë³´")]
     public RelicData[] relicPool;
     public CardData[] cardPool;
-    [Tooltip("º¸»ó Ä«µå¸¦ ÁøÂ¥ Ä«µå ¸ð¾çÀ¸·Î º¸¿©ÁÙ Ä«µå ÇÁ¸®ÆÕ (Prefab Æú´õÀÇ CardPrefab)")]
+    [Tooltip("ë³´ìƒ ì¹´ë“œë¥¼ ì§„ì§œ ì¹´ë“œ ëª¨ì–‘ìœ¼ë¡œ ë³´ì—¬ì¤„ ì¹´ë“œ í”„ë¦¬íŒ¹ (Prefab í´ë”ì˜ CardPrefab)")]
     public GameObject cardPrefab;
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
@@ -38,17 +38,17 @@ public class EventPopup : MonoBehaviour
         root.SetActive(false);
     }
 
-    // ---------------- ¿­±â ----------------
+    // ---------------- ì—´ê¸° ----------------
 
     public void Open()
     {
         if (events == null || events.Length == 0)
         {
-            Debug.LogWarning("EventPopup: ÀÌº¥Æ® ¸ñ·ÏÀÌ ºñ¾î ÀÖ¾î¿ä.");
+            Debug.LogWarning("EventPopup: ì´ë²¤íŠ¸ ëª©ë¡ì´ ë¹„ì–´ ìžˆì–´ìš”.");
             return;
         }
 
-        // ¹Ù·Î Àü°ú °°Àº ÀÌº¥Æ®´Â °¡´ÉÇÏ¸é ÇÇÇÑ´Ù
+        // ë°”ë¡œ ì „ê³¼ ê°™ì€ ì´ë²¤íŠ¸ëŠ” ê°€ëŠ¥í•˜ë©´ í”¼í•œë‹¤
         current = events[Random.Range(0, events.Length)];
         if (events.Length > 1)
             for (int tries = 0; tries < 5 && current == last; tries++) current = events[Random.Range(0, events.Length)];
@@ -76,9 +76,10 @@ public class EventPopup : MonoBehaviour
         }
 
         root.SetActive(true);
+        SoundManager.Play("page");
     }
 
-    // ±×¸²ÀÌ ¾øÀ¸¸é Ã¢À» ÁÙÀÌ°í ±ÛÀÚ¸¦ À§·Î ¿Ã·Á¼­ ºó °ø°£ÀÌ »ý±âÁö ¾Ê°Ô ÇÑ´Ù
+    // ê·¸ë¦¼ì´ ì—†ìœ¼ë©´ ì°½ì„ ì¤„ì´ê³  ê¸€ìžë¥¼ ìœ„ë¡œ ì˜¬ë ¤ì„œ ë¹ˆ ê³µê°„ì´ ìƒê¸°ì§€ ì•Šê²Œ í•œë‹¤
     private void Layout(bool hasImage)
     {
         float shift = hasImage ? 0f : 120f;
@@ -92,16 +93,17 @@ public class EventPopup : MonoBehaviour
     private string Label(EventChoice c, bool canAfford)
     {
         string cost = "";
-        if (c.goldCost > 0) cost += $"  (°ñµå -{c.goldCost})";
-        if (c.hpCost > 0) cost += $"  (Ã¼·Â -{c.hpCost})";
-        if (!canAfford) cost += "  - ºÎÁ·";
+        if (c.goldCost > 0) cost += $"  (ê³¨ë“œ -{c.goldCost})";
+        if (c.hpCost > 0) cost += $"  (ì²´ë ¥ -{c.hpCost})";
+        if (!canAfford) cost += "  - ë¶€ì¡±";
         return c.text + cost;
     }
 
-    // ---------------- ¼±ÅÃ ----------------
+    // ---------------- ì„ íƒ ----------------
 
     private void Choose(int index)
     {
+        SoundManager.Play("click");
         root.SetActive(false);
         EventChoice c = current.choices[index];
         RunState run = RunState.GetOrCreate();
@@ -110,36 +112,36 @@ public class EventPopup : MonoBehaviour
 
         if (!string.IsNullOrEmpty(c.resultText)) lines.Add(c.resultText);
 
-        // ´ë°¡ Ä¡¸£±â (ÀÌº¥Æ®·Î´Â Á×Áö ¾Ê°Ô Ã¼·ÂÀº ÃÖ¼Ò 1)
-        if (c.goldCost > 0) { run.gold -= c.goldCost; lines.Add($"°ñµå -{c.goldCost}"); }
-        if (c.hpCost > 0) { run.playerHP = Mathf.Max(1, run.playerHP - c.hpCost); lines.Add($"Ã¼·Â -{c.hpCost}"); }
+        // ëŒ€ê°€ ì¹˜ë¥´ê¸° (ì´ë²¤íŠ¸ë¡œëŠ” ì£½ì§€ ì•Šê²Œ ì²´ë ¥ì€ ìµœì†Œ 1)
+        if (c.goldCost > 0) { run.gold -= c.goldCost; lines.Add($"ê³¨ë“œ -{c.goldCost}"); }
+        if (c.hpCost > 0) { run.playerHP = Mathf.Max(1, run.playerHP - c.hpCost); lines.Add($"ì²´ë ¥ -{c.hpCost}"); }
 
-        // ÇÔÁ¤
+        // í•¨ì •
         if (c.trapChance > 0f && Random.value < c.trapChance)
         {
             run.playerHP = Mathf.Max(1, run.playerHP - c.trapHpLoss);
-            lines.Add($"ÇÔÁ¤ÀÌ´Ù! Ã¼·Â -{c.trapHpLoss}");
+            lines.Add($"í•¨ì •ì´ë‹¤! ì²´ë ¥ -{c.trapHpLoss}");
         }
 
-        // º¸»ó
+        // ë³´ìƒ
         switch (c.reward)
         {
             case EventRewardType.Gold:
                 int gold = Random.Range(c.goldMin, c.goldMax + 1);
                 run.gold += gold;
-                lines.Add($"°ñµå +{gold}");
+                lines.Add($"ê³¨ë“œ +{gold}");
                 break;
 
             case EventRewardType.Relic:
                 RelicData relic = c.relic != null ? c.relic : PickRelic(run);
                 if (relic != null && run.AddRelic(relic))
                 {
-                    lines.Add($"À¯¹° È¹µæ: {relic.relicName}");
+                    lines.Add($"ìœ ë¬¼ íšë“: {relic.relicName}");
                 }
                 else
                 {
                     run.gold += 30;
-                    lines.Add("´õ ¾òÀ» À¯¹°ÀÌ ¾ø¾î ´ë½Å °ñµå +30");
+                    lines.Add("ë” ì–»ì„ ìœ ë¬¼ì´ ì—†ì–´ ëŒ€ì‹  ê³¨ë“œ +30");
                 }
                 break;
 
@@ -148,14 +150,14 @@ public class EventPopup : MonoBehaviour
                 break;
 
             case EventRewardType.Item:
-                lines.Add("1È¸¿ë ¾ÆÀÌÅÛ (ÁØºñ Áß)");
+                lines.Add("1íšŒìš© ì•„ì´í…œ (ì¤€ë¹„ ì¤‘)");
                 break;
         }
 
-        lines.Add($"Ã¼·Â {run.playerHP} / {run.playerMaxHP}   ¡¤   °ñµå {run.gold}");
-        Debug.Log($"[ÀÌº¥Æ®] {current.title} ¡æ {c.text}");
+        lines.Add($"ì²´ë ¥ {run.playerHP} / {run.playerMaxHP}   Â·   ê³¨ë“œ {run.gold}");
+        Debug.Log($"[ì´ë²¤íŠ¸] {current.title} â†’ {c.text}");
 
-        // °á°ú´Â ÀüÅõ º¸»ó Ã¢°ú °°Àº ¸ð¾çÀ¸·Î º¸¿©ÁØ´Ù (Ä«µå º¸»óÀÌ¸é 3Àå Áß °í¸£±â)
+        // ê²°ê³¼ëŠ” ì „íˆ¬ ë³´ìƒ ì°½ê³¼ ê°™ì€ ëª¨ì–‘ìœ¼ë¡œ ë³´ì—¬ì¤€ë‹¤ (ì¹´ë“œ ë³´ìƒì´ë©´ 3ìž¥ ì¤‘ ê³ ë¥´ê¸°)
         BattleRewardPopup.Show(current.title, lines, cards, picked =>
         {
             if (picked != null)
@@ -188,7 +190,7 @@ public class EventPopup : MonoBehaviour
         return result;
     }
 
-    // ---------------- È­¸é ¸¸µé±â ----------------
+    // ---------------- í™”ë©´ ë§Œë“¤ê¸° ----------------
 
     private void BuildUI()
     {

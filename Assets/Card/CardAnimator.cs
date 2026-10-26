@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Ä«µå ¾Ö´Ï¸ŞÀÌ¼Ç ¸ğÀ½ (»Ì±â, ³õ±â, »ç¿ë, ÇÇ°İ, ¸¶¿ì½º ¿Ã¸®±â)
-// ¼ÕÆĞ¿Í ½½·ÔÀº Layout GroupÀÌ À§Ä¡¸¦ Á¤ÇÏ±â ¶§¹®¿¡, ÁøÂ¥ Ä«µå¸¦ Á÷Á¢ ¿òÁ÷ÀÌÁö ¾Ê°í
-// "º¹»çº»(ghost)"À» ³¯·Á º¸³½ µÚ µµÂøÇÏ¸é ÁøÂ¥ Ä«µå¸¦ º¸¿©ÁÖ´Â ¹æ½ÄÀ» ¾´´Ù
+// ì¹´ë“œ ì• ë‹ˆë©”ì´ì…˜ ëª¨ìŒ (ë½‘ê¸°, ë†“ê¸°, ì‚¬ìš©, í”¼ê²©, ë§ˆìš°ìŠ¤ ì˜¬ë¦¬ê¸°)
+// ì†íŒ¨ì™€ ìŠ¬ë¡¯ì€ Layout Groupì´ ìœ„ì¹˜ë¥¼ ì •í•˜ê¸° ë•Œë¬¸ì—, ì§„ì§œ ì¹´ë“œë¥¼ ì§ì ‘ ì›€ì§ì´ì§€ ì•Šê³ 
+// "ë³µì‚¬ë³¸(ghost)"ì„ ë‚ ë ¤ ë³´ë‚¸ ë’¤ ë„ì°©í•˜ë©´ ì§„ì§œ ì¹´ë“œë¥¼ ë³´ì—¬ì£¼ëŠ” ë°©ì‹ì„ ì“´ë‹¤
 public static class CardAnimator
 {
     private static CardAnimRunner runner;
     private static readonly Dictionary<CardUI, float> hoverBaseY = new Dictionary<CardUI, float>();
     private static readonly Dictionary<CardUI, Coroutine> hoverRoutines = new Dictionary<CardUI, Coroutine>();
 
-    // ---------------- 1. Ä«µå »Ì±â ----------------
-    // È­¸é ¿ŞÂÊ ¾Æ·¡¿¡¼­ ¼ÕÆĞ ÀÚ¸®·Î ³¯¾Æ¿Â´Ù
+    // ---------------- 1. ì¹´ë“œ ë½‘ê¸° ----------------
+    // í™”ë©´ ì™¼ìª½ ì•„ë˜ì—ì„œ ì†íŒ¨ ìë¦¬ë¡œ ë‚ ì•„ì˜¨ë‹¤
 
     public static void PlayDraw(CardUI card, float delay)
     {
@@ -26,10 +26,11 @@ public static class CardAnimator
         group.alpha = 0f;
         group.blocksRaycasts = false;
 
-        yield return null;                                   // ¼ÕÆĞ Á¤·ÄÀÌ ³¡³¯ ¶§±îÁö ÇÑ ÇÁ·¹ÀÓ ±â´Ù¸²
+        yield return null;                                   // ì†íŒ¨ ì •ë ¬ì´ ëë‚  ë•Œê¹Œì§€ í•œ í”„ë ˆì„ ê¸°ë‹¤ë¦¼
         if (delay > 0f) yield return new WaitForSeconds(delay);
         if (card == null) yield break;
         Canvas.ForceUpdateCanvases();
+        SoundManager.Play("card_draw");
 
         RectTransform root = RootCanvas(card);
         GameObject ghost = MakeGhost(card, root);
@@ -57,8 +58,8 @@ public static class CardAnimator
         }
     }
 
-    // ---------------- 2. ³õ±â / ¼ÕÆĞ·Î µ¹¾Æ°¡±â ----------------
-    // ³õÀº ÀÚ¸®¿¡¼­ ÃÖÁ¾ ÀÚ¸®·Î ºÎµå·´°Ô ¹Ì²ô·¯Áö°í, ½½·Ô¿¡ µé¾î°¡¸é 'Å¹' Æ¨±ä´Ù
+    // ---------------- 2. ë†“ê¸° / ì†íŒ¨ë¡œ ëŒì•„ê°€ê¸° ----------------
+    // ë†“ì€ ìë¦¬ì—ì„œ ìµœì¢… ìë¦¬ë¡œ ë¶€ë“œëŸ½ê²Œ ë¯¸ë„ëŸ¬ì§€ê³ , ìŠ¬ë¡¯ì— ë“¤ì–´ê°€ë©´ 'íƒ' íŠ•ê¸´ë‹¤
 
     public static void PlaySettle(CardUI card, Vector3 fromWorld, bool punch)
     {
@@ -67,6 +68,7 @@ public static class CardAnimator
 
     private static IEnumerator SettleRoutine(CardUI card, Vector3 fromWorld, bool punch)
     {
+        SoundManager.Play(punch ? "card_place" : "card_hover");
         CanvasGroup group = GroupOf(card);
         group.alpha = 0f;
 
@@ -106,14 +108,15 @@ public static class CardAnimator
         }
     }
 
-    // ---------------- 3. Ä«µå »ç¿ë ----------------
-    // Ä«µå°¡ ¸ñÇ¥(¸ó½ºÅÍ ¶Ç´Â ÇÃ·¹ÀÌ¾î Ã¼·Â)·Î ³¯¾Æ°¡¸ç ÀÛ¾ÆÁö°í »ç¶óÁø´Ù
-    // AttackManager¿¡¼­ yield return StartCoroutine(CardAnimator.UseCard(...)) ·Î ¾´´Ù
+    // ---------------- 3. ì¹´ë“œ ì‚¬ìš© ----------------
+    // ì¹´ë“œê°€ ëª©í‘œ(ëª¬ìŠ¤í„° ë˜ëŠ” í”Œë ˆì´ì–´ ì²´ë ¥)ë¡œ ë‚ ì•„ê°€ë©° ì‘ì•„ì§€ê³  ì‚¬ë¼ì§„ë‹¤
+    // AttackManagerì—ì„œ yield return StartCoroutine(CardAnimator.UseCard(...)) ë¡œ ì“´ë‹¤
 
     public static IEnumerator UseCard(CardUI card, RectTransform target, Color glow)
     {
         if (card == null) yield break;
         CardHoverPreview.Hide(card);
+        SoundManager.Play("card_use");
 
         RectTransform root = RootCanvas(card);
         GameObject ghost = MakeGhost(card, root);
@@ -129,7 +132,7 @@ public static class CardAnimator
         Vector3 start = g.position;
         Vector3 end = target != null ? target.position : start + root.up * 300f * root.lossyScale.y;
 
-        // »ìÂ¦ Ä¿Áö¸é¼­ ºû³ª±â
+        // ì‚´ì§ ì»¤ì§€ë©´ì„œ ë¹›ë‚˜ê¸°
         const float charge = 0.12f;
         for (float t = 0f; t < charge; t += Time.deltaTime)
         {
@@ -137,7 +140,7 @@ public static class CardAnimator
             yield return null;
         }
 
-        // ¸ñÇ¥·Î ³¯¾Æ°¡±â
+        // ëª©í‘œë¡œ ë‚ ì•„ê°€ê¸°
         const float fly = 0.25f;
         for (float t = 0f; t < fly; t += Time.deltaTime)
         {
@@ -152,11 +155,13 @@ public static class CardAnimator
         Object.Destroy(ghost);
     }
 
-    // ---------------- 4. ÇÇ°İ ----------------
-    // ´ë»óÀÌ ÁÂ¿ì·Î Èçµé¸®°í »öÀÌ ¹øÂ½ÀÎ´Ù
+    // ---------------- 4. í”¼ê²© ----------------
+    // ëŒ€ìƒì´ ì¢Œìš°ë¡œ í”ë“¤ë¦¬ê³  ìƒ‰ì´ ë²ˆì©ì¸ë‹¤
 
     public static void Hit(RectTransform target, Color flash)
     {
+        // íŒŒë€ ë¹›ì´ë©´ ë””ë²„í”„, ë‚˜ë¨¸ì§€ëŠ” íƒ€ê²© ì†Œë¦¬
+        SoundManager.Play(flash.b > flash.r ? "debuff" : "hit");
         if (target != null) Run(HitRoutine(target, flash));
     }
 
@@ -181,9 +186,10 @@ public static class CardAnimator
         if (graphic != null) graphic.color = baseColor;
     }
 
-    // Ã¼·Â ±ÛÀÚ µîÀ» Àá±ñ Å©°Ô Çß´Ù°¡ µ¹·Á³õ´Â´Ù (È¸º¹ÇÒ ¶§)
+    // ì²´ë ¥ ê¸€ì ë“±ì„ ì ê¹ í¬ê²Œ í–ˆë‹¤ê°€ ëŒë ¤ë†“ëŠ”ë‹¤ (íšŒë³µí•  ë•Œ)
     public static void Pulse(RectTransform target, Color flash)
     {
+        SoundManager.Play("heal");
         if (target != null) Run(PulseRoutine(target, flash));
     }
 
@@ -205,25 +211,26 @@ public static class CardAnimator
         if (graphic != null) graphic.color = baseColor;
     }
 
-    // ---------------- 5. ¸¶¿ì½º ¿Ã¸®¸é ¶°¿À¸£±â (¼ÕÆĞ¿¡¼­¸¸) ----------------
+    // ---------------- 5. ë§ˆìš°ìŠ¤ ì˜¬ë¦¬ë©´ ë– ì˜¤ë¥´ê¸° (ì†íŒ¨ì—ì„œë§Œ) ----------------
 
     public static void SetHover(CardUI card, bool on)
     {
         if (card == null || card.transform.parent == null) return;
-        if (card.transform.parent.GetComponent<HandPanelZone>() == null) return;   // ¼ÕÆĞ¿¡ ÀÖÀ» ¶§¸¸
+        if (card.transform.parent.GetComponent<HandPanelZone>() == null) return;   // ì†íŒ¨ì— ìˆì„ ë•Œë§Œ
 
         RectTransform rt = (RectTransform)card.transform;
         if (on && !hoverBaseY.ContainsKey(card)) hoverBaseY[card] = rt.anchoredPosition.y;
         if (!hoverBaseY.TryGetValue(card, out float baseY)) return;
 
         float targetY = on ? baseY + 26f : baseY;
+        if (on) SoundManager.Play("card_hover");
         if (!on) hoverBaseY.Remove(card);
 
         if (hoverRoutines.TryGetValue(card, out Coroutine running) && running != null) Runner.StopCoroutine(running);
         hoverRoutines[card] = Runner.StartCoroutine(RiseRoutine(rt, targetY));
     }
 
-    // Ä«µå¸¦ Àâ±â ½ÃÀÛÇÒ ¶§ ¶°¿À¸£±â »óÅÂ¸¦ Áö¿î´Ù
+    // ì¹´ë“œë¥¼ ì¡ê¸° ì‹œì‘í•  ë•Œ ë– ì˜¤ë¥´ê¸° ìƒíƒœë¥¼ ì§€ìš´ë‹¤
     public static void ClearHover(CardUI card)
     {
         if (hoverRoutines.TryGetValue(card, out Coroutine running) && running != null) Runner.StopCoroutine(running);
@@ -249,7 +256,7 @@ public static class CardAnimator
         rt.anchoredPosition = end;
     }
 
-    // ---------------- µµ¿ì¹Ì ----------------
+    // ---------------- ë„ìš°ë¯¸ ----------------
 
     private static CardAnimRunner Runner
     {
@@ -283,7 +290,7 @@ public static class CardAnimator
         return (RectTransform)canvas.rootCanvas.transform;
     }
 
-    // º¸±â¸¸ ÇÏ´Â Ä«µå º¹»çº» ¸¸µé±â
+    // ë³´ê¸°ë§Œ í•˜ëŠ” ì¹´ë“œ ë³µì‚¬ë³¸ ë§Œë“¤ê¸°
     private static GameObject MakeGhost(CardUI card, RectTransform root)
     {
         RectTransform src = (RectTransform)card.transform;
@@ -314,5 +321,5 @@ public static class CardAnimator
     private static float EaseIn(float x) { x = Mathf.Clamp01(x); return x * x; }
 }
 
-// ÄÚ·çÆ¾À» ´ë½Å µ¹·Á ÁÖ´Â ºó ¿ÀºêÁ§Æ® (ÀÚµ¿À¸·Î ¸¸µé¾îÁø´Ù)
+// ì½”ë£¨í‹´ì„ ëŒ€ì‹  ëŒë ¤ ì£¼ëŠ” ë¹ˆ ì˜¤ë¸Œì íŠ¸ (ìë™ìœ¼ë¡œ ë§Œë“¤ì–´ì§„ë‹¤)
 public class CardAnimRunner : MonoBehaviour { }

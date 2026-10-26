@@ -4,25 +4,25 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-// ¸ğµç ¾ÀÀÇ ¿À¸¥ÂÊ À§¿¡ Åé´Ï¹ÙÄû ¹öÆ°À» ¶ç¿ì°í, ´©¸£°Å³ª ESC¸¦ ´©¸£¸é ¼³Á¤Ã¢À» ¿¬´Ù
-// °ÔÀÓÀÌ ½ÃÀÛµÇ¸é ÀÚµ¿À¸·Î ¸¸µé¾îÁö¹Ç·Î ¾À¿¡ Á÷Á¢ ³õÀ» ÇÊ¿ä´Â ¾ø´Ù
+// ëª¨ë“  ì”¬ì˜ ì˜¤ë¥¸ìª½ ìœ„ì— í†±ë‹ˆë°”í€´ ë²„íŠ¼ì„ ë„ìš°ê³ , ëˆ„ë¥´ê±°ë‚˜ ESCë¥¼ ëˆ„ë¥´ë©´ ì„¤ì •ì°½ì„ ì—°ë‹¤
+// ê²Œì„ì´ ì‹œì‘ë˜ë©´ ìë™ìœ¼ë¡œ ë§Œë“¤ì–´ì§€ë¯€ë¡œ ì”¬ì— ì§ì ‘ ë†“ì„ í•„ìš”ëŠ” ì—†ë‹¤
 public class SettingsMenu : MonoBehaviour
 {
     public static SettingsMenu Instance { get; private set; }
 
-    // ¼Ò¸® Å©±â°¡ ¹Ù²î¸é ¾Ë·ÁÁØ´Ù (0 = ÀüÃ¼, 1 = ¹è°æÀ½, 2 = È¿°úÀ½ / °ªÀº 0~1)
-    // SoundManager°¡ ÀÌ°É µè°í ½ÇÁ¦ ¼Ò¸® Å©±â¸¦ ¹Ù²Û´Ù
+    // ì†Œë¦¬ í¬ê¸°ê°€ ë°”ë€Œë©´ ì•Œë ¤ì¤€ë‹¤ (0 = ì „ì²´, 1 = ë°°ê²½ìŒ, 2 = íš¨ê³¼ìŒ / ê°’ì€ 0~1)
+    // SoundManagerê°€ ì´ê±¸ ë“£ê³  ì‹¤ì œ ì†Œë¦¬ í¬ê¸°ë¥¼ ë°”ê¾¼ë‹¤
     public static event Action<int, float> VolumeChanged;
 
-    [Tooltip("Åé´Ï¹ÙÄû¸¦ ¼û±æ ¾À (·Îµù È­¸é µî)")]
+    [Tooltip("í†±ë‹ˆë°”í€´ë¥¼ ìˆ¨ê¸¸ ì”¬ (ë¡œë”© í™”ë©´ ë“±)")]
     public string[] hiddenInScenes = { "StartLoding", "MapLoding" };
-    [Tooltip("¸ŞÀÎ È­¸é ¾À ÀÌ¸§")]
+    [Tooltip("ë©”ì¸ í™”ë©´ ì”¬ ì´ë¦„")]
     public string mainSceneName = "Main";
 
-    // ÀúÀå ÀÌ¸§ (SoundManager¿Í °°Àº ÀÌ¸§À» ¾´´Ù)
+    // ì €ì¥ ì´ë¦„ (SoundManagerì™€ ê°™ì€ ì´ë¦„ì„ ì“´ë‹¤)
     public static readonly string[] VolumeKeys = { "vol_master", "vol_bgm", "vol_sfx" };
     public static readonly float[] VolumeDefaults = { 0.8f, 0.6f, 0.7f };
-    private static readonly string[] VolumeLabels = { "ÀüÃ¼ À½·®", "¹è°æÀ½", "È¿°úÀ½" };
+    private static readonly string[] VolumeLabels = { "ì „ì²´ ìŒëŸ‰", "ë°°ê²½ìŒ", "íš¨ê³¼ìŒ" };
     private static readonly Vector2Int[] Resolutions = { new Vector2Int(1920, 1080), new Vector2Int(1600, 900), new Vector2Int(1280, 720) };
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
@@ -37,15 +37,15 @@ public class SettingsMenu : MonoBehaviour
     private GameObject panel;
     private bool isOpen;
 
-    // ¼Ò¸® ¸·´ë
+    // ì†Œë¦¬ ë§‰ëŒ€
     private readonly RectTransform[] volumeFills = new RectTransform[3];
     private readonly RectTransform[] volumeKnobs = new RectTransform[3];
     private readonly Text[] volumeTexts = new Text[3];
-    private readonly float[] pendingVolumes = new float[3];   // ÀúÀåÇÏ±â Àü, Áö±İ Á¶Àı ÁßÀÎ °ª
-    private bool volumeDirty;                                 // ÀúÀåÇÏÁö ¾ÊÀº º¯°æÀÌ ÀÖ´ÂÁö
+    private readonly float[] pendingVolumes = new float[3];   // ì €ì¥í•˜ê¸° ì „, ì§€ê¸ˆ ì¡°ì ˆ ì¤‘ì¸ ê°’
+    private bool volumeDirty;                                 // ì €ì¥í•˜ì§€ ì•Šì€ ë³€ê²½ì´ ìˆëŠ”ì§€
     private Text statusText;
 
-    // È­¸é ¸ğµå, ÇØ»óµµ
+    // í™”ë©´ ëª¨ë“œ, í•´ìƒë„
     private readonly Image[] modeButtons = new Image[2];
     private readonly Text[] modeTexts = new Text[2];
     private Text resolutionText;
@@ -88,7 +88,7 @@ public class SettingsMenu : MonoBehaviour
     {
         gearButton.SetActive(Array.IndexOf(hiddenInScenes, sceneName) < 0);
 
-        // ¸ŞÀÎ È­¸é¿¡¼­´Â "¸ŞÀÎ È­¸éÀ¸·Î" ¹öÆ°À» Èå¸®°Ô
+        // ë©”ì¸ í™”ë©´ì—ì„œëŠ” "ë©”ì¸ í™”ë©´ìœ¼ë¡œ" ë²„íŠ¼ì„ íë¦¬ê²Œ
         bool inMain = sceneName == mainSceneName;
         mainButton.interactable = !inMain;
         mainButton.GetComponent<Image>().color = inMain ? new Color(Brown.r, Brown.g, Brown.b, 0.35f) : Brown;
@@ -102,22 +102,23 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    // ---------------- ¿­±â / ´İ±â ----------------
+    // ---------------- ì—´ê¸° / ë‹«ê¸° ----------------
 
     public void Open()
     {
         isOpen = true;
-        for (int i = 0; i < 3; i++) pendingVolumes[i] = GetVolume(i);   // ÀúÀåµÈ °ª¿¡¼­ ½ÃÀÛ
+        SoundManager.Play("page");
+        for (int i = 0; i < 3; i++) pendingVolumes[i] = GetVolume(i);   // ì €ì¥ëœ ê°’ì—ì„œ ì‹œì‘
         volumeDirty = false;
         SetStatus("", Brown);
         RefreshAll();
         panel.SetActive(true);
-        Time.timeScale = 0f;           // ¼³Á¤Ã¢ÀÌ ¿­¸° µ¿¾È °ÔÀÓÀ» ¸ØÃá´Ù
+        Time.timeScale = 0f;           // ì„¤ì •ì°½ì´ ì—´ë¦° ë™ì•ˆ ê²Œì„ì„ ë©ˆì¶˜ë‹¤
     }
 
     public void Close()
     {
-        // ÀúÀåÇÏÁö ¾Ê°í ´İÀ¸¸é ÀúÀåµÈ ¼Ò¸® Å©±â·Î µÇµ¹¸°´Ù
+        // ì €ì¥í•˜ì§€ ì•Šê³  ë‹«ìœ¼ë©´ ì €ì¥ëœ ì†Œë¦¬ í¬ê¸°ë¡œ ë˜ëŒë¦°ë‹¤
         if (volumeDirty)
         {
             for (int i = 0; i < 3; i++)
@@ -133,26 +134,26 @@ public class SettingsMenu : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    // ---------------- ¼Ò¸® ----------------
+    // ---------------- ì†Œë¦¬ ----------------
 
     public static float GetVolume(int channel)
     {
         return PlayerPrefs.GetFloat(VolumeKeys[channel], VolumeDefaults[channel]);
     }
 
-    // - + ¹öÆ°: 10%¾¿
+    // - + ë²„íŠ¼: 10%ì”©
     private void ChangeVolume(int channel, float delta)
     {
         SetPendingVolume(channel, Mathf.Round((pendingVolumes[channel] + delta) * 10f) / 10f);
     }
 
-    // ¸·´ë¸¦ ²ø°Å³ª ´­·¶À» ¶§, ±×¸®°í - + ¹öÆ°: ¹Ì¸® µé·ÁÁÖ±â¸¸ ÇÏ°í ¾ÆÁ÷ ÀúÀåÇÏÁö ¾Ê´Â´Ù
+    // ë§‰ëŒ€ë¥¼ ëŒê±°ë‚˜ ëˆŒë €ì„ ë•Œ, ê·¸ë¦¬ê³  - + ë²„íŠ¼: ë¯¸ë¦¬ ë“¤ë ¤ì£¼ê¸°ë§Œ í•˜ê³  ì•„ì§ ì €ì¥í•˜ì§€ ì•ŠëŠ”ë‹¤
     private void SetPendingVolume(int channel, float value)
     {
         pendingVolumes[channel] = Mathf.Clamp01(Mathf.Round(value * 100f) / 100f);
         VolumeChanged?.Invoke(channel, pendingVolumes[channel]);
         volumeDirty = true;
-        SetStatus("ÀúÀåÇÏÁö ¾ÊÀ¸¸é Ã¢À» ´İÀ» ¶§ ÀÌÀü ¼Ò¸®·Î µ¹¾Æ°¡¿ä", Red);
+        SetStatus("ì €ì¥í•˜ì§€ ì•Šìœ¼ë©´ ì°½ì„ ë‹«ì„ ë•Œ ì´ì „ ì†Œë¦¬ë¡œ ëŒì•„ê°€ìš”", Red);
         RefreshVolume(channel);
     }
 
@@ -161,7 +162,7 @@ public class SettingsMenu : MonoBehaviour
         for (int i = 0; i < 3; i++) PlayerPrefs.SetFloat(VolumeKeys[i], pendingVolumes[i]);
         PlayerPrefs.Save();
         volumeDirty = false;
-        SetStatus("ÀúÀåµÇ¾ú¾î¿ä", Brown);
+        SetStatus("ì €ì¥ë˜ì—ˆì–´ìš”", Brown);
     }
 
     private void SetStatus(string message, Color color)
@@ -179,7 +180,7 @@ public class SettingsMenu : MonoBehaviour
         volumeTexts[channel].text = Mathf.RoundToInt(v * 100f) + "%";
     }
 
-    // ---------------- È­¸é ----------------
+    // ---------------- í™”ë©´ ----------------
 
     private void SetFullScreen(bool full)
     {
@@ -200,7 +201,7 @@ public class SettingsMenu : MonoBehaviour
     private void ApplyResolution()
     {
         Vector2Int r = Resolutions[resolutionIndex];
-        Screen.SetResolution(r.x, r.y, Screen.fullScreenMode);   // ¿¡µğÅÍ¿¡¼­´Â Àû¿ëµÇÁö ¾Ê°í, ºôµåÇÑ °ÔÀÓ¿¡¼­ Àû¿ëµÈ´Ù
+        Screen.SetResolution(r.x, r.y, Screen.fullScreenMode);   // ì—ë””í„°ì—ì„œëŠ” ì ìš©ë˜ì§€ ì•Šê³ , ë¹Œë“œí•œ ê²Œì„ì—ì„œ ì ìš©ëœë‹¤
         PlayerPrefs.Save();
     }
 
@@ -213,7 +214,7 @@ public class SettingsMenu : MonoBehaviour
             modeTexts[i].color = on ? Parchment : Ink;
         }
         Vector2Int r = Resolutions[resolutionIndex];
-        resolutionText.text = $"{r.x} ¡¿ {r.y}";
+        resolutionText.text = $"{r.x} Ã— {r.y}";
     }
 
     private void RefreshAll()
@@ -222,26 +223,26 @@ public class SettingsMenu : MonoBehaviour
         RefreshScreen(Screen.fullScreenMode != FullScreenMode.Windowed);
     }
 
-    // ---------------- ¹öÆ° ----------------
+    // ---------------- ë²„íŠ¼ ----------------
 
     private void GoToMain()
     {
         Close();
-        if (RunState.Instance != null) RunState.Instance.NewRun();   // ÁøÇà ÁßÀÌ´ø ·±Àº Ã³À½ºÎÅÍ
+        if (RunState.Instance != null) RunState.Instance.NewRun();   // ì§„í–‰ ì¤‘ì´ë˜ ëŸ°ì€ ì²˜ìŒë¶€í„°
         SceneManager.LoadScene(mainSceneName);
     }
 
     private void QuitGame()
     {
-        Debug.Log("°ÔÀÓÀ» Á¾·áÇÕ´Ï´Ù.");
+        Debug.Log("ê²Œì„ì„ ì¢…ë£Œí•©ë‹ˆë‹¤.");
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;   // ¿¡µğÅÍ¿¡¼­´Â Play¸¦ ²ö´Ù
+        UnityEditor.EditorApplication.isPlaying = false;   // ì—ë””í„°ì—ì„œëŠ” Playë¥¼ ëˆë‹¤
 #else
-        Application.Quit();                                 // ½ÇÁ¦ °ÔÀÓ¿¡¼­´Â ÇÁ·Î±×·¥À» ²ö´Ù
+        Application.Quit();                                 // ì‹¤ì œ ê²Œì„ì—ì„œëŠ” í”„ë¡œê·¸ë¨ì„ ëˆë‹¤
 #endif
     }
 
-    // ---------------- È­¸é ¸¸µé±â ----------------
+    // ---------------- í™”ë©´ ë§Œë“¤ê¸° ----------------
 
     private void BuildUI()
     {
@@ -256,10 +257,10 @@ public class SettingsMenu : MonoBehaviour
         scaler.matchWidthOrHeight = 0.5f;
         gameObject.AddComponent<GraphicRaycaster>();
 
-        // 1. ¿À¸¥ÂÊ À§ Åé´Ï¹ÙÄû (ÀÎº¥Åä¸® ¾ÆÀÌÄÜ ¿ŞÂÊ)
+        // 1. ì˜¤ë¥¸ìª½ ìœ„ í†±ë‹ˆë°”í€´ (ì¸ë²¤í† ë¦¬ ì•„ì´ì½˜ ì™¼ìª½)
         Image gear = NewImage("GearButton", transform, Color.white);
         RectTransform gearRt = gear.rectTransform;
-        gearRt.anchorMin = gearRt.anchorMax = new Vector2(0f, 1f);   // ¿ŞÂÊ À§ ±âÁØ
+        gearRt.anchorMin = gearRt.anchorMax = new Vector2(0f, 1f);   // ì™¼ìª½ ìœ„ ê¸°ì¤€
         gearRt.pivot = new Vector2(0f, 1f);
         gearRt.sizeDelta = new Vector2(72, 72);
         gearRt.anchoredPosition = new Vector2(28, -28);
@@ -271,7 +272,7 @@ public class SettingsMenu : MonoBehaviour
         gear.gameObject.AddComponent<Button>().onClick.AddListener(() => { if (isOpen) Close(); else Open(); });
         gearButton = gear.gameObject;
 
-        // 2. ¾îµÎ¿î ¹è°æ + Ã¢
+        // 2. ì–´ë‘ìš´ ë°°ê²½ + ì°½
         Image dim = NewImage("SettingsPanel", transform, new Color(0, 0, 0, 0.62f));
         RectTransform dimRt = dim.rectTransform;
         dimRt.anchorMin = Vector2.zero;
@@ -287,12 +288,12 @@ public class SettingsMenu : MonoBehaviour
         border.effectDistance = new Vector2(4, -4);
         Transform w = window.transform;
 
-        NewText("Title", w, "¼³Á¤", 48, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, new Vector2(0, 300), new Vector2(600, 70));
-        NewText("Hint", w, "ESC¸¦ ´©¸£¸é ´İÈü´Ï´Ù", 18, FontStyle.Normal, Brown, TextAnchor.MiddleCenter, new Vector2(0, 255), new Vector2(600, 30));
+        NewText("Title", w, "ì„¤ì •", 48, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, new Vector2(0, 300), new Vector2(600, 70));
+        NewText("Hint", w, "ESCë¥¼ ëˆ„ë¥´ë©´ ë‹«í™ë‹ˆë‹¤", 18, FontStyle.Normal, Brown, TextAnchor.MiddleCenter, new Vector2(0, 255), new Vector2(600, 30));
         NewButton("CloseButton", w, "X", Ink, Parchment, new Vector2(350, 320), new Vector2(48, 48), 24, Close);
 
-        // 3. ¼Ò¸®
-        NewSection(w, "¼Ò¸®", 200);
+        // 3. ì†Œë¦¬
+        NewSection(w, "ì†Œë¦¬", 200);
         for (int i = 0; i < 3; i++)
         {
             int ch = i;
@@ -301,7 +302,7 @@ public class SettingsMenu : MonoBehaviour
             NewButton("Minus", w, "-", Brown, Color.white, new Vector2(-130, y), new Vector2(40, 40), 26, () => ChangeVolume(ch, -0.1f));
             NewButton("Plus", w, "+", Brown, Color.white, new Vector2(230, y), new Vector2(40, 40), 26, () => ChangeVolume(ch, 0.1f));
 
-            // ¸¶¿ì½º·Î ´©¸£°í ²ø ¼ö ÀÖ´Â Åõ¸íÇÑ ¿µ¿ª (¸·´ëº¸´Ù À§¾Æ·¡·Î ³Ë³ËÇÏ°Ô)
+            // ë§ˆìš°ìŠ¤ë¡œ ëˆ„ë¥´ê³  ëŒ ìˆ˜ ìˆëŠ” íˆ¬ëª…í•œ ì˜ì—­ (ë§‰ëŒ€ë³´ë‹¤ ìœ„ì•„ë˜ë¡œ ë„‰ë„‰í•˜ê²Œ)
             Image hit = NewImage("DragArea", w, new Color(0, 0, 0, 0));
             hit.rectTransform.sizeDelta = new Vector2(300, 40);
             hit.rectTransform.anchoredPosition = new Vector2(50, y);
@@ -339,10 +340,10 @@ public class SettingsMenu : MonoBehaviour
             volumeTexts[i] = NewText("Value", w, "80%", 22, FontStyle.Bold, Ink, TextAnchor.MiddleRight, new Vector2(302, y), new Vector2(80, 40));
         }
 
-        // 4. È­¸é
-        NewSection(w, "È­¸é", -20);
-        NewText("Label", w, "È­¸é ¸ğµå", 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(-272, -80), new Vector2(140, 40));
-        string[] modes = { "ÀüÃ¼È­¸é", "Ã¢¸ğµå" };
+        // 4. í™”ë©´
+        NewSection(w, "í™”ë©´", -20);
+        NewText("Label", w, "í™”ë©´ ëª¨ë“œ", 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(-272, -80), new Vector2(140, 40));
+        string[] modes = { "ì „ì²´í™”ë©´", "ì°½ëª¨ë“œ" };
         for (int i = 0; i < 2; i++)
         {
             bool full = i == 0;
@@ -351,7 +352,7 @@ public class SettingsMenu : MonoBehaviour
             modeTexts[i] = b.GetComponentInChildren<Text>();
         }
 
-        NewText("Label", w, "ÇØ»óµµ", 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(-272, -140), new Vector2(140, 40));
+        NewText("Label", w, "í•´ìƒë„", 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(-272, -140), new Vector2(140, 40));
         NewButton("Prev", w, "<", Brown, Color.white, new Vector2(-178, -140), new Vector2(44, 44), 22, () => ChangeResolution(-1));
         NewButton("Next", w, ">", Brown, Color.white, new Vector2(320, -140), new Vector2(44, 44), 22, () => ChangeResolution(1));
         Image resBox = NewImage("ResolutionBox", w, new Color32(0xF4, 0xEC, 0xD8, 0xFF));
@@ -360,16 +361,16 @@ public class SettingsMenu : MonoBehaviour
         Outline resLine = resBox.gameObject.AddComponent<Outline>();
         resLine.effectColor = Ink;
         resLine.effectDistance = new Vector2(2, -2);
-        resolutionText = NewText("Value", resBox.transform, "1920 ¡¿ 1080", 22, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(430, 44));
+        resolutionText = NewText("Value", resBox.transform, "1920 Ã— 1080", 22, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(430, 44));
 
-        // 5. ÀúÀå ¾È³» ±ÛÀÚ
+        // 5. ì €ì¥ ì•ˆë‚´ ê¸€ì
         statusText = NewText("Status", w, "", 18, FontStyle.Bold, Brown, TextAnchor.MiddleCenter, new Vector2(0, -205), new Vector2(684, 30));
 
-        // 6. ¾Æ·¡ ¹öÆ° 4°³
-        NewButton("SaveButton", w, "ÀúÀå", Ink, Parchment, new Vector2(-261, -270), new Vector2(160, 64), 24, SaveSettings);
-        NewButton("ContinueButton", w, "°è¼ÓÇÏ±â", Brown, Color.white, new Vector2(-87, -270), new Vector2(160, 64), 22, Close);
-        mainButton = NewButton("MainButton", w, "¸ŞÀÎ È­¸éÀ¸·Î", Brown, Color.white, new Vector2(87, -270), new Vector2(160, 64), 20, GoToMain);
-        NewButton("QuitButton", w, "°ÔÀÓ Á¾·á", Red, Color.white, new Vector2(261, -270), new Vector2(160, 64), 22, QuitGame);
+        // 6. ì•„ë˜ ë²„íŠ¼ 4ê°œ
+        NewButton("SaveButton", w, "ì €ì¥", Ink, Parchment, new Vector2(-261, -270), new Vector2(160, 64), 24, SaveSettings);
+        NewButton("ContinueButton", w, "ê³„ì†í•˜ê¸°", Brown, Color.white, new Vector2(-87, -270), new Vector2(160, 64), 22, Close);
+        mainButton = NewButton("MainButton", w, "ë©”ì¸ í™”ë©´ìœ¼ë¡œ", Brown, Color.white, new Vector2(87, -270), new Vector2(160, 64), 20, GoToMain);
+        NewButton("QuitButton", w, "ê²Œì„ ì¢…ë£Œ", Red, Color.white, new Vector2(261, -270), new Vector2(160, 64), 22, QuitGame);
 
         panel.SetActive(false);
     }
@@ -417,7 +418,7 @@ public class SettingsMenu : MonoBehaviour
         image.rectTransform.anchoredPosition = pos;
         NewText("Label", image.transform, label, fontSize, FontStyle.Bold, textColor, TextAnchor.MiddleCenter, Vector2.zero, size);
         Button button = image.gameObject.AddComponent<Button>();
-        button.onClick.AddListener(() => onClick());
+        button.onClick.AddListener(() => { SoundManager.Play("click"); onClick(); });
         return button;
     }
 }

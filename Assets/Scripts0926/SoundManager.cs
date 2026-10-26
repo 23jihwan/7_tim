@@ -3,11 +3,11 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 
-// ¼Ò¸® Å©±â Á¾·ù
+// ì†Œë¦¬ í¬ê¸° ì¢…ë¥˜
 public enum SoundChannel { Master, BGM, SFX }
 
-// ¹è°æÀ½¾Ç°ú È¿°úÀ½À» Àç»ıÇÏ°í, ¼Ò¸® Å©±â¸¦ ÀúÀå¡¤Àû¿ëÇÑ´Ù
-// °ÔÀÓÀÌ ½ÃÀÛµÇ¸é ÀÚµ¿À¸·Î ¸¸µé¾îÁö¹Ç·Î ¾À¿¡ Á÷Á¢ ³õÀ» ÇÊ¿ä´Â ¾ø´Ù
+// ë°°ê²½ìŒì•…ê³¼ íš¨ê³¼ìŒì„ ì¬ìƒí•˜ê³ , ì†Œë¦¬ í¬ê¸°ë¥¼ ì €ì¥Â·ì ìš©í•œë‹¤
+// ê²Œì„ì´ ì‹œì‘ë˜ë©´ ìë™ìœ¼ë¡œ ë§Œë“¤ì–´ì§€ë¯€ë¡œ ì”¬ì— ì§ì ‘ ë†“ì„ í•„ìš”ëŠ” ì—†ë‹¤
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance { get; private set; }
@@ -16,10 +16,11 @@ public class SoundManager : MonoBehaviour
     private AudioSource bgmSource;
     private AudioSource sfxSource;
     private Coroutine fadeRoutine;
+    private static readonly System.Collections.Generic.HashSet<string> warned = new System.Collections.Generic.HashSet<string>();
 
-    // Audio Mixer¿¡¼­ ExposeÇÑ ÆÄ¶ó¹ÌÅÍ ÀÌ¸§
+    // Audio Mixerì—ì„œ Exposeí•œ íŒŒë¼ë¯¸í„° ì´ë¦„
     private static readonly string[] MixerParams = { "MasterVolume", "BGMVolume", "SFXVolume" };
-    // °ÔÀÓÀ» ²°´Ù ÄÑµµ ³²µµ·Ï ÀúÀåÇÒ ¶§ ¾²´Â ÀÌ¸§
+    // ê²Œì„ì„ ê»ë‹¤ ì¼œë„ ë‚¨ë„ë¡ ì €ì¥í•  ë•Œ ì“°ëŠ” ì´ë¦„
     private static readonly string[] SaveKeys = { "vol_master", "vol_bgm", "vol_sfx" };
     private static readonly float[] Defaults = { 0.8f, 0.6f, 0.7f };
 
@@ -37,7 +38,7 @@ public class SoundManager : MonoBehaviour
 
         library = Resources.Load<SoundLibrary>("SoundLibrary");
         if (library == null)
-            Debug.LogWarning("SoundManager: Resources Æú´õ¿¡¼­ SoundLibrary¸¦ Ã£Áö ¸øÇß¾î¿ä.");
+            Debug.LogWarning("SoundManager: Resources í´ë”ì—ì„œ SoundLibraryë¥¼ ì°¾ì§€ ëª»í–ˆì–´ìš”.");
 
         bgmSource = gameObject.AddComponent<AudioSource>();
         bgmSource.loop = true;
@@ -52,7 +53,7 @@ public class SoundManager : MonoBehaviour
         }
 
         SceneManager.sceneLoaded += OnSceneLoaded;
-        SettingsMenu.VolumeChanged += OnVolumeChanged;   // ¼³Á¤Ã¢¿¡¼­ ¼Ò¸® Å©±â¸¦ ¹Ù²Ù¸é ¹Ù·Î Àû¿ë
+        SettingsMenu.VolumeChanged += OnVolumeChanged;   // ì„¤ì •ì°½ì—ì„œ ì†Œë¦¬ í¬ê¸°ë¥¼ ë°”ê¾¸ë©´ ë°”ë¡œ ì ìš©
     }
 
     private void OnVolumeChanged(int channel, float value)
@@ -62,7 +63,7 @@ public class SoundManager : MonoBehaviour
 
     private void Start()
     {
-        // Audio Mixer °ªÀº Awake¿¡¼­ ¹Ù²Ù¸é Àû¿ëÀÌ ¾È µÉ ¼ö ÀÖ¾î¼­ Start¿¡¼­ Àû¿ëÇÑ´Ù
+        // Audio Mixer ê°’ì€ Awakeì—ì„œ ë°”ê¾¸ë©´ ì ìš©ì´ ì•ˆ ë  ìˆ˜ ìˆì–´ì„œ Startì—ì„œ ì ìš©í•œë‹¤
         for (int i = 0; i < 3; i++) ApplyVolume((SoundChannel)i, GetVolume((SoundChannel)i));
         PlaySceneBgm(SceneManager.GetActiveScene().name);
     }
@@ -79,7 +80,7 @@ public class SoundManager : MonoBehaviour
         PlaySceneBgm(scene.name);
     }
 
-    // ---------------- ¹è°æÀ½¾Ç ----------------
+    // ---------------- ë°°ê²½ìŒì•… ----------------
 
     private void PlaySceneBgm(string sceneName)
     {
@@ -88,16 +89,16 @@ public class SoundManager : MonoBehaviour
         foreach (SoundLibrary.SceneBgm entry in library.sceneBgms)
         {
             if (entry.sceneName != sceneName || entry.clip == null) continue;
-            if (bgmSource.clip == entry.clip && bgmSource.isPlaying) return;   // °°Àº À½¾ÇÀÌ¸é ²÷Áö ¾Ê°í °è¼Ó
+            if (bgmSource.clip == entry.clip && bgmSource.isPlaying) return;   // ê°™ì€ ìŒì•…ì´ë©´ ëŠì§€ ì•Šê³  ê³„ì†
 
             if (fadeRoutine != null) StopCoroutine(fadeRoutine);
             fadeRoutine = StartCoroutine(FadeTo(entry.clip, entry.volume));
             return;
         }
-        // ¸ñ·Ï¿¡ ¾ø´Â ¾ÀÀº Áö±İ À½¾ÇÀ» ±×´ë·Î µĞ´Ù
+        // ëª©ë¡ì— ì—†ëŠ” ì”¬ì€ ì§€ê¸ˆ ìŒì•…ì„ ê·¸ëŒ€ë¡œ ë‘”ë‹¤
     }
 
-    // Áö±İ À½¾ÇÀ» ÁÙÀÌ°í, »õ À½¾ÇÀ» Å°¿î´Ù (¼³Á¤Ã¢ÀÌ °ÔÀÓÀ» ¸ØÃçµµ µ¿ÀÛÇÏ°Ô unscaled ½Ã°£ »ç¿ë)
+    // ì§€ê¸ˆ ìŒì•…ì„ ì¤„ì´ê³ , ìƒˆ ìŒì•…ì„ í‚¤ìš´ë‹¤ (ì„¤ì •ì°½ì´ ê²Œì„ì„ ë©ˆì¶°ë„ ë™ì‘í•˜ê²Œ unscaled ì‹œê°„ ì‚¬ìš©)
     private IEnumerator FadeTo(AudioClip clip, float targetVolume)
     {
         const float duration = 0.6f;
@@ -122,9 +123,9 @@ public class SoundManager : MonoBehaviour
         fadeRoutine = null;
     }
 
-    // ---------------- È¿°úÀ½ ----------------
+    // ---------------- íš¨ê³¼ìŒ ----------------
 
-    // ¾îµğ¼­µç SoundManager.Play("click") Ã³·³ ºÎ¸£¸é µÈ´Ù
+    // ì–´ë””ì„œë“  SoundManager.Play("click") ì²˜ëŸ¼ ë¶€ë¥´ë©´ ëœë‹¤
     public static void Play(string name)
     {
         if (Instance == null || Instance.library == null || Instance.library.sfx == null) return;
@@ -137,12 +138,12 @@ public class SoundManager : MonoBehaviour
                 return;
             }
         }
-        Debug.LogWarning($"SoundManager: '{name}' È¿°úÀ½ÀÌ Sound Library¿¡ ¾ø¾î¿ä.");
+        if (warned.Add(name)) Debug.LogWarning($"SoundManager: '{name}' íš¨ê³¼ìŒì´ Sound Libraryì— ì—†ì–´ìš”.");
     }
 
-    // ---------------- ¼Ò¸® Å©±â ----------------
+    // ---------------- ì†Œë¦¬ í¬ê¸° ----------------
 
-    // 0 ~ 1 »çÀÌ °ª
+    // 0 ~ 1 ì‚¬ì´ ê°’
     public static float GetVolume(SoundChannel channel)
     {
         int i = (int)channel;
@@ -160,7 +161,7 @@ public class SoundManager : MonoBehaviour
     private void ApplyVolume(SoundChannel channel, float value)
     {
         if (library == null || library.mixer == null) return;
-        // Audio Mixer´Â µ¥½Ãº§(dB) ´ÜÀ§¶ó¼­ 0~1 °ªÀ» ¹Ù²ã¼­ ³Ö´Â´Ù (0ÀÌ¸é ¿ÏÀüÈ÷ ²û)
+        // Audio MixerëŠ” ë°ì‹œë²¨(dB) ë‹¨ìœ„ë¼ì„œ 0~1 ê°’ì„ ë°”ê¿”ì„œ ë„£ëŠ”ë‹¤ (0ì´ë©´ ì™„ì „íˆ ë”)
         float db = value <= 0.0001f ? -80f : Mathf.Log10(value) * 20f;
         library.mixer.SetFloat(MixerParams[(int)channel], db);
     }
