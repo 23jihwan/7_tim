@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: relic_002
   relicName: "\uC0DD\uBA85\uC758 \uD39C\uB358\uD2B8"
-  description: "\uB9E4 \uD134\uB9C8\uB2E4 \uCCB4\uB825\uC744 10\uC529 \uC790\uB3D9\uC73C\uB85C
-    \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  description: "\uCD5C\uB300\uCCB4\uB825\uC774 ( +10 ) \uCD94\uAC00 \uB429\uB2C8\uB2E4."
   icon: {fileID: 4542371467470970117, guid: 60549ace37f57814fac05c00de1ff145, type: 3}
   type: 1
+  statBonusType: 1
   value: 10

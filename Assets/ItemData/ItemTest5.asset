@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RelicData
   relicId: relic_005
   relicName: "\uD669\uAE08 \uBC40\uC758 \uB208"
-  description: "\uC804\uD22C \uC2B9\uB9AC \uBC0F \uBAAC\uC2A4\uD130 \uCC98\uCE58
-    \uC2DC \uD68D\uB4DD\uD558\uB294 \uC7AC\uD654(\uACE8\uB4DC/\uC7AC\uB8CC)\uC758
-    \uC591\uC774 25% \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  description: "\uC804\uD22C \uC2B9\uB9AC\uC2DC ( +20 ) \uACE8\uB4DC\uB97C \uCD94\uAC00
+    \uD68D\uB4DD \uD569\uB2C8\uB2E4."
   icon: {fileID: 23121403190668631, guid: cb60fb866faf10c4b8a48581cd78b9ea, type: 3}
   type: 3
-  value: 25
+  statBonusType: 2
+  value: 20

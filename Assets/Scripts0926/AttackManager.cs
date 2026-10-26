@@ -52,7 +52,6 @@ public class AttackManager : MonoBehaviour
     private int attackReduction = 0;
     private bool isAttacking = false;
 
-    // ★ [수정] 단순 bool 플래그 대신 남은 행동불가 턴 수를 저장하는 변수
     private int enemyStunTurns = 0;
 
     private List<ActiveStatusEffect> activeEnemyEffects = new List<ActiveStatusEffect>();
@@ -76,7 +75,6 @@ public class AttackManager : MonoBehaviour
         enemyCurrentHP = enemyMaxHP;
         playerCurrentHP = playerMaxHP;
 
-        // ★ GameManager 초기 체력 설정 및 연동
         if (GameManager.Instance != null)
         {
             GameManager.Instance.playerMaxHP = playerMaxHP;
@@ -112,25 +110,32 @@ public class AttackManager : MonoBehaviour
                 {
                     CardData card = cardUI.cardData;
 
-                    // ★ [애니메이션] 카드가 목표로 날아간다 (힐은 내 체력 쪽, 나머지는 몬스터 쪽)
                     Color glow = card.cardType == CardType.Attack ? AttackColor
                                : card.cardType == CardType.Heal ? HealColor
                                : DebuffColor;
                     RectTransform target = (card.cardType == CardType.Heal && playerHPText != null) ? playerHPText.rectTransform : monsterVisual;
                     yield return StartCoroutine(CardAnimator.UseCard(cardUI, target, glow));
 
-                    // ★ [수정] 카드 효과로 행동 불가(Causes Stun) 옵션이 있다면 stunDuration 수치만큼 턴 누적
+                    // ★ [유물 연동] 카드 효과로 행동 불가가 발생할 때 스턴 유물 보너스(+1턴 등) 추가 적용
                     if (card.causesStun)
                     {
                         int addTurns = card.stunDuration > 0 ? card.stunDuration : 1;
+
+                        // 유물로 인한 추가 스턴 턴 수 합산 (+)
+                        int relicStunBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.StunBonus) : 0;
+                        addTurns += relicStunBonus;
+
                         enemyStunTurns += addTurns;
-                        Debug.Log($"[상태이상] {card.cardName} 카드의 효과로 {enemyName}이(가) {addTurns}턴 동안 행동 불가 상태가 됩니다! (총 남은 턴: {enemyStunTurns}턴)");
+                        Debug.Log($"[상태이상] {card.cardName} 카드의 효과로 {enemyName}이(가) {addTurns}턴 동안 행동 불가 상태가 됩니다! (유물 보너스 +{relicStunBonus} 포함, 총 남은 턴: {enemyStunTurns}턴)");
                     }
 
                     // (1) 공격 카드
                     if (card.cardType == CardType.Attack)
                     {
                         int baseDamage = card.value;
+
+                        int relicAttackBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
+                        baseDamage += relicAttackBonus;
 
                         if (enemyElement != ElementType.None && card.bonusDamageAgainstElemental > 0)
                         {
@@ -141,7 +146,6 @@ public class AttackManager : MonoBehaviour
                         float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                         int finalDamage = Mathf.RoundToInt(baseDamage * multiplier);
 
-                        // ★ GameManager를 통해 적 HP 감축 (구체/텍스트 연동)
                         if (GameManager.Instance != null)
                         {
                             GameManager.Instance.TakeEnemyDamage(finalDamage);
@@ -152,7 +156,7 @@ public class AttackManager : MonoBehaviour
                             enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
                         }
 
-                        CardAnimator.Hit(monsterVisual, AttackColor);   // ★ [애니메이션] 몬스터 피격
+                        CardAnimator.Hit(monsterVisual, AttackColor);
                         UpdateUI();
                         Debug.Log($"[공격] {card.cardName}({card.elementType}) -> {enemyName}({enemyElement})에게 {finalDamage} 데미지!");
                     }
@@ -161,7 +165,6 @@ public class AttackManager : MonoBehaviour
                     {
                         int before = playerCurrentHP;
 
-                        // ★ GameManager를 통해 플레이어 HP 회복 (구체 체력바 채워짐)
                         if (GameManager.Instance != null)
                         {
                             GameManager.Instance.HealPlayer(card.value);
@@ -172,7 +175,7 @@ public class AttackManager : MonoBehaviour
                             playerCurrentHP = Mathf.Min(playerMaxHP, playerCurrentHP + card.value);
                         }
 
-                        if (playerHPText != null) CardAnimator.Pulse(playerHPText.rectTransform, HealColor);   // ★ [애니메이션] 회복
+                        if (playerHPText != null) CardAnimator.Pulse(playerHPText.rectTransform, HealColor);
 
                         int healed = playerCurrentHP - before;
                         Debug.Log($"[힐] {card.cardName} → 체력 {healed} 회복!");
@@ -181,16 +184,17 @@ public class AttackManager : MonoBehaviour
                         {
                             int baseDamage = card.damageValue;
 
+                            int relicAttackBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
+                            baseDamage += relicAttackBonus;
+
                             if (enemyElement != ElementType.None && card.bonusDamageAgainstElemental > 0)
                             {
                                 baseDamage += card.bonusDamageAgainstElemental;
-                                Debug.Log($"[속성 보너스] 힐 추가 공격 데미지 +{card.bonusDamageAgainstElemental} 적용!");
                             }
 
                             float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                             int finalDamage = Mathf.RoundToInt(baseDamage * multiplier);
 
-                            // ★ 신성 힐 공격 추가 데미지 연동
                             if (GameManager.Instance != null)
                             {
                                 GameManager.Instance.TakeEnemyDamage(finalDamage);
@@ -201,7 +205,7 @@ public class AttackManager : MonoBehaviour
                                 enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
                             }
 
-                            CardAnimator.Hit(monsterVisual, HolyColor);   // ★ [애니메이션] 신성한 빛 피격
+                            CardAnimator.Hit(monsterVisual, HolyColor);
                             Debug.Log($"[신성 힐 공격] 적에게 {finalDamage} 데미지!");
                         }
                         UpdateUI();
@@ -209,10 +213,16 @@ public class AttackManager : MonoBehaviour
                     // (3) 디버프 카드
                     else if (card.cardType == CardType.Debuff)
                     {
-                        attackReduction += card.value;
-                        CardAnimator.Hit(monsterVisual, DebuffColor);   // ★ [애니메이션] 저주 받음
+                        int debuffValue = card.value;
+
+                        // ★ [유물 연동] 디버프 효과를 증폭시키는 유물 보너스(+값) 추가 합산
+                        int relicDebuffBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.DebuffBonus) : 0;
+                        debuffValue += relicDebuffBonus;
+
+                        attackReduction += debuffValue;
+                        CardAnimator.Hit(monsterVisual, DebuffColor);
                         UpdateUI();
-                        Debug.Log($"[디버프] 적 공격력 -{card.value}");
+                        Debug.Log($"[디버프] 적 공격력 -{debuffValue} (기본 {card.value} + 유물 보너스 +{relicDebuffBonus})");
                     }
 
                     // (4) 지속 속성 피해(DOT) 부여
@@ -229,7 +239,7 @@ public class AttackManager : MonoBehaviour
                     }
 
                     Destroy(cardUI.gameObject);
-                    yield return new WaitForSeconds(0.3f);   // 애니메이션 연출 감안 속도 조절
+                    yield return new WaitForSeconds(0.3f);
                 }
             }
         }
@@ -248,7 +258,6 @@ public class AttackManager : MonoBehaviour
                 float multiplier = GetElementMultiplier(effect.element, enemyElement);
                 int finalDotDamage = Mathf.RoundToInt(effect.damagePerTurn * multiplier);
 
-                // ★ GameManager 지속 피해 연동
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.TakeEnemyDamage(finalDotDamage);
@@ -259,7 +268,7 @@ public class AttackManager : MonoBehaviour
                     enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDotDamage);
                 }
 
-                CardAnimator.Hit(monsterVisual, AttackColor);   // ★ [애니메이션] 지속 피해
+                CardAnimator.Hit(monsterVisual, AttackColor);
                 effect.remainingTurns--;
                 UpdateUI();
 
@@ -280,11 +289,10 @@ public class AttackManager : MonoBehaviour
         // 3. 적의 반격 (살아있는 경우)
         if (enemyCurrentHP > 0)
         {
-            // ★ [수정] 행동 불가 턴 수(enemyStunTurns)가 남아있는 경우 공격 무효화 및 1턴 차감
             if (enemyStunTurns > 0)
             {
                 enemyStunTurns--;
-                Debug.Log($"[적 행동 불가] {enemyName}이(가) 스턴/빙결/마비 효과로 이번 턴에 공격하지 못합니다! (남은 행동불가: {enemyStunTurns}턴)");
+                Debug.Log($"[적 행동 불가] {enemyName}이(가) 스턴 효과로 이번 턴에 공격하지 못합니다! (남은 행동불가: {enemyStunTurns}턴)");
                 UpdateUI();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -292,7 +300,6 @@ public class AttackManager : MonoBehaviour
             {
                 int damage = GetCurrentEnemyAttack();
 
-                // ★ 적이 플레이어를 공격할 때 GameManager를 호출하여 피 구체 감소!
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.TakePlayerDamage(damage);
@@ -303,7 +310,7 @@ public class AttackManager : MonoBehaviour
                     playerCurrentHP = Mathf.Max(0, playerCurrentHP - damage);
                 }
 
-                if (playerHPText != null) CardAnimator.Hit(playerHPText.rectTransform, AttackColor);   // ★ [애니메이션] 플레이어 피격
+                if (playerHPText != null) CardAnimator.Hit(playerHPText.rectTransform, AttackColor);
                 UpdateUI();
                 yield return new WaitForSeconds(0.5f);
             }
@@ -367,7 +374,6 @@ public class AttackManager : MonoBehaviour
             string elementTag = enemyElement != ElementType.None ? $"[{enemyElement}] " : "";
             string statusTag = activeEnemyEffects.Count > 0 ? $" (상태이상 {activeEnemyEffects.Count}개)" : "";
 
-            // ★ [수정] 행동 불가 남은 턴 수가 직관적으로 UI에 출력됨
             if (enemyStunTurns > 0)
             {
                 statusTag += $" [행동불가 {enemyStunTurns}턴]";
