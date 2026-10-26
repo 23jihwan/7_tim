@@ -18,7 +18,9 @@ public enum CardType
 {
     Attack,
     Heal,
-    Debuff
+    Debuff,
+    Shield,    // 배리어 / 실드 카드 타입
+    Buff       // ★ [추가] 버프 카드 타입
 }
 
 [CreateAssetMenu(fileName = "New Card", menuName = "Card System/Card Data")]
@@ -29,10 +31,20 @@ public class CardData : ScriptableObject
     [TextArea(2, 5)]
     public string description;                          // 카드 설명문
 
-    public CardType cardType;                           // 카드 타입 (공격, 힐, 디버프)
+    public CardType cardType;                           // 카드 타입 (공격, 힐, 디버프, 실드, 버프)
     public ElementType elementType = ElementType.None;  // 카드의 기본 속성
 
     public int value;                                   // 기본 수치 (공격력 / 힐량 / 디버프량)
+
+    [Header("실드 / 배리어 설정")]
+    [Tooltip("이번 턴 동안 적의 공격 피해를 적게 받게 해주는 배리어 수치 (예: 5, 10, 15)")]
+    public int shieldValue = 0;                         // 배리어 수치
+
+    [Header("버프 / 강화 설정")]
+    [Tooltip("이번 턴 동안 플레이어의 공격력을 올려주는 버프 수치 (예: 5, 10)")]
+    public int buffValue = 0;                           // ★ [추가] 공격력 버프 수치
+    [Tooltip("버프 지속 턴 수 (1 = 이번 턴)")]
+    public int buffDuration = 1;                        // ★ [추가] 버프 지속 턴 수
 
     [Header("추가 데미지 및 특수 효과 (인스펙터 설정)")]
     [Tooltip("힐/디버프 카드 사용 시 적에게 줄 추가 데미지 (0이면 회복만 함)")]
@@ -61,8 +73,11 @@ public class CardData : ScriptableObject
     public int combineId;
 
     [Header("도감 및 UI 표시용 스탯")]
-    public int attack;                                  // ★ [추가] 도감 상세 팝업용 공격력
-    public int health;                                  // ★ [추가] 도감 상세 팝업용 체력
+    public int attack;                                  // 도감 상세 팝업용 공격력
+    public int health;                                  // 도감 상세 팝업용 체력 / 회복량
+    public int debuff;                                  // 도감 상세 팝업용 디버프 수치
+    public int shield;                                  // 도감 상세 팝업용 쉴드/배리어 수치
+    public int buff;                                    // ★ [추가] 도감 상세 팝업용 버프 수치
 
     [Header("Visual Asset")]
     public Sprite cardIcon;                             // 카드 이미지

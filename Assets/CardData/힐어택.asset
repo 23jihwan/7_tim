@@ -18,6 +18,9 @@ MonoBehaviour:
   cardType: 1
   elementType: 4
   value: 30
+  shieldValue: 0
+  buffValue: 0
+  buffDuration: 0
   damageValue: 5
   bonusDamageAgainstElemental: 0
   causesStun: 0
@@ -29,4 +32,7 @@ MonoBehaviour:
   combineId: 0
   attack: 5
   health: 30
+  debuff: 0
+  shield: 0
+  buff: 0
   cardIcon: {fileID: 21300000, guid: b11f9c52da2945740b5078d84177a9ab, type: 3}

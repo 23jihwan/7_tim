@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1f8de2b33e84fa46bce1068c56ecc51, type: 3}
+  m_Name: "\uB9C8\uB098 \uC7A5\uB9C9"
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: "\uB9C8\uB098 \uC7A5\uB9C9"
+  description: 
+  cardType: 3
+  elementType: 0
+  value: 0
+  shieldValue: 2
+  buffValue: 0
+  buffDuration: 0
+  damageValue: 0
+  bonusDamageAgainstElemental: 0
+  causesStun: 0
+  stunDuration: 1
+  dotElementType: 0
+  dotDamagePerTurn: 0
+  dotDuration: 0
+  statusEffect: 
+  combineId: 0
+  attack: 0
+  health: 0
+  debuff: 0
+  shield: 2
+  buff: 0
+  cardIcon: {fileID: 3152428061425467088, guid: c60c4d81c797b774da91c7c020451010, type: 3}

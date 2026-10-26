@@ -15,8 +15,11 @@ MonoBehaviour:
   cardName: "\uD790"
   description: "HP 10\uC744 \uD68C\uBCF5\uD55C\uB2E4"
   cardType: 1
-  elementType: 0
+  elementType: 4
   value: 10
+  shieldValue: 0
+  buffValue: 0
+  buffDuration: 0
   damageValue: 0
   bonusDamageAgainstElemental: 0
   causesStun: 0
@@ -28,4 +31,7 @@ MonoBehaviour:
   combineId: 0
   attack: 0
   health: 10
+  debuff: 0
+  shield: 0
+  buff: 0
   cardIcon: {fileID: 21300000, guid: 8e42a364f9d2c432283fe87d1c7460ae, type: 3}

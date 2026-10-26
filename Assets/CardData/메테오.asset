@@ -13,20 +13,28 @@ MonoBehaviour:
   m_Name: "\uBA54\uD14C\uC624"
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: "\uBA54\uD14C\uC624"
-  description: "\uAC70\uB300\uD55C \uBA54\uD14C\uC624\uB97C \uB0A0\uB824 40\uC758
-    \uB370\uBBF8\uC9C0\uB97C \uC90D\uB2C8\uB2E4"
+  description: "\uAC70\uB300\uD55C \uBA54\uD14C\uC624\uB97C \uB0A0\uB824 60\uC758
+    \uB370\uBBF8\uC9C0\uB97C \uC8FC\uACE0 \uC0C1\uD0DC\uC774\uC0C1 \uD654\uC0C1 \uD6A8\uACFC\uB97C
+    2\uD134\uAC04 \uC801\uC6A9\uD558\uC5EC \uB9E4\uD134 15\uC758 \uB370\uBBF8\uC9C0\uB97C
+    \uC90D\uB2C8 "
   cardType: 0
-  elementType: 0
-  value: 40
-  damageValue: 15
+  elementType: 1
+  value: 60
+  shieldValue: 0
+  buffValue: 0
+  buffDuration: 0
+  damageValue: 0
   bonusDamageAgainstElemental: 0
   causesStun: 0
   stunDuration: 1
   dotElementType: 1
-  dotDamagePerTurn: 0
-  dotDuration: 0
+  dotDamagePerTurn: 15
+  dotDuration: 2
   statusEffect: 
   combineId: 0
-  attack: 40
+  attack: 60
   health: 0
+  debuff: 0
+  shield: 0
+  buff: 0
   cardIcon: {fileID: 21300000, guid: 8ec5b52b09d90074a83d61c1334190f9, type: 3}

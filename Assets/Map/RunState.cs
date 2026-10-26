@@ -30,9 +30,11 @@ public class RunState : MonoBehaviour
     public List<Vector2Int> visited = new List<Vector2Int>();
     public RoomType currentRoomType;
 
-    [Header("플레이어")]
+    [Header("플레이어 데이터 및 스탯")]
+    public PlayerData playerData;         // ★ [추가] 인스펙터에서 연결할 PlayerData 에셋
     public int playerMaxHP = 100;
     public int playerHP = 100;
+    public int playerDefense = 0;         // ★ [추가] 플레이어 고정 방어력
     public int gold = 0;
 
     [Header("덱 (전투에서 이 카드들 중에서 뽑는다)")]
@@ -115,7 +117,14 @@ public class RunState : MonoBehaviour
         seed = Random.Range(1000, 10000);
         hasPosition = false;
         visited.Clear();
-        playerHP = playerMaxHP;
+
+        // PlayerData 에셋이 할당되어 있다면 기본 스탯 가져오기
+        if (playerData != null)
+        {
+            playerMaxHP = playerData.maxHP;
+            playerDefense = playerData.defense;
+        }
+
         gold = 0;
         obtainedCards.Clear();
         hasPendingReward = false;
@@ -127,9 +136,9 @@ public class RunState : MonoBehaviour
         for (int i = 0; i < equippedRelics.Length; i++) equippedRelics[i] = null;   // 배열은 그대로 두고 비우기만
         startingRelicsGiven = false;
 
-        playerMaxHP = 100 + GetTotalRelicBonus(StatBonusType.MaxHP);   // (팀원 코드) 유물 최대 체력 보너스
+        playerMaxHP = (playerData != null ? playerData.maxHP : 100) + GetTotalRelicBonus(StatBonusType.MaxHP);   // 유물 최대 체력 보너스
         playerHP = playerMaxHP;
-        Debug.Log($"새 런을 시작해요. (시드 {seed})");
+        Debug.Log($"새 런을 시작해요. (시드 {seed}, 방어력 {playerDefense})");
     }
 
     // 카드 얻기 (전투 보상, 이벤트 등): 덱에 들어간다
@@ -155,7 +164,7 @@ public class RunState : MonoBehaviour
         if (relic == null || ownedRelics.Contains(relic)) return false;
         ownedRelics.Add(relic);
 
-        // (팀원 코드) 최대 체력 유물은 얻는 즉시 적용
+        // 최대 체력 유물은 얻는 즉시 적용
         if (relic.statBonusType == StatBonusType.MaxHP)
         {
             playerMaxHP += relic.value;
@@ -225,7 +234,6 @@ public class RunState : MonoBehaviour
     }
 
     // ---------------- 전투 연결 ----------------
-    // 전투 담당의 AttackManager 코드는 고치지 않고, 여기서 값을 넣고 결과를 지켜본다
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -254,6 +262,7 @@ public class RunState : MonoBehaviour
 
         // AttackManager의 Start()가 실행되기 전에 값을 바꿔 둔다
         battle.playerMaxHP = playerMaxHP;
+        battle.playerDefense = (playerData != null) ? playerData.defense : playerDefense; // ★ 방어력 전달
 
         if (pendingEnemy != null)
         {
@@ -268,7 +277,6 @@ public class RunState : MonoBehaviour
             if (currentRoomType == RoomType.Boss) multiplier = bossHpMultiplier;
             battle.enemyMaxHP = Mathf.RoundToInt(battle.enemyMaxHP * multiplier);
         }
-        // 씬에 이미 몬스터 데이터가 들어 있으면 그대로 둔다 (체력이 두 번 오르지 않게)
 
         StartCoroutine(SetupBattleNextFrame());
     }
@@ -280,6 +288,7 @@ public class RunState : MonoBehaviour
         if (battle == null) yield break;
 
         battle.playerCurrentHP = playerHP;
+
         // GameManager도 체력을 관리하므로 같이 맞춰 준다
         if (GameManager.Instance != null)
         {
@@ -291,7 +300,7 @@ public class RunState : MonoBehaviour
             battle.playerHPText.text = $"Player HP: {playerHP}/{playerMaxHP}";
 
         battleReady = true;
-        Debug.Log($"{floorIndex + 1}층 {MapGenerator.KoreanName(currentRoomType)} 전투 시작: {battle.enemyName} (체력 {battle.enemyMaxHP}, 공격력 {battle.enemyAttackDamage})");
+        Debug.Log($"{floorIndex + 1}층 {MapGenerator.KoreanName(currentRoomType)} 전투 시작: {battle.enemyName} (체력 {battle.enemyMaxHP}, 공격력 {battle.enemyAttackDamage}, 방어력 {battle.enemyDefense})");
     }
 
     private void Update()
@@ -376,7 +385,6 @@ public class RunState : MonoBehaviour
     }
 
     // ---------------- 테스트용 ----------------
-    // Play 중 Hierarchy의 DontDestroyOnLoad → RunState를 선택하고 점 세 개 메뉴에서 실행
 
     [ContextMenu("테스트: 전투 승리")]
     private void DebugWin()
@@ -408,7 +416,6 @@ public class RunState : MonoBehaviour
         Debug.Log($"{floorIndex}층 클리어! {floorIndex + 1}층으로 올라가요.");
     }
 
-    // 기획서 4. 골드 획득량 (7단계에서 보상 시스템으로 옮길 예정)
     private int RollGold(RoomType type)
     {
         int[,] enemy = { { 15, 25 }, { 25, 35 }, { 35, 45 } };
@@ -424,6 +431,6 @@ public class RunState : MonoBehaviour
             case RoomType.Boss: baseGold = boss[f]; break;
         }
 
-        return GetModifiedGold(baseGold);   // (팀원 코드) 골드 보너스 유물 적용
+        return GetModifiedGold(baseGold);   // 골드 보너스 유물 적용
     }
 }
