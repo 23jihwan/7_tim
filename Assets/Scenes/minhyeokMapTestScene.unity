@@ -1318,7 +1318,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB3C4\uAC10"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c46bce8f1fa46cf409129101f2e1c32a, type: 2}
   m_sharedMaterial: {fileID: 2946741057158105351, guid: c46bce8f1fa46cf409129101f2e1c32a, type: 2}
@@ -1426,7 +1426,7 @@ RectTransform:
   m_GameObject: {fileID: 341558455}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 2, z: 1}
+  m_LocalScale: {x: 0.66767, y: 3.672185, z: 0.66767}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 332349496}
@@ -1513,8 +1513,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: -3645056998552937895, guid: cb44cf286877da340994fea5ac1f4a93, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2339,7 +2339,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 893, y: -472}
+  m_AnchoredPosition: {x: 857, y: -358}
   m_SizeDelta: {x: 110, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &655505251
@@ -2484,6 +2484,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2de22dc1d02693d45aec411716ab90ab, type: 2}
   - {fileID: 11400000, guid: 8f2500016b9e45a43b67b21c3f62793a, type: 2}
   - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
+  - {fileID: 11400000, guid: 0e2fbb5e8f5d378438be3e6bcfa2b828, type: 2}
+  - {fileID: 11400000, guid: fac4a65d45d682d46b828fd592a988a2, type: 2}
+  - {fileID: 11400000, guid: 925348f6671b66c4bb441045e2b38eda, type: 2}
   cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
 --- !u!4 &670652261
 Transform:

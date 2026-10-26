@@ -623,9 +623,12 @@ MonoBehaviour:
   enemyMaxHP: 100
   enemyCurrentHP: 0
   enemyAttackDamage: 10
+  enemyDefense: 0
   enemyHPText: {fileID: 1430603983}
   playerMaxHP: 100
   playerCurrentHP: 0
+  playerDefense: 0
+  playerBarrier: 0
   playerHPText: {fileID: 0}
   enemyAttackText: {fileID: 28294554}
 --- !u!4 &423436537
@@ -2571,6 +2574,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1338677bf1f09be4483490f02b87c876, type: 2}
   - {fileID: 11400000, guid: 0e2fbb5e8f5d378438be3e6bcfa2b828, type: 2}
   - {fileID: 11400000, guid: fac4a65d45d682d46b828fd592a988a2, type: 2}
+  - {fileID: 11400000, guid: 925348f6671b66c4bb441045e2b38eda, type: 2}
   playerMaxHP: 100
   playerCurrentHP: 100
   enemyMaxHP: 30
