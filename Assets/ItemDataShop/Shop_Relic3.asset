@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: "\uB9C8\uC655\uC758 \uC9C0\uD321\uC774"
   itemDesc: "\uC0C1\uD0DC\uC774\uC0C1 \uACF5\uACA9\uBD88\uAC00 ( +1 ) \uD69F\uC218\uB97C
     \uCD94\uAC00\uD569\uB2C8\uB2E4."
-  itemPrice: 120
+  itemPrice: 1
   itemIcon: {fileID: 4251389298968119032, guid: 26d421ddaedc42e449938e2d9a1a16e3, type: 3}
   itemType: 1
   card: {fileID: 0}

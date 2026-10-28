@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
   itemName: "\uC0DD\uBA85\uC758 \uD39C\uB358\uD2B8"
   itemDesc: "\uCD5C\uB300\uCCB4\uB825\uC774 ( +10 ) \uCD94\uAC00 \uB429\uB2C8\uB2E4."
-  itemPrice: 120
+  itemPrice: 1
   itemIcon: {fileID: 4542371467470970117, guid: 60549ace37f57814fac05c00de1ff145, type: 3}
   itemType: 1
   card: {fileID: 0}
