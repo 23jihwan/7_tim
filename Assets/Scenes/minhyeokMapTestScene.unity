@@ -1221,7 +1221,7 @@ MonoBehaviour:
   confirmPopup: {fileID: 1223172552}
   eventPopup: {fileID: 670652260}
   restPopup: {fileID: 972201723}
-  demoMode: 0
+  demoMode: 1
   demoOrder: 0000000001000000020000000300000004000000
   padding: 80
   nodeSize: 56
