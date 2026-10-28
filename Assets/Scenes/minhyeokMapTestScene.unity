@@ -1220,6 +1220,9 @@ MonoBehaviour:
   nodePrefab: {fileID: 1332497883257682475, guid: ae63b911f1bc02242984dd3f440b99f2, type: 3}
   confirmPopup: {fileID: 1223172552}
   eventPopup: {fileID: 670652260}
+  restPopup: {fileID: 972201723}
+  demoMode: 0
+  demoOrder: 0000000001000000020000000300000004000000
   padding: 80
   nodeSize: 56
   bossSize: 84
@@ -2712,6 +2715,53 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 925213370}
   m_CullTransparentMesh: 1
+--- !u!1 &972201722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 972201724}
+  - component: {fileID: 972201723}
+  m_Layer: 0
+  m_Name: RestPopup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &972201723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972201722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 926d835f873faa343ae38501c8e930c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RestPopup
+  healPercent: 0.3
+  image: {fileID: 21300000, guid: d4db4344658fc8a4d999166447d1bb2a, type: 3}
+  upgradeEnabled: 0
+--- !u!4 &972201724
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 972201722}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 740.5734, y: 589.749, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &984791379
 GameObject:
   m_ObjectHideFlags: 0
@@ -5188,3 +5238,4 @@ SceneRoots:
   - {fileID: 1869563664}
   - {fileID: 2014001140}
   - {fileID: 857064201}
+  - {fileID: 972201724}

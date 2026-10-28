@@ -27,6 +27,13 @@ public class MapView : MonoBehaviour
     public MapConfirmPopup confirmPopup;
     [Tooltip("이벤트 노드에 들어가면 뜨는 이벤트 창")]
     public EventPopup eventPopup;   // ★ 이벤트 창
+    [Tooltip("휴식 노드에 들어가면 뜨는 휴식 창")]
+    public RestPopup restPopup;
+
+    // ★ 발표용
+    [Header("발표용 (체크하면 정해진 순서의 맵이 나온다)")]
+    public bool demoMode = false;
+    public RoomType[] demoOrder = { RoomType.Enemy, RoomType.Elite, RoomType.Event, RoomType.Shop, RoomType.Rest };
 
     [Header("배치")]
     public float padding = 80f;
@@ -100,7 +107,8 @@ public class MapView : MonoBehaviour
         RunState run = RunState.GetOrCreate();
         run.config = config;   // 층별 몬스터 정보를 RunState도 쓸 수 있게
         run.EnsureRunStarted();
-        currentMap = MapGenerator.Generate(config, run.floorIndex, run.seed);
+        // ★ 발표용: 체크되어 있으면 정해진 순서의 맵
+        currentMap = demoMode ? BuildDemoMap() : MapGenerator.Generate(config, run.floorIndex, run.seed);
 
         PrepareLayers();
         Clear();
@@ -126,6 +134,25 @@ public class MapView : MonoBehaviour
         RefreshVisuals();
 
         Debug.Log($"{run.floorIndex + 1}층 맵 (시드 {run.seed}) · 체력 {run.playerHP}/{run.playerMaxHP} · 골드 {run.gold}");
+    }
+
+    // ★ 발표용: 정해진 순서대로 한 줄로 이어진 맵 (마지막은 보스)
+    private MapData BuildDemoMap()
+    {
+        MapData map = new MapData();
+        MapNode prev = null;
+
+        for (int i = 0; i < demoOrder.Length; i++)
+        {
+            MapNode node = new MapNode { column = i, lane = 1, type = demoOrder[i] };
+            if (prev != null) { prev.next.Add(node); node.prev.Add(prev); }
+            map.columns.Add(new List<MapNode> { node });
+            prev = node;
+        }
+
+        map.boss = new MapNode { column = demoOrder.Length, lane = 1, type = RoomType.Boss };
+        if (prev != null) { prev.next.Add(map.boss); map.boss.prev.Add(prev); }
+        return map;
     }
 
     private Vector2 GetPosition(MapNode node)
@@ -245,6 +272,7 @@ public class MapView : MonoBehaviour
     private void OnNodeClicked(MapNode node)
     {
         if (!IsReachable(node)) return;
+        SoundManager.Play("page");
 
         if (confirmPopup != null)
         {
@@ -269,6 +297,8 @@ public class MapView : MonoBehaviour
         {
             if (node.type == RoomType.Event && eventPopup != null)
                 eventPopup.Open();
+            else if (node.type == RoomType.Rest && restPopup != null)
+                restPopup.Open();
             else
                 Debug.Log($"{MapGenerator.KoreanName(node.type)} 방은 아직 구현 전이라 바로 통과해요.");
         }
