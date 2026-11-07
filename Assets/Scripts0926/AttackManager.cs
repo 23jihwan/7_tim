@@ -20,7 +20,7 @@ public class ActiveStatusEffect
     }
 }
 
-// ★ [추가] 플레이어 버프 정보 구조체
+// ★ 플레이어 버프 정보 구조체
 [System.Serializable]
 public class ActivePlayerBuff
 {
@@ -187,7 +187,6 @@ public class AttackManager : MonoBehaviour
                     // (1) 공격 카드
                     if (card.cardType == CardType.Attack)
                     {
-                        // ★ [현재 활성화된 버프 적용] (이전 턴에 예약되어 이번 턴에 활성화된 버프만 적용)
                         int currentActiveBuff = GetTotalActiveBuff();
                         int baseDamage = card.value + currentActiveBuff;
 
@@ -202,6 +201,13 @@ public class AttackManager : MonoBehaviour
 
                         float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                         int calculatedDamage = Mathf.RoundToInt(baseDamage * multiplier);
+
+                        // ★ [치명타 연산] RunState.Instance.equippedRelics (배열)를 전달하여 치명타 연산
+                        bool isCrit = false;
+                        if (CriticalManager.Instance != null && RunState.Instance != null)
+                        {
+                            calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, RunState.Instance.equippedRelics, out isCrit);
+                        }
 
                         // 몬스터 방어력 차감 계산 (최소 0)
                         int finalDamage = Mathf.Max(0, calculatedDamage - enemyDefense);
@@ -218,7 +224,9 @@ public class AttackManager : MonoBehaviour
 
                         CardAnimator.Hit(monsterVisual, AttackColor);
                         UpdateUI();
-                        Debug.Log($"[공격] {card.cardName}({card.elementType}) -> {enemyName}(방어력 {enemyDefense})에게 계산피해:{calculatedDamage} / 최종피해:{finalDamage} 데미지! (공격 버프 +{currentActiveBuff} 적용)");
+
+                        string critTag = isCrit ? " ★[치명타 2배 적용!]" : "";
+                        Debug.Log($"[공격] {card.cardName}({card.elementType}) -> {enemyName}(방어력 {enemyDefense})에게 계산피해:{calculatedDamage}{critTag} / 최종피해:{finalDamage} 데미지! (공격 버프 +{currentActiveBuff} 적용)");
                     }
                     // (2) 힐 카드
                     else if (card.cardType == CardType.Heal)
@@ -256,6 +264,13 @@ public class AttackManager : MonoBehaviour
                             float multiplier = GetElementMultiplier(card.elementType, enemyElement);
                             int calculatedDamage = Mathf.RoundToInt(baseDamage * multiplier);
 
+                            // ★ [치명타 연산] 힐 공격 수치에도 치명타 연산 적용
+                            bool isCrit = false;
+                            if (CriticalManager.Instance != null && RunState.Instance != null)
+                            {
+                                calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, RunState.Instance.equippedRelics, out isCrit);
+                            }
+
                             int finalDamage = Mathf.Max(0, calculatedDamage - enemyDefense);
 
                             if (GameManager.Instance != null)
@@ -269,7 +284,8 @@ public class AttackManager : MonoBehaviour
                             }
 
                             CardAnimator.Hit(monsterVisual, HolyColor);
-                            Debug.Log($"[신성 힐 공격] 적(방어력 {enemyDefense})에게 최종 {finalDamage} 데미지!");
+                            string critTag = isCrit ? " ★[치명타 2배 적용!]" : "";
+                            Debug.Log($"[신성 힐 공격] 적(방어력 {enemyDefense})에게 최종 {finalDamage} 데미지!{critTag}");
                         }
                         UpdateUI();
                     }

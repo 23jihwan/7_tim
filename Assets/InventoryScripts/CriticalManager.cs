@@ -5,8 +5,7 @@ public class CriticalManager : MonoBehaviour
 {
     public static CriticalManager Instance { get; private set; }
 
-    [Header("치명타 설정")]
-    private const float MAX_CRIT_CHANCE = 100f; // 최대 치명타 확률 100% 제한
+    private const float MAX_CRIT_CHANCE = 100f; // 최대 치명타 확률 100%
 
     private void Awake()
     {
@@ -22,13 +21,17 @@ public class CriticalManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 현재 장착 중인 5개 유물 슬롯 리스트를 받아 총 치명타 확률 계산
+    /// 장착 중인 유물 목록(배열 또는 리스트)에서 총 치명타 확률 합산 (최대 100% 제한)
     /// </summary>
-    public float GetTotalCriticalChance(List<RelicData> equippedRelics)
+    public float GetTotalCriticalChance(IEnumerable<RelicData> equippedRelics)
     {
-        float totalChance = 0f;
+        if (equippedRelics == null)
+        {
+            Debug.LogWarning("[CriticalManager] 장착된 유물 목록이 null입니다.");
+            return 0f;
+        }
 
-        if (equippedRelics == null) return 0f;
+        float totalChance = 0f;
 
         foreach (var relic in equippedRelics)
         {
@@ -38,28 +41,28 @@ public class CriticalManager : MonoBehaviour
             }
         }
 
-        // 최대 100%로 제한
         return Mathf.Clamp(totalChance, 0f, MAX_CRIT_CHANCE);
     }
 
     /// <summary>
-    /// 최종 데미지 계산 (치명타 성공 시 기본 공격력의 2배 적용)
+    /// 최종 데미지 연산 (치명타 100% 만족 시 baseDamage * 2 적용)
     /// </summary>
-    /// <param name="baseDamage">기본 공격력</param>
-    /// <param name="equippedRelics">현재 장착된 유물 리스트</param>
-    /// <param name="isCritical">치명타 발동 여부 반환</param>
-    public int CalculateDamage(int baseDamage, List<RelicData> equippedRelics, out bool isCritical)
+    public int CalculateDamage(int baseDamage, IEnumerable<RelicData> equippedRelics, out bool isCritical)
     {
         float critChance = GetTotalCriticalChance(equippedRelics);
         float randomValue = Random.Range(0f, 100f);
 
+        // critChance가 100%이면 randomValue < 100f는 무조건 true
         if (randomValue < critChance)
         {
             isCritical = true;
-            return baseDamage * 2; // 치명타 시 기본 공격력의 2배
+            int doubleDamage = baseDamage * 2;
+            Debug.Log($"[CriticalManager] ★ 치명타 발동! (확률: {critChance}%) | {baseDamage} -> {doubleDamage} 데미지");
+            return doubleDamage;
         }
 
         isCritical = false;
+        Debug.Log($"[CriticalManager] 일반 공격 (확률: {critChance}%) | 데미지: {baseDamage}");
         return baseDamage;
     }
 }

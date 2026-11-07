@@ -433,4 +433,6 @@ public class RunState : MonoBehaviour
 
         return GetModifiedGold(baseGold);   // 골드 보너스 유물 적용
     }
+
+
 }

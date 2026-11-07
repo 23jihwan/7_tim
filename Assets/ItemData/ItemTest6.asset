@@ -20,4 +20,4 @@ MonoBehaviour:
   icon: {fileID: 4701579575602394981, guid: dd7e2f3a661e00f45bb1c482dd83e399, type: 3}
   type: 0
   statBonusType: 6
-  value: 20
+  value: 100

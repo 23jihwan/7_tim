@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// 유물 카테고리
 public enum RelicType
 {
     Attack,
@@ -9,7 +8,7 @@ public enum RelicType
     Utility
 }
 
-// 유물 능력치 부여 타입 (치명타 확률 추가)
+// StatBonusType에 CriticalChanceBonus 추가
 public enum StatBonusType
 {
     None,
@@ -18,7 +17,7 @@ public enum StatBonusType
     AttackBonus,
     DebuffBonus,
     StunBonus,
-    CriticalChanceBonus // ★ 치명타 확률 증가 효과
+    CriticalChanceBonus // ★ 치명타 확률 증가 보너스
 }
 
 [CreateAssetMenu(fileName = "NewRelic", menuName = "Inventory/RelicData")]
@@ -31,6 +30,6 @@ public class RelicData : ScriptableObject
     public RelicType type;
 
     [Header("효과 설정")]
-    public StatBonusType statBonusType; // 어떤 능력치를 올려주는 유물인가?
-    public int value;                   // 올려주는 수치 (+값, 치명타의 경우 % 확률 수치)
+    public StatBonusType statBonusType; // CriticalChanceBonus 선택
+    public int value;                   // 치명타 확률 수치 (예: 20 -> 20%)
 }
