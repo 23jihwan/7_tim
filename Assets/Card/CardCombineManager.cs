@@ -22,6 +22,17 @@ public class CardCombineManager : MonoBehaviour
     }
 
     /// <summary>
+    /// 조합 슬롯 2곳 중 카드가 1장이라도 올라와 있는지 확인합니다.
+    /// </summary>
+    public bool HasCardsInCombineSlots()
+    {
+        CardUI card1 = combineSlot1 != null ? combineSlot1.GetComponentInChildren<CardUI>() : null;
+        CardUI card2 = combineSlot2 != null ? combineSlot2.GetComponentInChildren<CardUI>() : null;
+
+        return (card1 != null || card2 != null);
+    }
+
+    /// <summary>
     /// 조합 슬롯 2곳의 카드를 확인하여 미리보기 UI를 업데이트합니다.
     /// </summary>
     public void UpdateCraftPreview()
@@ -74,7 +85,7 @@ public class CardCombineManager : MonoBehaviour
         {
             Debug.Log($"[조합 성공] {card1.cardData.cardName} + {card2.cardData.cardName} => {resultData.cardName}");
 
-            // ★ [추가] 조합으로 새로 조합해낸 결과 카드를 도감에 해금!
+            // ★ 조합으로 새로 조합해낸 결과 카드를 도감에 해금!
             if (EncyclopediaManager.Instance != null)
             {
                 EncyclopediaManager.Instance.UnlockCard(resultData.cardName);

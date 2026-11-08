@@ -40,6 +40,7 @@ public class AttackManager : MonoBehaviour
 {
     [Header("References")]
     public GameManager gameManager;
+    public CardCombineManager combineManager; // 조합 매니저 참조
     public Transform[] dropSlots;
 
     [Header("Animation")]
@@ -103,6 +104,12 @@ public class AttackManager : MonoBehaviour
             playerDefense = RunState.Instance.playerData.defense;
         }
 
+        // 3. combineManager가 인스펙터에 비어있는 경우 씬에서 자동 탐색 (최신 API 적용)
+        if (combineManager == null)
+        {
+            combineManager = FindFirstObjectByType<CardCombineManager>();
+        }
+
         enemyCurrentHP = enemyMaxHP;
         playerCurrentHP = playerMaxHP;
         playerBarrier = 0;
@@ -125,6 +132,15 @@ public class AttackManager : MonoBehaviour
     public void OnAttackButtonClicked()
     {
         if (isAttacking) return;
+
+        // ★ [조합 슬롯 검사] 조합 슬롯에 카드가 남아있으면 턴 종료 차단 (최신 API 적용)
+        CardCombineManager combiner = combineManager != null ? combineManager : FindFirstObjectByType<CardCombineManager>();
+        if (combiner != null && combiner.HasCardsInCombineSlots())
+        {
+            Debug.LogWarning("[턴 종료 중단] 조합 슬롯에 카드가 남아있습니다! 카드를 완성하거나 손패로 돌려놓은 뒤 턴을 종료해주세요.");
+            return;
+        }
+
         StartCoroutine(AttackRoutine());
     }
 
