@@ -120,7 +120,14 @@ public class ShopManager : MonoBehaviour
         switch (item.itemType)
         {
             case ShopItemType.Card:
-                run.AddCard(item.card);       // 덱에 추가 + 도감 등록
+                run.AddCard(item.card);       // 덱에 추가
+
+                // ★ [추가] 구매한 카드를 도감 및 조합 시스템에 해금 등록
+                if (item.card != null && EncyclopediaManager.Instance != null)
+                {
+                    EncyclopediaManager.Instance.UnlockCard(item.card.cardName);
+                    Debug.Log($"[상점 구매] {item.card.cardName} 카드가 도감 및 조합 가능 데이터에 해금되었습니다.");
+                }
                 break;
 
             case ShopItemType.Relic:
