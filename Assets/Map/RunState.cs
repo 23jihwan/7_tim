@@ -93,7 +93,7 @@ public class RunState : MonoBehaviour
     public int GetTotalRelicBonus(StatBonusType targetType)
     {
         int totalBonus = 0;
-        foreach (var relic in ownedRelics)
+        foreach (var relic in equippedRelics) // ownedRelics가 아니라 equippedRelics여야 함
         {
             if (relic != null && relic.statBonusType == targetType)
             {
@@ -163,14 +163,6 @@ public class RunState : MonoBehaviour
     {
         if (relic == null || ownedRelics.Contains(relic)) return false;
         ownedRelics.Add(relic);
-
-        // 최대 체력 유물은 얻는 즉시 적용
-        if (relic.statBonusType == StatBonusType.MaxHP)
-        {
-            playerMaxHP += relic.value;
-            playerHP += relic.value;
-            Debug.Log($"[유물 효과] 최대 체력 증가 +{relic.value} (현재 최대 체력: {playerMaxHP})");
-        }
 
         Debug.Log($"유물 획득: {relic.relicName} (보유 {ownedRelics.Count}개)");
         return true;
