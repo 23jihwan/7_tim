@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: "Shop_\uD790\uC5B4\uD0DD"
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
   itemName: "\uD790\uC5B4\uD0DD"
-  itemDesc: "\uB371\uC5D0 \uD790\uC5B4\uD0DD \uCE74\uB4DC\uB97C 1\uC7A5 \uCD94\uAC00\uD569\uB2C8\uB2E4."
+  itemDesc: "HP 30\uC744 \uD68C\uBCF5\uD558\uACE0 \uC801\uC5D0\uAC8C 5\uC758 \uB370\uBBF8\uC9C0\uB97C
+    \uC785\uD78C\uB2E4"
   itemPrice: 50
-  itemIcon: {fileID: 21300000, guid: 25126c248902e8347a4a2f96259cb92b, type: 3}
+  itemIcon: {fileID: 21300000, guid: b11f9c52da2945740b5078d84177a9ab, type: 3}
   itemType: 0
   card: {fileID: 11400000, guid: 17a5fc3f57f1e004aa2063a1dbcbc89b, type: 2}
   relic: {fileID: 0}

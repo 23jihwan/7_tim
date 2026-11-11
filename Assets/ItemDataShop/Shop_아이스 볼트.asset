@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: "Shop_\uC544\uC774\uC2A4 \uBCFC\uD2B8"
   m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
   itemName: "\uC544\uC774\uC2A4 \uBCFC\uD2B8"
-  itemDesc: "\uB371\uC5D0 \uC544\uC774\uC2A4 \uBCFC\uD2B8 \uCE74\uB4DC\uB97C 1\uC7A5
-    \uCD94\uAC00\uD569\uB2C8\uB2E4."
+  itemDesc: "\uC801\uC5D0\uAC8C 15\uC758 \uB370\uBBF8\uC9C0\uC640 \uAC10\uC804 \uC0C1\uD0DC
+    \uD6A8\uACFC\uB97C \uBD80\uC5EC\uD55C\uB2E4"
   itemPrice: 50
-  itemIcon: {fileID: 21300000, guid: 25126c248902e8347a4a2f96259cb92b, type: 3}
+  itemIcon: {fileID: 21300000, guid: ff42a689ad961fd4b9da0a00643acce7, type: 3}
   itemType: 0
   card: {fileID: 11400000, guid: 22579b50a5698374f8977335efa17cf0, type: 2}
   relic: {fileID: 0}

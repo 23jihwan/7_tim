@@ -20,4 +20,34 @@ public class ShopItemData : ScriptableObject
     public RelicData relic;
     [Tooltip("종류가 Heal일 때: 회복량")]
     public int healAmount = 30;
+
+#if UNITY_EDITOR
+    // 에디터 우측 상단 점 3개 메뉴를 눌러서 데이터를 한 번에 가져오는 버튼
+    [ContextMenu("카드/유물 데이터에서 이미지 및 정보 자동 가져오기")]
+    public void SyncDataFromSource()
+    {
+        if (itemType == ShopItemType.Card && card != null)
+        {
+            itemName = card.cardName;
+            itemDesc = card.description;
+            itemIcon = card.cardIcon; // CardData의 이미지 변수명 연동
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"[상점 데이터 동기화] 카드 ({card.cardName})의 정보와 이미지를 성공적으로 가져왔습니다!");
+        }
+        else if (itemType == ShopItemType.Relic && relic != null)
+        {
+            itemName = relic.relicName;
+            itemDesc = relic.description;
+            itemIcon = relic.icon; // RelicData의 이미지 변수명 연동
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"[상점 데이터 동기화] 유물 ({relic.relicName})의 정보와 이미지를 성공적으로 가져왔습니다!");
+        }
+        else
+        {
+            Debug.LogWarning("연결된 카드나 유물 데이터가 없거나 아이템 타입이 올바르지 않습니다.");
+        }
+    }
+#endif
 }

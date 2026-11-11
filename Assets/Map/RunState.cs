@@ -427,4 +427,22 @@ public class RunState : MonoBehaviour
     }
 
 
+    // ★ [추가] 이미 상점에서 구매한 아이템들을 영구적으로 기록하는 리스트
+    public HashSet<ShopItemData> purchasedShopItems = new HashSet<ShopItemData>();
+
+    // 이미 구매한 아이템인지 확인하는 함수
+    public bool IsItemPurchased(ShopItemData item)
+    {
+        return purchasedShopItems.Contains(item);
+    }
+
+    // 아이템을 구매 목록에 추가하는 함수
+    public void AddPurchasedItem(ShopItemData item)
+    {
+        if (item != null && !purchasedShopItems.Contains(item))
+        {
+            purchasedShopItems.Add(item);
+        }
+    }
+
 }
