@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// ¾Ë¾Æ³½ Á¶ÇÕ¹ıÀ» ¿µ±¸È÷ ±â·ÏÇÑ´Ù (°ÔÀÓÀ» ²°´Ù ÄÑµµ, »õ ·±À» ½ÃÀÛÇØµµ À¯Áö)
-// Á¶ÇÕ¿¡ ¼º°øÇÏ¸é RecipeBook.Unlock(Àç·áA, Àç·áB) ÇÑ ÁÙ¸¸ ºÎ¸£¸é µÈ´Ù
+// ì•Œì•„ë‚¸ ì¡°í•©ë²•ì„ ì˜êµ¬íˆ ê¸°ë¡í•œë‹¤ (ê²Œì„ì„ ê»ë‹¤ ì¼œë„, ìƒˆ ëŸ°ì„ ì‹œì‘í•´ë„ ìœ ì§€)
+// ì¡°í•©ì— ì„±ê³µí•˜ë©´ RecipeBook.Unlock(ì¬ë£ŒA, ì¬ë£ŒB) í•œ ì¤„ë§Œ ë¶€ë¥´ë©´ ëœë‹¤
 public static class RecipeBook
 {
     private const string SaveKey = "unlocked_recipes";
     private static HashSet<string> unlocked;
 
-    // Àç·á ¼ø¼­°¡ ¹Ù²î¾îµµ °°Àº Á¶ÇÕÀ¸·Î º»´Ù (ÆÄÀÌ¾îº¼+Èú = Èú+ÆÄÀÌ¾îº¼)
+    // ì¬ë£Œ ìˆœì„œê°€ ë°”ë€Œì–´ë„ ê°™ì€ ì¡°í•©ìœ¼ë¡œ ë³¸ë‹¤ (íŒŒì´ì–´ë³¼+í = í+íŒŒì´ì–´ë³¼)
     private static string Key(CardData a, CardData b)
     {
-        string x = a != null ? a.name : "", y = b != null ? b.name : "";
+        // ê°•í™” ì¹´ë“œ(íŒŒì´ì–´ë³¼+2)ë„ ì›ë˜ ì¹´ë“œ(íŒŒì´ì–´ë³¼)ë¡œ ê¸°ë¡í•œë‹¤
+        string x = a != null ? a.BaseCard.name : "", y = b != null ? b.BaseCard.name : "";
         return string.CompareOrdinal(x, y) <= 0 ? x + "+" + y : y + "+" + x;
     }
 
@@ -30,25 +31,25 @@ public static class RecipeBook
         return unlocked.Contains(Key(a, b));
     }
 
-    // Ã³À½ ¾Ë¾Æ³½ Á¶ÇÕÀÌ¸é true
+    // ì²˜ìŒ ì•Œì•„ë‚¸ ì¡°í•©ì´ë©´ true
     public static bool Unlock(CardData a, CardData b)
     {
         Load();
         if (!unlocked.Add(Key(a, b))) return false;
         PlayerPrefs.SetString(SaveKey, string.Join("|", unlocked));
         PlayerPrefs.Save();
-        Debug.Log($"»õ Á¶ÇÕ¹ı ÇØ±İ: {(a != null ? a.cardName : "?")} + {(b != null ? b.cardName : "?")}");
+        Debug.Log($"ìƒˆ ì¡°í•©ë²• í•´ê¸ˆ: {(a != null ? a.cardName : "?")} + {(b != null ? b.cardName : "?")}");
         return true;
     }
 
     public static int UnlockedCount { get { Load(); return unlocked.Count; } }
 
-    // Å×½ºÆ®¿ë: ÇØ±İ ±â·Ï Áö¿ì±â
+    // í…ŒìŠ¤íŠ¸ìš©: í•´ê¸ˆ ê¸°ë¡ ì§€ìš°ê¸°
     public static void ResetAll()
     {
         unlocked = new HashSet<string>();
         PlayerPrefs.DeleteKey(SaveKey);
         PlayerPrefs.Save();
-        Debug.Log("Á¶ÇÕ¹ı ÇØ±İ ±â·ÏÀ» ¸ğµÎ Áö¿ü¾î¿ä.");
+        Debug.Log("ì¡°í•©ë²• í•´ê¸ˆ ê¸°ë¡ì„ ëª¨ë‘ ì§€ì› ì–´ìš”.");
     }
 }

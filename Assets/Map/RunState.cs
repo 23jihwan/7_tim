@@ -151,11 +151,31 @@ public class RunState : MonoBehaviour
         Debug.Log($"덱에 {card.cardName} 추가! (덱 {deck.Count}장)");
     }
 
+    // ★ 덱의 index번째 카드를 1단계 강화 (휴식 방). 최대 +5
+    public bool UpgradeCardAt(int index)
+    {
+        if (index < 0 || index >= deck.Count || !CardUpgrade.CanUpgrade(deck[index])) return false;
+        string before = deck[index].cardName;
+        deck[index] = CardUpgrade.Upgrade(deck[index]);
+        Debug.Log($"[강화] {before} → {deck[index].cardName} (수치 {deck[index].value})");
+        return true;
+    }
+
+    // ★ 덱의 index번째 카드를 제거 (휴식 방의 명상)
+    public bool RemoveCardAt(int index)
+    {
+        if (index < 0 || index >= deck.Count) return false;
+        Debug.Log($"[명상] {deck[index].cardName} 제거 (남은 덱 {deck.Count - 1}장)");
+        deck.RemoveAt(index);
+        return true;
+    }
+
     // 얻은 카드는 모두 도감에 등록 (이미 등록된 카드면 아무 일도 없음)
     private void RegisterInBook(CardData card)
     {
+        // ★ 강화 카드(파이어볼+2)는 원래 카드(파이어볼) 이름으로 등록
         if (card != null && EncyclopediaManager.Instance != null)
-            EncyclopediaManager.Instance.UnlockCard(card.cardName);
+            EncyclopediaManager.Instance.UnlockCard(card.BaseCard.cardName);
     }
 
     // 유물 얻기 (이벤트, 엘리트, 상점 보상 등). 이미 가진 유물이면 false
@@ -192,7 +212,7 @@ public class RunState : MonoBehaviour
         }
 
         if (type != RoomType.Enemy && type != RoomType.Elite && type != RoomType.Boss)
-            return false;   // 상점, 이벤트, 휴식은 아직 구현 전
+            return false;   // 이벤트, 휴식은 맵에서 창으로 처리
 
         pendingEnemy = PickEnemy(type);
         SceneManager.LoadScene(GetBattleScene(type));

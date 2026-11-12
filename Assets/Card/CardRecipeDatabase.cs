@@ -18,6 +18,10 @@ public class CardRecipeDatabase : ScriptableObject
     {
         if (a == null || b == null) return null;
 
+        // ★ 강화 카드(파이어볼+2)도 원래 카드(파이어볼)로 조합에 쓸 수 있게
+        a = a.BaseCard;
+        b = b.BaseCard;
+
         foreach (var recipe in recipes)
         {
             if ((recipe.cardA == a && recipe.cardB == b) || (recipe.cardA == b && recipe.cardB == a))

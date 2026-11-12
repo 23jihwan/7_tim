@@ -3,18 +3,20 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// ÀüÅõ È­¸é ±¸¼®¿¡ µ¦ ´õ¹Ì¸¦ º¸¿©ÁÖ°í, ¸¶¿ì½º¸¦ ¿Ã¸®¸é Á¶ÇÕ¹ı ¸ñ·ÏÀ» ¶ç¿î´Ù
-// ¾ÆÁ÷ ¸ğ¸£´Â Á¶ÇÕÀº °á°ú°¡ "?"·Î, ¾Ë¾Æ³½ Á¶ÇÕÀº °á°ú Ä«µå ±×¸²ÀÌ ³ª¿Â´Ù
-// ÀüÅõ ¾ÀÀÇ ºó ¿ÀºêÁ§Æ®¿¡ ºÙÀÌ°í Recipe Database¸¸ ¿¬°áÇÏ¸é µÈ´Ù (È­¸éÀº ÄÚµå°¡ ¸¸µç´Ù)
+// ì „íˆ¬ í™”ë©´ êµ¬ì„ì— ë± ë”ë¯¸ë¥¼ ë³´ì—¬ì£¼ê³ , ë§ˆìš°ìŠ¤ë¥¼ ì˜¬ë¦¬ë©´ ì¡°í•©ë²• ëª©ë¡ì„ ë„ìš´ë‹¤
+// ì•„ì§ ëª¨ë¥´ëŠ” ì¡°í•©ì€ ê²°ê³¼ê°€ "?"ë¡œ, ì•Œì•„ë‚¸ ì¡°í•©ì€ ê²°ê³¼ ì¹´ë“œ ê·¸ë¦¼ì´ ë‚˜ì˜¨ë‹¤
+// ì „íˆ¬ ì”¬ì˜ ë¹ˆ ì˜¤ë¸Œì íŠ¸ì— ë¶™ì´ê³  Recipe Databaseë§Œ ì—°ê²°í•˜ë©´ ëœë‹¤ (í™”ë©´ì€ ì½”ë“œê°€ ë§Œë“ ë‹¤)
 public class DeckRecipeView : MonoBehaviour
 {
-    [Header("µ¥ÀÌÅÍ")]
+    [Header("ë°ì´í„°")]
     public CardRecipeDatabase recipeDatabase;
 
-    [Header("µ¦ ´õ¹Ì À§Ä¡ (È­¸é ¿À¸¥ÂÊ ¾Æ·¡ ±âÁØ)")]
+    [Header("ë± ë”ë¯¸ ìœ„ì¹˜ (í™”ë©´ ì˜¤ë¥¸ìª½ ì•„ë˜ ê¸°ì¤€)")]
     public Vector2 deckPosition = new Vector2(-110, 40);
-    [Tooltip("Ä«µå µŞ¸é ±×¸² (ºñ¿ö µÎ¸é ±âº» ¸ğ¾ç)")]
+    [Tooltip("ì¹´ë“œ ë’·ë©´ ê·¸ë¦¼ (ë¹„ì›Œ ë‘ë©´ ê¸°ë³¸ ëª¨ì–‘)")]
     public Sprite cardBack;
+    [Tooltip("ë± ë³´ê¸°ì—ì„œ ì“¸ ì¹´ë“œ í”„ë¦¬íŒ¹. ì „íˆ¬ ì”¬ì€ ë¹„ì›Œë„ GameManagerì—ì„œ ê°€ì ¸ì˜¨ë‹¤ (ë§µ ì”¬ì€ CardPrefab ë„£ê¸°)")]
+    public GameObject cardPrefab;
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
     private static readonly Color Ink = new Color32(0x3A, 0x2C, 0x1A, 0xFF);
@@ -32,6 +34,11 @@ public class DeckRecipeView : MonoBehaviour
     private void Start()
     {
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        // ë± ë³´ê¸°ì—ì„œ ì¹´ë“œë¥¼ ì§„ì§œ ì¹´ë“œ ëª¨ì–‘ìœ¼ë¡œ ë³´ì—¬ì£¼ë ¤ê³  ì „íˆ¬ ì”¬ì˜ ì¹´ë“œ í”„ë¦¬íŒ¹ì„ ë„˜ê²¨ ë‘”ë‹¤
+        if (cardPrefab != null)
+            BattleRewardPopup.cardPrefab = cardPrefab;
+        else if (GameManager.Instance != null && GameManager.Instance.cardPrefab != null)
+            BattleRewardPopup.cardPrefab = GameManager.Instance.cardPrefab;
         BuildUI();
         panel.SetActive(false);
     }
@@ -53,7 +60,7 @@ public class DeckRecipeView : MonoBehaviour
         return gm != null && gm.cardDatabase != null ? gm.cardDatabase.Count : 0;
     }
 
-    // ---------------- ¸¶¿ì½º ----------------
+    // ---------------- ë§ˆìš°ìŠ¤ ----------------
 
     private void ShowPanel()
     {
@@ -66,22 +73,22 @@ public class DeckRecipeView : MonoBehaviour
         panel.SetActive(false);
     }
 
-    [ContextMenu("Å×½ºÆ®: Á¶ÇÕ¹ı ÇØ±İ ±â·Ï Áö¿ì±â")]
+    [ContextMenu("í…ŒìŠ¤íŠ¸: ì¡°í•©ë²• í•´ê¸ˆ ê¸°ë¡ ì§€ìš°ê¸°")]
     private void ResetRecipes() { RecipeBook.ResetAll(); }
 
-    [ContextMenu("Å×½ºÆ®: ¸ğµç Á¶ÇÕ¹ı ÇØ±İ")]
+    [ContextMenu("í…ŒìŠ¤íŠ¸: ëª¨ë“  ì¡°í•©ë²• í•´ê¸ˆ")]
     private void UnlockAll()
     {
         if (recipeDatabase == null) return;
         foreach (CardRecipe r in recipeDatabase.recipes) RecipeBook.Unlock(r.cardA, r.cardB);
     }
 
-    // ---------------- Á¶ÇÕ¹ı ¸ñ·Ï ----------------
+    // ---------------- ì¡°í•©ë²• ëª©ë¡ ----------------
 
     private void RefreshList()
     {
         foreach (Transform child in listRoot) Destroy(child.gameObject);
-        if (recipeDatabase == null) { headerText.text = "Á¶ÇÕ¹ı (µ¥ÀÌÅÍ ¾øÀ½)"; return; }
+        if (recipeDatabase == null) { headerText.text = "ì¡°í•©ë²• (ë°ì´í„° ì—†ìŒ)"; return; }
 
         int known = 0;
         List<CardRecipe> recipes = recipeDatabase.recipes;
@@ -92,7 +99,7 @@ public class DeckRecipeView : MonoBehaviour
             if (unlocked) known++;
             BuildRow(r, unlocked, -i * 58f);
         }
-        headerText.text = $"Á¶ÇÕ¹ı   {known} / {recipes.Count}";
+        headerText.text = $"ì¡°í•©ë²•   {known} / {recipes.Count}";
     }
 
     private void BuildRow(CardRecipe r, bool unlocked, float y)
@@ -107,7 +114,7 @@ public class DeckRecipeView : MonoBehaviour
         Icon(row.transform, r.cardA, -250);
         NewText("Plus", row.transform, "+", 26, FontStyle.Bold, InkLight, TextAnchor.MiddleCenter, new Vector2(-205, 0), new Vector2(30, 40));
         Icon(row.transform, r.cardB, -160);
-        NewText("Arrow", row.transform, "¡æ", 26, FontStyle.Bold, InkLight, TextAnchor.MiddleCenter, new Vector2(-112, 0), new Vector2(40, 40));
+        NewText("Arrow", row.transform, "â†’", 26, FontStyle.Bold, InkLight, TextAnchor.MiddleCenter, new Vector2(-112, 0), new Vector2(40, 40));
 
         if (unlocked && r.resultCard != null)
         {
@@ -134,7 +141,7 @@ public class DeckRecipeView : MonoBehaviour
         else img.color = Purple;
     }
 
-    // ---------------- È­¸é ¸¸µé±â ----------------
+    // ---------------- í™”ë©´ ë§Œë“¤ê¸° ----------------
 
     private void BuildUI()
     {
@@ -148,7 +155,7 @@ public class DeckRecipeView : MonoBehaviour
         scaler.referenceResolution = new Vector2(1920, 1080);
         scaler.matchWidthOrHeight = 0.5f;
 
-        // µ¦ ´õ¹Ì (Ä«µå 3ÀåÀÌ °ãÄ£ ¸ğ¾ç)
+        // ë± ë”ë¯¸ (ì¹´ë“œ 3ì¥ì´ ê²¹ì¹œ ëª¨ì–‘)
         Image hit = NewImage("Deck", canvasGO.transform, new Color(0, 0, 0, 0));
         RectTransform hrt = hit.rectTransform;
         hrt.anchorMin = hrt.anchorMax = new Vector2(1f, 0f);
@@ -186,14 +193,15 @@ public class DeckRecipeView : MonoBehaviour
         bo.effectColor = Gold;
         bo.effectDistance = new Vector2(2, -2);
         countText = NewText("Text", badge.transform, "0", 24, FontStyle.Bold, Parchment, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(52, 40));
-        NewText("Label", hit.transform, "µ¦", 20, FontStyle.Bold, Parchment, TextAnchor.MiddleCenter, new Vector2(0, 92), new Vector2(80, 30));
+        NewText("Label", hit.transform, "ë±", 20, FontStyle.Bold, Parchment, TextAnchor.MiddleCenter, new Vector2(0, 92), new Vector2(80, 30));
 
-        // ¸¶¿ì½º¸¦ ¿Ã¸®¸é Á¶ÇÕ¹ı Ã¢ (EventTrigger·Î °¨Áö)
+        // ë§ˆìš°ìŠ¤ë¥¼ ì˜¬ë¦¬ë©´ ì¡°í•©ë²• ì°½ (EventTriggerë¡œ ê°ì§€)
         EventTrigger trigger = hit.gameObject.AddComponent<EventTrigger>();
         AddTrigger(trigger, EventTriggerType.PointerEnter, ShowPanel);
         AddTrigger(trigger, EventTriggerType.PointerExit, HidePanel);
+        AddTrigger(trigger, EventTriggerType.PointerClick, () => { HidePanel(); SoundManager.Play("click"); DeckPicker.ShowView(); });   // í´ë¦­í•˜ë©´ ë‚´ ë± ë³´ê¸°
 
-        // Á¶ÇÕ¹ı Ã¢ (µ¦ ¿ŞÂÊ À§¿¡ ¶á´Ù)
+        // ì¡°í•©ë²• ì°½ (ë± ì™¼ìª½ ìœ„ì— ëœ¬ë‹¤)
         Image p = NewImage("RecipePanel", canvasGO.transform, Parchment);
         RectTransform prt = p.rectTransform;
         prt.anchorMin = prt.anchorMax = new Vector2(1f, 0f);
@@ -207,7 +215,7 @@ public class DeckRecipeView : MonoBehaviour
         po.effectDistance = new Vector2(4, -4);
         panel = p.gameObject;
 
-        headerText = NewText("Header", p.transform, "Á¶ÇÕ¹ı", 28, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(580, 50));
+        headerText = NewText("Header", p.transform, "ì¡°í•©ë²•", 28, FontStyle.Bold, Ink, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(580, 50));
         RectTransform hdr = headerText.rectTransform;
         hdr.anchorMin = hdr.anchorMax = new Vector2(0.5f, 1f);
         hdr.anchoredPosition = new Vector2(0, -36);

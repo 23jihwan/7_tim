@@ -81,4 +81,9 @@ public class CardData : ScriptableObject
 
     [Header("Visual Asset")]
     public Sprite cardIcon;                             // 카드 이미지
+
+    [Header("강화 (런 중에 자동으로 채워짐)")]
+    [HideInInspector] public CardData baseCard;      // 강화 카드라면 원래 카드
+    [HideInInspector] public int upgradeLevel;       // 0 = 강화 안 됨, 1~5
+    public CardData BaseCard => baseCard != null ? baseCard : this;
 }
