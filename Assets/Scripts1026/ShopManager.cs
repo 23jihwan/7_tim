@@ -205,8 +205,7 @@ public class ShopManager : MonoBehaviour
         switch (item.itemType)
         {
             case ShopItemType.Card:
-                run.AddCard(item.card);
-
+                // 덱 추가(run.AddCard) 제거 -> 도감 및 조합 권한만 해금
                 if (item.card != null && EncyclopediaManager.Instance != null)
                 {
                     EncyclopediaManager.Instance.UnlockCard(item.card.cardName);
