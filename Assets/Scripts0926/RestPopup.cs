@@ -19,6 +19,8 @@ public class RestPopup : MonoBehaviour
     public GameObject cardPrefab;
     [Tooltip("명상으로 덱을 이보다 적게 줄일 수는 없다")]
     public int minDeckSize = 5;
+    [Tooltip("명상으로 한 번에 제거할 수 있는 최대 장수")]
+    public int maxRemoveCount = 3;
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
     private static readonly Color Ink = new Color32(0x3A, 0x2C, 0x1A, 0xFF);
@@ -70,7 +72,8 @@ public class RestPopup : MonoBehaviour
 
         // 명상: 덱이 너무 적으면 막는다
         bool canRemove = removeEnabled && run.deck.Count > minDeckSize;
-        removeLabel.text = canRemove ? "명상 - 덱에서 카드 1장을 제거한다" : $"명상 - 덱이 {minDeckSize}장 이하라 제거할 수 없다";
+        int removable = Mathf.Min(maxRemoveCount, run.deck.Count - minDeckSize);
+        removeLabel.text = canRemove ? $"명상 - 덱에서 카드를 최대 {removable}장 제거한다" : $"명상 - 덱이 {minDeckSize}장 이하라 제거할 수 없다";
         SetButton(removeButton, canRemove, Purple);
 
         root.SetActive(true);
@@ -134,20 +137,30 @@ public class RestPopup : MonoBehaviour
 
     private void OnRemove()
     {
+        RunState run = RunState.GetOrCreate();
+        int removable = Mathf.Min(maxRemoveCount, run.deck.Count - minDeckSize);
+        if (removable <= 0) return;
+
         root.SetActive(false);
-        DeckPicker.Show("덱에서 제거할 카드를 고르세요", "제거하기", Purple,
+        DeckPicker.ShowMulti($"덱에서 제거할 카드를 고르세요 (최대 {removable}장)", "제거하기", Purple, removable,
             card => true,
-            card => $"{card.cardName}  을(를) 덱에서 영원히 제거합니다",
-            index =>
+            indices =>
             {
-                RunState run = RunState.GetOrCreate();
-                string name = run.deck[index].cardName;
-                run.RemoveCardAt(index);
+                // 뒤쪽 번호부터 지워야 앞쪽 번호가 밀리지 않는다
+                indices.Sort();
+                indices.Reverse();
+                List<string> names = new List<string>();
+                foreach (int i in indices)
+                {
+                    names.Add(run.deck[i].cardName);
+                    run.RemoveCardAt(i);
+                }
+                names.Reverse();
                 SoundManager.Play("debuff");
                 BattleRewardPopup.Show("명상", new List<string>
                 {
                     "마음을 비우고 불필요한 주문을 잊었다.",
-                    $"{name} 제거",
+                    $"{string.Join(", ", names)} 제거",
                     $"내 덱 {run.deck.Count}장"
                 }, new List<CardData>(), _ => { });
             },

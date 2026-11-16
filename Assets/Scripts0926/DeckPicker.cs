@@ -17,6 +17,13 @@ public static class DeckPicker
     /// <param name="describe">고른 카드에 대해 아래에 보여줄 설명 (예: "파이어볼+1 → 파이어볼+2")</param>
     /// <param name="onPicked">확인을 누르면 덱에서의 번호를 알려준다</param>
     /// <param name="onCancel">돌아가기를 누르면</param>
+    // 여러 장 고르기 (예: 명상으로 최대 3장 제거). 1장만 골라도 확인할 수 있다
+    public static void ShowMulti(string title, string confirmLabel, Color confirmColor, int maxSelect,
+        Func<CardData, bool> canPick, Action<List<int>> onPicked, Action onCancel)
+    {
+        Show(title, confirmLabel, confirmColor, canPick, null, null, onCancel, false, maxSelect, onPicked);
+    }
+
     // 덱 보기 전용 (고르기 없이 구경만, 카드를 누르면 설명이 나온다)
     public static void ShowView()
     {
@@ -39,8 +46,10 @@ public static class DeckPicker
 
     public static void Show(string title, string confirmLabel, Color confirmColor,
         Func<CardData, bool> canPick, Func<CardData, string> describe,
-        Action<int> onPicked, Action onCancel, bool viewOnly = false)
+        Action<int> onPicked, Action onCancel, bool viewOnly = false,
+        int maxSelect = 1, Action<List<int>> onPickedMany = null)
     {
+        bool multi = maxSelect > 1;
         RunState run = RunState.GetOrCreate();
         Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
@@ -89,12 +98,16 @@ public static class DeckPicker
         scroll.horizontal = false; scroll.scrollSensitivity = 30f;
 
         // 아래쪽: 선택 설명 + 버튼
-        Text info = NewText(font, "Info", window.transform, viewOnly ? "카드를 누르면 효과를 볼 수 있어요" : "카드를 골라 주세요", 26, FontStyle.Bold, InkLight, new Vector2(0, -300), new Vector2(1100, 40));
+        string hint = viewOnly ? "카드를 누르면 효과를 볼 수 있어요"
+                    : multi ? $"카드를 최대 {maxSelect}장까지 골라 주세요 (1장만 골라도 돼요)" : "카드를 골라 주세요";
+        Text info = NewText(font, "Info", window.transform, hint, 26, FontStyle.Bold, InkLight, new Vector2(0, -300), new Vector2(1100, 40));
 
         int selected = -1;
+        List<int> picks = new List<int>();   // 여러 장 고를 때 고른 카드 번호
         List<Image> frames = new List<Image>();
 
         Button confirm = NewButton(font, "Confirm", window.transform, confirmLabel, confirmColor, new Vector2(160, -380), new Vector2(280, 64));
+        Text confirmText = confirm.GetComponentInChildren<Text>();
         Button cancel = NewButton(font, "Cancel", window.transform, viewOnly ? "닫기" : "돌아가기", Brown, new Vector2(viewOnly ? 0 : -160, -380), new Vector2(280, 64));
         SetInteractable(confirm, false, confirmColor);
         if (viewOnly) confirm.gameObject.SetActive(false);
@@ -135,6 +148,24 @@ public static class DeckPicker
             b.transition = Selectable.Transition.None;
             b.onClick.AddListener(() =>
             {
+                if (multi)
+                {
+                    // 누르면 고르기 / 다시 누르면 취소. 최대 장수를 넘으면 무시
+                    if (picks.Contains(index)) picks.Remove(index);
+                    else if (picks.Count < maxSelect) picks.Add(index);
+                    else { info.text = $"최대 {maxSelect}장까지만 고를 수 있어요"; SoundManager.Play("error"); return; }
+
+                    for (int k = 0; k < frames.Count; k++)
+                        frames[k].color = new Color(Gold.r, Gold.g, Gold.b, picks.Contains(k) ? 1f : 0f);
+                    List<string> names = new List<string>();
+                    foreach (int pi in picks) names.Add(run.deck[pi].cardName);
+                    info.text = picks.Count > 0 ? $"고른 카드 ({picks.Count}/{maxSelect}): {string.Join(", ", names)}" : hint;
+                    confirmText.text = picks.Count > 0 ? $"{confirmLabel} ({picks.Count}장)" : confirmLabel;
+                    SetInteractable(confirm, picks.Count > 0, confirmColor);
+                    SoundManager.Play("card_place");
+                    return;
+                }
+
                 selected = index;
                 for (int k = 0; k < frames.Count; k++)
                     frames[k].color = new Color(Gold.r, Gold.g, Gold.b, k == index ? 1f : 0f);
@@ -146,6 +177,13 @@ public static class DeckPicker
 
         confirm.onClick.AddListener(() =>
         {
+            if (multi)
+            {
+                if (picks.Count == 0) return;
+                UnityEngine.Object.Destroy(canvasGO);
+                onPickedMany?.Invoke(new List<int>(picks));
+                return;
+            }
             if (selected < 0) return;
             UnityEngine.Object.Destroy(canvasGO);
             onPicked?.Invoke(selected);
