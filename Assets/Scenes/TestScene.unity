@@ -425,6 +425,7 @@ MonoBehaviour:
   recipeDatabase: {fileID: 11400000, guid: 6f039b05ed84b624886e21376084dbf5, type: 2}
   deckPosition: {x: -110, y: 40}
   cardBack: {fileID: 0}
+  cardPrefab: {fileID: 0}
 --- !u!4 &279311964
 Transform:
   m_ObjectHideFlags: 0
@@ -470,6 +471,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackManager
   gameManager: {fileID: 2131407800}
+  combineManager: {fileID: 0}
   dropSlots:
   - {fileID: 476181073}
   - {fileID: 892654086}
@@ -2465,6 +2467,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0e2fbb5e8f5d378438be3e6bcfa2b828, type: 2}
   - {fileID: 11400000, guid: fac4a65d45d682d46b828fd592a988a2, type: 2}
   - {fileID: 11400000, guid: 925348f6671b66c4bb441045e2b38eda, type: 2}
+  - {fileID: 11400000, guid: fc24f68ceb1c9964a91abf90917e9e9b, type: 2}
+  - {fileID: 11400000, guid: e8498aaaebdbf164d85bd9b59809ffab, type: 2}
+  - {fileID: 11400000, guid: fafb9518a4dc5ed4e9ebfc6724aaa333, type: 2}
   playerMaxHP: 100
   playerCurrentHP: 100
   enemyMaxHP: 30
