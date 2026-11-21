@@ -1,42 +1,44 @@
 using System;
 using UnityEngine;
 
-// ÀÌº¥Æ® º¸»ó Á¾·ù (±âÈ¹: 1 À¯¹°, 2 °ñµå, 3 Ä«µå, 4 1È¸¿ë ¾ÆÀÌÅÛÀº ³ªÁß¿¡)
-public enum EventRewardType { None, Relic, Gold, Card, Item }
+// ì´ë²¤íŠ¸ ë³´ìƒ ì¢…ë¥˜ (ê¸°íš: 1 ìœ ë¬¼, 2 ê³¨ë“œ, 3 ì¹´ë“œ, 4 1íšŒìš© ì•„ì´í…œì€ ë‚˜ì¤‘ì—)
+public enum EventRewardType { None, Relic, Gold, Card, Item, Recipe }
 
 [Serializable]
 public class EventChoice
 {
-    [Tooltip("¹öÆ°¿¡ º¸ÀÏ ±Û. ¿¹: °ñµå 30À» ÁÖ°í µ½´Â´Ù")]
+    [Tooltip("ë²„íŠ¼ì— ë³´ì¼ ê¸€. ì˜ˆ: ê³¨ë“œ 30ì„ ì£¼ê³  ë•ëŠ”ë‹¤")]
     public string text;
 
-    [Header("´ë°¡")]
+    [Header("ëŒ€ê°€")]
     public int goldCost;
     public int hpCost;
 
-    [Header("º¸»ó")]
+    [Header("ë³´ìƒ")]
     public EventRewardType reward = EventRewardType.None;
-    [Tooltip("°ñµå º¸»ó ¹üÀ§")]
+    [Tooltip("ê³¨ë“œ ë³´ìƒ ë²”ìœ„")]
     public int goldMin = 20;
     public int goldMax = 40;
-    [Tooltip("Æ¯Á¤ À¯¹°À» ÁÙ ¶§. ºñ¿ö µÎ¸é À¯¹° ÈÄº¸ Áß ¹«ÀÛÀ§")]
+    [Tooltip("íŠ¹ì • ìœ ë¬¼ì„ ì¤„ ë•Œ. ë¹„ì›Œ ë‘ë©´ ìœ ë¬¼ í›„ë³´ ì¤‘ ë¬´ì‘ìœ„")]
     public RelicData relic;
+    [Tooltip("ë³´ìƒì´ Recipeì¼ ë•Œ: ëª‡ ë‹¨ê³„ ì¡°í•©ë²•ì„ ì¤„ì§€ (2 ë˜ëŠ” 3)")]
+    [Range(1, 3)] public int recipeTier = 2;
 
-    [Header("ÇÔÁ¤ (¼±ÅÃ)")]
+    [Header("í•¨ì • (ì„ íƒ)")]
     [Range(0f, 1f)] public float trapChance;
     public int trapHpLoss = 10;
 
-    [Tooltip("°í¸¥ µÚ º¸¿©ÁÙ °á°ú ¹®Àå")]
+    [Tooltip("ê³ ë¥¸ ë’¤ ë³´ì—¬ì¤„ ê²°ê³¼ ë¬¸ì¥")]
     [TextArea(2, 4)] public string resultText;
 }
 
-// Project Ã¢ ¿ìÅ¬¸¯ ¡æ Create ¡æ ¸¶¹ı»çÀÇ Å¾ ¡æ Event Data
-[CreateAssetMenu(fileName = "NewEvent", menuName = "¸¶¹ı»çÀÇ Å¾/Event Data")]
+// Project ì°½ ìš°í´ë¦­ â†’ Create â†’ ë§ˆë²•ì‚¬ì˜ íƒ‘ â†’ Event Data
+[CreateAssetMenu(fileName = "NewEvent", menuName = "ë§ˆë²•ì‚¬ì˜ íƒ‘/Event Data")]
 public class EventData : ScriptableObject
 {
     public string title;
     public Sprite image;
     [TextArea(3, 6)] public string story;
-    [Tooltip("¼±ÅÃÁö´Â ÃÖ´ë 3°³. ¸¶Áö¸·¿¡ 'Áö³ª°£´Ù'¸¦ ³Ö¾î µÎ´Â °É ÃßÃµ")]
+    [Tooltip("ì„ íƒì§€ëŠ” ìµœëŒ€ 3ê°œ. ë§ˆì§€ë§‰ì— 'ì§€ë‚˜ê°„ë‹¤'ë¥¼ ë„£ì–´ ë‘ëŠ” ê±¸ ì¶”ì²œ")]
     public EventChoice[] choices;
 }

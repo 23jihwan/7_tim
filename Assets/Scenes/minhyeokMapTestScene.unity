@@ -2477,6 +2477,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a0aca9ba3256e47428aae27cfc26669f, type: 2}
   - {fileID: 11400000, guid: be3ca54d721c3f94c9103d583d9094a4, type: 2}
   - {fileID: 11400000, guid: 6273347249c7a02489db0cec11e60b3a, type: 2}
+  - {fileID: 11400000, guid: f61ca33e5e83f234c87908488a5f47ce, type: 2}
+  - {fileID: 11400000, guid: 7c895112c6caa564bb1f6a30b5db94f3, type: 2}
   relicPool:
   - {fileID: 11400000, guid: 3bf009d3cf190c346a5fcee9a66afdb0, type: 2}
   - {fileID: 11400000, guid: 3866bf9ff48839541b9121de6304332c, type: 2}
@@ -2491,6 +2493,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fac4a65d45d682d46b828fd592a988a2, type: 2}
   - {fileID: 11400000, guid: 925348f6671b66c4bb441045e2b38eda, type: 2}
   cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
+  recipeDatabase: {fileID: 11400000, guid: 6f039b05ed84b624886e21376084dbf5, type: 2}
 --- !u!4 &670652261
 Transform:
   m_ObjectHideFlags: 0
@@ -2750,6 +2753,7 @@ MonoBehaviour:
   removeEnabled: 1
   cardPrefab: {fileID: 5914834537420821610, guid: 42a09e3ba49eeed418d3b7f41f6ca57b, type: 3}
   minDeckSize: 5
+  maxRemoveCount: 3
 --- !u!4 &972201724
 Transform:
   m_ObjectHideFlags: 0

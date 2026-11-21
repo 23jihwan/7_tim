@@ -344,8 +344,22 @@ public class RunState : MonoBehaviour
 
             List<string> lines = new List<string>();
             lines.Add($"골드 +{reward}   (보유 {gold})");
+            // ★ 엘리트는 2단계, 보스는 3단계 조합법을 하나 얻는다
             if (currentRoomType == RoomType.Elite || currentRoomType == RoomType.Boss)
-                lines.Add("장비 1개 획득 (장비 시스템 준비 중)");
+            {
+                int tier = currentRoomType == RoomType.Elite ? 2 : 3;
+                CardCombineManager combine = FindFirstObjectByType<CardCombineManager>();
+                CardRecipeDatabase db = combine != null ? combine.recipeDatabase : null;
+                if (RecipeUnlock.TryUnlockRandom(db, tier, out CardRecipe recipe))
+                {
+                    lines.Add($"새 {tier}단계 조합법: {RecipeUnlock.Describe(recipe)}");
+                }
+                else
+                {
+                    gold += 20;
+                    lines.Add($"더 배울 {tier}단계 조합법이 없어 대신 골드 +20");
+                }
+            }
             lines.Add($"남은 체력 {playerHP} / {playerMaxHP}");
 
             // 확인을 누를 때까지 기다린다

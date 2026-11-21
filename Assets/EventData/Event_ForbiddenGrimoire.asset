@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d599f0479cf0e054cb69dd5bb83e9175, type: 3}
+  m_Name: Event_ForbiddenGrimoire
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  title: "\uAE08\uC9C0\uB41C \uB9C8\uB3C4\uC11C"
+  image: {fileID: 21300000, guid: 95b69f2c9e4152b4a8cbd10fd2808e13, type: 3}
+  story: "\uC1E0\uC0AC\uC2AC\uC5D0 \uBB36\uC778 \uAC80\uC740 \uB9C8\uB3C4\uC11C\uAC00
+    \uB0AE\uAC8C \uC18D\uC0AD\uC778\uB2E4.\n\uD3BC\uCE58\uBA74 \uAC15\uB825\uD55C
+    \uBE44\uBC00\uC744 \uC54C \uC218 \uC788\uC9C0\uB9CC, \uB300\uAC00\uAC00 \uB530\uB97C
+    \uAC83\uC774\uB2E4."
+  choices:
+  - text: "\uACE8\uB4DC\uB97C \uBC14\uCCD0 \uBD09\uC778\uC744 \uD47C\uB2E4"
+    goldCost: 120
+    hpCost: 0
+    reward: 5
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 3
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uC0AC\uC2AC\uC774 \uD480\uB9AC\uBA70 \uAE08\uC9C0\uB41C \uACF5\uC2DD\uC774
+      \uB4DC\uB7EC\uB0AC\uB2E4."
+  - text: "\uC0DD\uBA85\uB825\uC744 \uBC14\uCCD0 \uC5B5\uC9C0\uB85C \uD3BC\uCE5C\uB2E4"
+    goldCost: 0
+    hpCost: 25
+    reward: 5
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 3
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uB9C8\uB3C4\uC11C\uAC00 \uC0DD\uBA85\uB825\uC744 \uBE68\uC544\uB4E4\uC774\uACE0
+      \uBE44\uBC00\uC744 \uB0B4\uC8FC\uC5C8\uB2E4."
+  - text: "\uC678\uBA74\uD558\uACE0 \uC9C0\uB098\uAC04\uB2E4"
+    goldCost: 0
+    hpCost: 0
+    reward: 0
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 2
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uB4F1 \uB4A4\uC5D0\uC11C \uC18D\uC0AD\uC784\uC774 \uC624\uB798\uB3C4\uB85D
+      \uB4E4\uB838\uB2E4."

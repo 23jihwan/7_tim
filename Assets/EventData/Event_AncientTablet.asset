@@ -1,0 +1,56 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d599f0479cf0e054cb69dd5bb83e9175, type: 3}
+  m_Name: Event_AncientTablet
+  m_EditorClassIdentifier: Assembly-CSharp::EventData
+  title: "\uACE0\uB300 \uC11D\uD310"
+  image: {fileID: 21300000, guid: 8d38f7cf56cece5488fbef866f52478d, type: 3}
+  story: "\uBCBD\uC5D0 \uBC15\uD78C \uB0A1\uC740 \uC11D\uD310\uC5D0 \uD76C\uBBF8\uD558\uAC8C
+    \uBE5B\uB098\uB294 \uB9C8\uBC95 \uACF5\uC2DD\uC774 \uC0C8\uACA8\uC838 \uC788\uB2E4.\n\uD574\uB3C5\uD558\uBA74
+    \uC0C8\uB85C\uC6B4 \uC870\uD569\uBC95\uC744 \uAE68\uC6B0\uCE60 \uC218 \uC788\uC744
+    \uAC83 \uAC19\uB2E4."
+  choices:
+  - text: "\uACE8\uB4DC\uB97C \uB4E4\uC5EC \uD574\uB3C5 \uB3C4\uAD6C\uB97C \uC4F4\uB2E4"
+    goldCost: 60
+    hpCost: 0
+    reward: 5
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 2
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uACF5\uC2DD\uC774 \uBA38\uB9BF\uC18D\uC5D0 \uB610\uB837\uD558\uAC8C
+      \uC0C8\uACA8\uC84C\uB2E4."
+  - text: "\uC190\uC744 \uBCA0\uC5B4 \uD53C\uB85C \uB8EC\uC744 \uAE68\uC6B4\uB2E4"
+    goldCost: 0
+    hpCost: 12
+    reward: 5
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 2
+    trapChance: 0.25
+    trapHpLoss: 8
+    resultText: "\uD53C\uC5D0 \uBC18\uC751\uD55C \uB8EC\uC774 \uBE44\uBC00\uC744
+      \uC18D\uC0AD\uC600\uB2E4."
+  - text: "\uC9C0\uB098\uAC04\uB2E4"
+    goldCost: 0
+    hpCost: 0
+    reward: 0
+    goldMin: 20
+    goldMax: 40
+    relic: {fileID: 0}
+    recipeTier: 2
+    trapChance: 0
+    trapHpLoss: 10
+    resultText: "\uC11D\uD310\uC758 \uBE5B\uC774 \uC870\uC6A9\uD788 \uC0AC\uADF8\uB77C\uB4E4\uC5C8\uB2E4."

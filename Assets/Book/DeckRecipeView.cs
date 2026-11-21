@@ -80,7 +80,7 @@ public class DeckRecipeView : MonoBehaviour
     private void UnlockAll()
     {
         if (recipeDatabase == null) return;
-        foreach (CardRecipe r in recipeDatabase.recipes) RecipeBook.Unlock(r.cardA, r.cardB);
+        foreach (CardRecipe r in recipeDatabase.recipes) RecipeUnlock.Unlock(r);
     }
 
     // ---------------- 조합법 목록 ----------------
@@ -95,14 +95,14 @@ public class DeckRecipeView : MonoBehaviour
         for (int i = 0; i < recipes.Count; i++)
         {
             CardRecipe r = recipes[i];
-            bool unlocked = RecipeBook.IsUnlocked(r.cardA, r.cardB);
+            bool unlocked = RecipeUnlock.IsKnown(r);   // 결과 카드를 해금했으면 아는 조합법
             if (unlocked) known++;
-            BuildRow(r, unlocked, -i * 58f);
+            BuildRow(r, unlocked, -i * 58f, RecipeUnlock.GetTier(recipeDatabase, r));
         }
         headerText.text = $"조합법   {known} / {recipes.Count}";
     }
 
-    private void BuildRow(CardRecipe r, bool unlocked, float y)
+    private void BuildRow(CardRecipe r, bool unlocked, float y, int tier)
     {
         Image row = NewImage("Row", listRoot, new Color(1f, 1f, 1f, unlocked ? 0.35f : 0.15f));
         RectTransform rt = row.rectTransform;
@@ -111,6 +111,7 @@ public class DeckRecipeView : MonoBehaviour
         rt.sizeDelta = new Vector2(580, 52);
         rt.anchoredPosition = new Vector2(0, y);
 
+        NewText("Tier", row.transform, $"{tier}단계", 18, FontStyle.Bold, InkLight, TextAnchor.MiddleRight, new Vector2(240, 0), new Vector2(70, 40));
         Icon(row.transform, r.cardA, -250);
         NewText("Plus", row.transform, "+", 26, FontStyle.Bold, InkLight, TextAnchor.MiddleCenter, new Vector2(-205, 0), new Vector2(30, 40));
         Icon(row.transform, r.cardB, -160);
@@ -119,7 +120,7 @@ public class DeckRecipeView : MonoBehaviour
         if (unlocked && r.resultCard != null)
         {
             Icon(row.transform, r.resultCard, -62);
-            NewText("Name", row.transform, r.resultCard.cardName, 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(110, 0), new Vector2(280, 40));
+            NewText("Name", row.transform, r.resultCard.cardName, 22, FontStyle.Bold, Ink, TextAnchor.MiddleLeft, new Vector2(100, 0), new Vector2(200, 40));
         }
         else
         {
@@ -127,7 +128,7 @@ public class DeckRecipeView : MonoBehaviour
             q.rectTransform.sizeDelta = new Vector2(40, 44);
             q.rectTransform.anchoredPosition = new Vector2(-62, 0);
             NewText("Q", q.transform, "?", 28, FontStyle.Bold, Gold, TextAnchor.MiddleCenter, Vector2.zero, new Vector2(40, 44));
-            NewText("Name", row.transform, "???", 22, FontStyle.Bold, InkLight, TextAnchor.MiddleLeft, new Vector2(110, 0), new Vector2(280, 40));
+            NewText("Name", row.transform, "???", 22, FontStyle.Bold, InkLight, TextAnchor.MiddleLeft, new Vector2(100, 0), new Vector2(200, 40));
         }
     }
 

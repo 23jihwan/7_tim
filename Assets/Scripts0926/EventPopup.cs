@@ -14,6 +14,8 @@ public class EventPopup : MonoBehaviour
     public CardData[] cardPool;
     [Tooltip("보상 카드를 진짜 카드 모양으로 보여줄 카드 프리팹 (Prefab 폴더의 CardPrefab)")]
     public GameObject cardPrefab;
+    [Tooltip("조합법 보상에 쓰는 조합법 목록 (CardData 폴더의 CardRecipeDatabase)")]
+    public CardRecipeDatabase recipeDatabase;
 
     private static readonly Color Parchment = new Color32(0xEA, 0xDF, 0xC3, 0xFF);
     private static readonly Color Ink = new Color32(0x3A, 0x2C, 0x1A, 0xFF);
@@ -151,6 +153,19 @@ public class EventPopup : MonoBehaviour
 
             case EventRewardType.Item:
                 lines.Add("1회용 아이템 (준비 중)");
+                break;
+
+            case EventRewardType.Recipe:
+                if (RecipeUnlock.TryUnlockRandom(recipeDatabase, c.recipeTier, out CardRecipe recipe))
+                {
+                    lines.Add($"새 {c.recipeTier}단계 조합법: {RecipeUnlock.Describe(recipe)}");
+                    SoundManager.Play("combine");
+                }
+                else
+                {
+                    run.gold += 30;
+                    lines.Add($"더 배울 {c.recipeTier}단계 조합법이 없어 대신 골드 +30");
+                }
                 break;
         }
 
