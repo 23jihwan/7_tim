@@ -111,6 +111,7 @@ public class EventPopup : MonoBehaviour
         RunState run = RunState.GetOrCreate();
         List<string> lines = new List<string>();
         List<CardData> cards = new List<CardData>();
+        List<CardRecipe> recipeChoices = null;   // 조합법 보상이면 결과 창 다음에 고르기
 
         if (!string.IsNullOrEmpty(c.resultText)) lines.Add(c.resultText);
 
@@ -156,13 +157,14 @@ public class EventPopup : MonoBehaviour
                 break;
 
             case EventRewardType.Recipe:
-                if (RecipeUnlock.TryUnlockRandom(recipeDatabase, c.recipeTier, out CardRecipe recipe))
+                recipeChoices = RecipeUnlock.PickCandidates(recipeDatabase, c.recipeTier, 3);
+                if (recipeChoices.Count > 0)
                 {
-                    lines.Add($"새 {c.recipeTier}단계 조합법: {RecipeUnlock.Describe(recipe)}");
-                    SoundManager.Play("combine");
+                    lines.Add($"{c.recipeTier}단계 조합법 1개를 배울 수 있다 (다음 화면에서 선택)");
                 }
                 else
                 {
+                    recipeChoices = null;
                     run.gold += 30;
                     lines.Add($"더 배울 {c.recipeTier}단계 조합법이 없어 대신 골드 +30");
                 }
@@ -173,12 +175,16 @@ public class EventPopup : MonoBehaviour
         Debug.Log($"[이벤트] {current.title} → {c.text}");
 
         // 결과는 전투 보상 창과 같은 모양으로 보여준다 (카드 보상이면 3장 중 고르기)
+        int tier = c.recipeTier;
         BattleRewardPopup.Show(current.title, lines, cards, picked =>
         {
             if (picked != null)
             {
                 run.AddCard(picked);
             }
+            // 조합법 보상: 후보 중 하나를 고르는 창
+            if (recipeChoices != null)
+                RecipeRewardPopup.Show($"{tier}단계 조합법 선택", recipeChoices, _ => { });
         });
     }
 

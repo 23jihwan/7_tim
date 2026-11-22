@@ -344,20 +344,24 @@ public class RunState : MonoBehaviour
 
             List<string> lines = new List<string>();
             lines.Add($"골드 +{reward}   (보유 {gold})");
-            // ★ 엘리트는 2단계, 보스는 3단계 조합법을 하나 얻는다
+            // ★ 엘리트는 2단계, 보스는 3단계 조합법 후보를 고른다 (카드 보상 다음 화면에서 선택)
+            List<CardRecipe> recipeChoices = null;
+            int recipeTier = 0;
             if (currentRoomType == RoomType.Elite || currentRoomType == RoomType.Boss)
             {
-                int tier = currentRoomType == RoomType.Elite ? 2 : 3;
+                recipeTier = currentRoomType == RoomType.Elite ? 2 : 3;
                 CardCombineManager combine = FindFirstObjectByType<CardCombineManager>();
                 CardRecipeDatabase db = combine != null ? combine.recipeDatabase : null;
-                if (RecipeUnlock.TryUnlockRandom(db, tier, out CardRecipe recipe))
+                recipeChoices = RecipeUnlock.PickCandidates(db, recipeTier, 3);
+                if (recipeChoices.Count > 0)
                 {
-                    lines.Add($"새 {tier}단계 조합법: {RecipeUnlock.Describe(recipe)}");
+                    lines.Add($"{recipeTier}단계 조합법 1개를 배울 수 있어요 (다음 화면)");
                 }
                 else
                 {
+                    recipeChoices = null;
                     gold += 20;
-                    lines.Add($"더 배울 {tier}단계 조합법이 없어 대신 골드 +20");
+                    lines.Add($"더 배울 {recipeTier}단계 조합법이 없어 대신 골드 +20");
                 }
             }
             lines.Add($"남은 체력 {playerHP} / {playerMaxHP}");
@@ -377,6 +381,15 @@ public class RunState : MonoBehaviour
                 confirmed = true;
             });
             while (!confirmed) yield return null;
+
+
+            // ★ 조합법 고르기 창 (고르거나 건너뛸 때까지 기다린다)
+            if (recipeChoices != null)
+            {
+                bool recipeDone = false;
+                RecipeRewardPopup.Show($"{recipeTier}단계 조합법 선택", recipeChoices, _ => recipeDone = true);
+                while (!recipeDone) yield return null;
+            }
 
             if (currentRoomType == RoomType.Boss) ClearFloor();
         }

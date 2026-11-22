@@ -42,6 +42,27 @@ public static class RecipeUnlock
         Debug.Log($"[조합법 획득] {Describe(recipe)}");
     }
 
+    // 아직 모르는 tier단계 조합법 중 최대 count개를 무작위로 골라 후보로 돌려준다 (보상 선택용)
+    public static List<CardRecipe> PickCandidates(CardRecipeDatabase db, int tier, int count)
+    {
+        List<CardRecipe> result = new List<CardRecipe>();
+        if (db == null || db.recipes == null) return result;
+
+        List<CardRecipe> pool = new List<CardRecipe>();
+        HashSet<CardData> seenResult = new HashSet<CardData>();   // 결과가 같은 조합법은 하나만
+        foreach (CardRecipe r in db.recipes)
+            if (r.resultCard != null && GetTier(db, r) == tier && !IsKnown(r) && seenResult.Add(r.resultCard))
+                pool.Add(r);
+
+        while (result.Count < count && pool.Count > 0)
+        {
+            int i = Random.Range(0, pool.Count);
+            result.Add(pool[i]);
+            pool.RemoveAt(i);
+        }
+        return result;
+    }
+
     // 아직 모르는 tier단계 조합법 중 하나를 무작위로 얻는다. 모르는 게 없으면 false
     public static bool TryUnlockRandom(CardRecipeDatabase db, int tier, out CardRecipe unlocked)
     {
