@@ -1116,6 +1116,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 11e3f610672d3e041ab87266be7d4f48, type: 2}
   - {fileID: 11400000, guid: f0bc0baa6abc1344bb829603d9314c3d, type: 2}
   - {fileID: 11400000, guid: 786eed14214de2f4bba448d114c8e1d4, type: 2}
+  - {fileID: 11400000, guid: 0b2e0ac2f3d25864e9281e852d0d02a3, type: 2}
+  - {fileID: 11400000, guid: 8718d2faa7780d74ea8b3c8f54bd7ff1, type: 2}
+  - {fileID: 11400000, guid: a60be3cb03a83224dba5aac5b66f9cbd, type: 2}
+  - {fileID: 11400000, guid: 2c9ec69ae0a44984393153cfa83f677b, type: 2}
+  - {fileID: 11400000, guid: fe5563540bf729245be7b68058701942, type: 2}
   shopSlots:
   - {fileID: 558557343}
   - {fileID: 740420748}

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 797340708c58a7e44abe70f9c1f3a60b, type: 3}
+  m_Name: Shop_Relic8
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemData
+  itemName: "\uC5F0\uAE08\uC220\uC758 \uD669\uAE08 \uC800\uC6B8"
+  itemDesc: "\uCE74\uB4DC\uB97C 2\uC7A5 \uC870\uD569\uD560 \uB54C\uB9C8\uB2E4 \uC989\uC2DC
+    15\uACE8\uB4DC\uB97C \uD68D\uB4DD\uD569\uB2C8\uB2E4."
+  itemPrice: 1
+  itemIcon: {fileID: 7945621913572347540, guid: 9535863c06533144aaec8bb45d2f6827, type: 3}
+  itemType: 2
+  card: {fileID: 0}
+  relic: {fileID: 11400000, guid: 04a07297a3590904194b946fc6cc6a91, type: 2}
+  healAmount: 0

@@ -8,7 +8,6 @@ public enum RelicType
     Utility
 }
 
-// StatBonusType에 CriticalChanceBonus 추가
 public enum StatBonusType
 {
     None,
@@ -17,7 +16,14 @@ public enum StatBonusType
     AttackBonus,
     DebuffBonus,
     StunBonus,
-    CriticalChanceBonus // ★ 치명타 확률 증가 보너스
+    CriticalChanceBonus,
+
+    // ★ 신규 5종 유물 효과 타입
+    GoldenGrimoire,      // 황금 마도서
+    AlchemyScale,        // 연금술의 황금 저울
+    OrbOfGreed,          // 탐욕의 보주
+    PhilosopherStone,    // 현자의 변환석
+    MidasCrown           // 미다스의 왕관
 }
 
 [CreateAssetMenu(fileName = "NewRelic", menuName = "Inventory/RelicData")]
@@ -30,6 +36,6 @@ public class RelicData : ScriptableObject
     public RelicType type;
 
     [Header("효과 설정")]
-    public StatBonusType statBonusType; // CriticalChanceBonus 선택
-    public int value;                   // 치명타 확률 수치 (예: 20 -> 20%)
+    public StatBonusType statBonusType;
+    public int value;
 }

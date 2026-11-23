@@ -88,7 +88,18 @@ public class RunState : MonoBehaviour
         if (Instance == this) SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // ---------------- 유물 보너스 계산 (팀원 코드) ----------------
+    // ---------------- 유물 보너스 계산 ----------------
+
+    // ★ 특정 유물 효과를 장착 중인지 확인 (신규 5종 유물용)
+    public bool HasRelicEffect(StatBonusType targetType)
+    {
+        foreach (var relic in equippedRelics)
+        {
+            if (relic != null && relic.statBonusType == targetType)
+                return true;
+        }
+        return false;
+    }
 
     public int GetTotalRelicBonus(StatBonusType targetType)
     {
@@ -106,7 +117,16 @@ public class RunState : MonoBehaviour
     public int GetModifiedGold(int baseGold)
     {
         int bonusGold = GetTotalRelicBonus(StatBonusType.GoldBonus);
-        return baseGold + bonusGold;
+        int total = baseGold + bonusGold;
+
+        // ★ [현자의 변환석] 전투 승리 시 골드 획득량 +30%
+        if (HasRelicEffect(StatBonusType.PhilosopherStone))
+        {
+            total = Mathf.RoundToInt(total * 1.3f);
+            Debug.Log($"[현자의 변환석] 전투 승리 골드 +30% 적용 -> {total} 골드");
+        }
+
+        return total;
     }
 
     // ---------------- 런 관리 ----------------

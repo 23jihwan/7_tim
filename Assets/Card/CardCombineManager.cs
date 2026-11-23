@@ -17,13 +17,9 @@ public class CardCombineManager : MonoBehaviour
 
     private void Update()
     {
-        // 실시간으로 조합 슬롯의 카드 상태를 확인하여 미리보기 갱신
         UpdateCraftPreview();
     }
 
-    /// <summary>
-    /// 조합 슬롯 2곳 중 카드가 1장이라도 올라와 있는지 확인합니다.
-    /// </summary>
     public bool HasCardsInCombineSlots()
     {
         CardUI card1 = combineSlot1 != null ? combineSlot1.GetComponentInChildren<CardUI>() : null;
@@ -32,10 +28,6 @@ public class CardCombineManager : MonoBehaviour
         return (card1 != null || card2 != null);
     }
 
-    /// <summary>
-    /// 조합 슬롯 2곳의 카드를 확인하여 미리보기 UI를 업데이트합니다.
-    /// (결과 카드가 상점/이벤트 등에서 이미 해금(구매)된 경우에만 미리보기가 표시됩니다.)
-    /// </summary>
     public void UpdateCraftPreview()
     {
         if (craftPreview == null) return;
@@ -47,14 +39,12 @@ public class CardCombineManager : MonoBehaviour
         {
             CardData resultData = recipeDatabase.GetRecipeResult(card1.cardData, card2.cardData);
 
-            // ★ [핵심] 결과물 카드가 해금(구매)되어 있는지 도감 매니저에서 확인
             if (resultData != null && IsCardUnlocked(resultData.cardName))
             {
                 craftPreview.ShowPreview(resultData);
             }
             else
             {
-                // 아직 구매/해금하지 않은 카드라면 미리보기 숨김
                 craftPreview.HidePreview();
             }
         }
@@ -95,21 +85,24 @@ public class CardCombineManager : MonoBehaviour
             return;
         }
 
-        // ★ [핵심] 상점/이벤트에서 결과 카드를 먼저 구매/해금했는지 확인
         if (!IsCardUnlocked(resultData.cardName))
         {
             Debug.LogWarning($"[조합 불가] 결과 카드 [{resultData.cardName}]를 상점이나 이벤트에서 먼저 구매/획득해야 조합할 수 있습니다!");
             return;
         }
 
-        // 조합 성공 처리
         Debug.Log($"[조합 성공] {card1.cardData.cardName} + {card2.cardData.cardName} => {resultData.cardName}");
 
-        // 사용한 재료 카드 파괴
+        // ★ [연금술의 황금 저울] 카드를 2장 조합할 때마다 즉시 15골드 획득
+        if (RunState.Instance != null && RunState.Instance.HasRelicEffect(StatBonusType.AlchemyScale))
+        {
+            RunState.Instance.gold += 15;
+            Debug.Log($"[연금술의 황금 저울] 카드 조합 성공! 즉시 +15 골드 획득 (현재 골드: {RunState.Instance.gold})");
+        }
+
         Destroy(card1.gameObject);
         Destroy(card2.gameObject);
 
-        // 결과 카드를 손패 생성
         if (cardPrefab != null && handPanel != null)
         {
             GameObject newCardObj = Instantiate(cardPrefab, handPanel);
@@ -127,9 +120,6 @@ public class CardCombineManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 카드가 해금(구매)된 상태인지 확인하는 헬퍼 메서드
-    /// </summary>
     private bool IsCardUnlocked(string cardName)
     {
         return EncyclopediaManager.Instance != null && EncyclopediaManager.Instance.IsUnlocked(cardName);

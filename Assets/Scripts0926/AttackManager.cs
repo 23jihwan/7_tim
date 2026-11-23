@@ -20,7 +20,6 @@ public class ActiveStatusEffect
     }
 }
 
-// ★ 플레이어 버프 정보 구조체
 [System.Serializable]
 public class ActivePlayerBuff
 {
@@ -40,7 +39,7 @@ public class AttackManager : MonoBehaviour
 {
     [Header("References")]
     public GameManager gameManager;
-    public CardCombineManager combineManager; // 조합 매니저 참조
+    public CardCombineManager combineManager;
     public Transform[] dropSlots;
 
     [Header("Animation")]
@@ -56,14 +55,14 @@ public class AttackManager : MonoBehaviour
     public int enemyMaxHP = 100;
     public int enemyCurrentHP;
     public int enemyAttackDamage = 10;
-    public int enemyDefense = 0; // 몬스터 고정 방어력
+    public int enemyDefense = 0;
     public TextMeshProUGUI enemyHPText;
 
     [Header("Player Stats")]
     public int playerMaxHP = 100;
     public int playerCurrentHP;
-    public int playerDefense = 0; // 플레이어 고정 방어력
-    public int playerBarrier = 0; // 이번 턴 동안 적 공격을 차감할 배리어 수치
+    public int playerDefense = 0;
+    public int playerBarrier = 0;
     public TextMeshProUGUI playerHPText;
 
     [Header("Debuff (적 공격력 감소)")]
@@ -71,16 +70,15 @@ public class AttackManager : MonoBehaviour
 
     private int attackReduction = 0;
     private bool isAttacking = false;
-
     private int enemyStunTurns = 0;
 
-    private List<ActiveStatusEffect> activeEnemyEffects = new List<ActiveStatusEffect>();
+    // ★ 황금 마도서 추적용: 이번 턴 사용한 공격 카드 횟수
+    private int attackCardCountThisTurn = 0;
 
-    // ★ [버프 관리] 현재 활성화된 버프 및 다음 턴 대기 중인 버프 목록
+    private List<ActiveStatusEffect> activeEnemyEffects = new List<ActiveStatusEffect>();
     private List<ActivePlayerBuff> activeBuffs = new List<ActivePlayerBuff>();
     private List<ActivePlayerBuff> pendingBuffs = new List<ActivePlayerBuff>();
 
-    // 애니메이션 색
     private static readonly Color AttackColor = new Color32(0xE8, 0x5A, 0x3C, 0xFF);
     private static readonly Color HealColor = new Color32(0x6F, 0xD8, 0x7A, 0xFF);
     private static readonly Color DebuffColor = new Color32(0x6F, 0xB8, 0xF0, 0xFF);
@@ -88,7 +86,6 @@ public class AttackManager : MonoBehaviour
 
     private void Start()
     {
-        // 1. 몬스터 데이터 에셋이 연결되어 있다면 스탯 불러오기
         if (currentEnemyData != null)
         {
             enemyName = currentEnemyData.enemyName;
@@ -98,13 +95,11 @@ public class AttackManager : MonoBehaviour
             enemyDefense = currentEnemyData.defense;
         }
 
-        // 2. PlayerData(RunState)가 존재하면 플레이어 방어력 불러오기
         if (RunState.Instance != null && RunState.Instance.playerData != null)
         {
             playerDefense = RunState.Instance.playerData.defense;
         }
 
-        // 3. combineManager가 인스펙터에 비어있는 경우 씬에서 자동 탐색 (최신 API 적용)
         if (combineManager == null)
         {
             combineManager = FindFirstObjectByType<CardCombineManager>();
@@ -113,6 +108,7 @@ public class AttackManager : MonoBehaviour
         enemyCurrentHP = enemyMaxHP;
         playerCurrentHP = playerMaxHP;
         playerBarrier = 0;
+        attackCardCountThisTurn = 0;
         activeBuffs.Clear();
         pendingBuffs.Clear();
 
@@ -133,7 +129,6 @@ public class AttackManager : MonoBehaviour
     {
         if (isAttacking) return;
 
-        // ★ [조합 슬롯 검사] 조합 슬롯에 카드가 남아있으면 턴 종료 차단 (최신 API 적용)
         CardCombineManager combiner = combineManager != null ? combineManager : FindFirstObjectByType<CardCombineManager>();
         if (combiner != null && combiner.HasCardsInCombineSlots())
         {
@@ -148,10 +143,10 @@ public class AttackManager : MonoBehaviour
     {
         isAttacking = true;
         attackReduction = 0;
-        playerBarrier = 0; // 턴 시작 시 이전 턴 배리어 초기화
+        playerBarrier = 0;
+        attackCardCountThisTurn = 0; // 매 턴 공격 카드 카운트 초기화
         UpdateUI();
 
-        // 1. 카드 실행 연산
         foreach (Transform slot in dropSlots)
         {
             if (slot.childCount > 0)
@@ -169,7 +164,6 @@ public class AttackManager : MonoBehaviour
                     RectTransform target = (card.cardType == CardType.Heal && playerHPText != null) ? playerHPText.rectTransform : monsterVisual;
                     yield return StartCoroutine(CardAnimator.UseCard(cardUI, target, glow));
 
-                    // ★ [배리어 획득]
                     if (card.shieldValue > 0)
                     {
                         playerBarrier += card.shieldValue;
@@ -178,7 +172,6 @@ public class AttackManager : MonoBehaviour
                         Debug.Log($"[배리어 획득] {card.cardName} 사용 -> 배리어 +{card.shieldValue} (현재 총 배리어: {playerBarrier})");
                     }
 
-                    // ★ [다음 턴 버프 예약] 이번 턴에 쓰면 다음 턴 목록(pendingBuffs)에 추가
                     if (card.cardType == CardType.Buff || card.buffValue > 0)
                     {
                         int duration = card.buffDuration > 0 ? card.buffDuration : 1;
@@ -188,25 +181,34 @@ public class AttackManager : MonoBehaviour
                         Debug.Log($"[버프 예약] {card.cardName} 사용 -> 다음 턴부터 공격력 +{card.buffValue} 적용 ({duration}턴 지속)");
                     }
 
-                    // [유물 연동] 스턴 보너스
                     if (card.causesStun)
                     {
                         int addTurns = card.stunDuration > 0 ? card.stunDuration : 1;
-
                         int relicStunBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.StunBonus) : 0;
                         addTurns += relicStunBonus;
-
                         enemyStunTurns += addTurns;
-                        Debug.Log($"[상태이상] {card.cardName} 카드의 효과로 {enemyName}이(가) {addTurns}턴 동안 행동 불가 상태가 됩니다! (유물 보너스 +{relicStunBonus} 포함, 총 남은 턴: {enemyStunTurns}턴)");
+                        Debug.Log($"[상태이상] {card.cardName} 효과로 {enemyName} 행동 불가 +{addTurns}턴 (총 {enemyStunTurns}턴)");
                     }
 
                     // (1) 공격 카드
                     if (card.cardType == CardType.Attack)
                     {
+                        attackCardCountThisTurn++;
+                        RunState rs = RunState.Instance;
+                        int currentGold = rs != null ? rs.gold : 0;
+
+                        // ★ [미다스의 왕관] 공격 카드를 낼 때마다 3골드 획득
+                        if (rs != null && rs.HasRelicEffect(StatBonusType.MidasCrown))
+                        {
+                            rs.gold += 3;
+                            currentGold = rs.gold;
+                            Debug.Log($"[미다스의 왕관] 공격 카드 사용! +3 골드 획득 (현재 골드: {currentGold})");
+                        }
+
                         int currentActiveBuff = GetTotalActiveBuff();
                         int baseDamage = card.value + currentActiveBuff;
 
-                        int relicAttackBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
+                        int relicAttackBonus = (rs != null) ? rs.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
                         baseDamage += relicAttackBonus;
 
                         if (enemyElement != ElementType.None && card.bonusDamageAgainstElemental > 0)
@@ -215,27 +217,62 @@ public class AttackManager : MonoBehaviour
                             Debug.Log($"[속성 보너스] 적({enemyElement})이 속성을 보유하여 추가 데미지 +{card.bonusDamageAgainstElemental} 적용!");
                         }
 
-                        float multiplier = GetElementMultiplier(card.elementType, enemyElement);
-                        int calculatedDamage = Mathf.RoundToInt(baseDamage * multiplier);
-
-                        // ★ [치명타 연산] RunState.Instance.equippedRelics (배열)를 전달하여 치명타 연산
-                        bool isCrit = false;
-                        if (CriticalManager.Instance != null && RunState.Instance != null)
+                        // ★ [탐욕의 보주] 보유 골드 100당 위력 +5% 증가 (손패 6장 이상이면 2배인 +10%)
+                        float greedMultiplier = 1.0f;
+                        if (rs != null && rs.HasRelicEffect(StatBonusType.OrbOfGreed))
                         {
-                            calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, RunState.Instance.equippedRelics, out isCrit);
+                            int goldStacks = currentGold / 100;
+                            if (goldStacks > 0)
+                            {
+                                Transform hp = (gameManager != null && gameManager.handPanel != null) ? gameManager.handPanel
+                                             : (GameManager.Instance != null ? GameManager.Instance.handPanel : null);
+                                int handCount = hp != null ? hp.childCount : 0;
+                                float ratePerStack = (handCount >= 6) ? 0.10f : 0.05f;
+                                greedMultiplier += goldStacks * ratePerStack;
+                                Debug.Log($"[탐욕의 보주] 골드 {currentGold} ({goldStacks}스택), 손패 {handCount}장 -> 위력 +{(greedMultiplier - 1f) * 100f:F0}% 적용");
+                            }
                         }
 
-                        // 몬스터 방어력 차감 계산 (최소 0)
+                        float multiplier = GetElementMultiplier(card.elementType, enemyElement);
+                        int calculatedDamage = Mathf.RoundToInt(baseDamage * elementMultOrMult(multiplier, greedMultiplier));
+
+                        // 치명타 연산
+                        bool isCrit = false;
+                        if (CriticalManager.Instance != null && rs != null)
+                        {
+                            calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, rs.equippedRelics, out isCrit);
+                        }
+
+                        // ★ [미다스의 왕관] 보유 골드 500 이상일 때 모든 카드의 최종 피해량 +25% 증가
+                        if (rs != null && rs.HasRelicEffect(StatBonusType.MidasCrown) && currentGold >= 500)
+                        {
+                            calculatedDamage = Mathf.RoundToInt(calculatedDamage * 1.25f);
+                            Debug.Log($"[미다스의 왕관] 골드 500 이상({currentGold}) 달성! 최종 피해량 +25% 적용");
+                        }
+
+                        // 몬스터 방어력 차감
                         int finalDamage = Mathf.Max(0, calculatedDamage - enemyDefense);
 
-                        if (GameManager.Instance != null)
+                        // ★ [황금 마도서] 매 턴 3번째 사용하는 공격 카드가 현재 보유 골드의 10%만큼 추가 고정 피해
+                        if (rs != null && rs.HasRelicEffect(StatBonusType.GoldenGrimoire) && attackCardCountThisTurn == 3)
                         {
-                            GameManager.Instance.TakeEnemyDamage(finalDamage);
-                            enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
+                            int bonusFixedDamage = Mathf.RoundToInt(currentGold * 0.1f);
+                            finalDamage += bonusFixedDamage;
+                            Debug.Log($"[황금 마도서] 이번 턴 3번째 공격! 골드({currentGold})의 10%인 +{bonusFixedDamage} 고정 추가 피해!");
                         }
-                        else
+
+                        int hpBeforeHit = enemyCurrentHP;
+                        ApplyDamageToEnemy(finalDamage);
+
+                        // ★ [현자의 변환석] 몬스터 처치 시 초과 피해량(오버킬)만큼 추가 골드 획득
+                        if (rs != null && rs.HasRelicEffect(StatBonusType.PhilosopherStone) && hpBeforeHit > 0 && enemyCurrentHP <= 0)
                         {
-                            enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
+                            int overkillGold = Mathf.Max(0, finalDamage - hpBeforeHit);
+                            if (overkillGold > 0)
+                            {
+                                rs.gold += overkillGold;
+                                Debug.Log($"[현자의 변환석] 적 처치 오버킬! 초과 피해량만큼 +{overkillGold} 골드 획득 (현재 골드: {rs.gold})");
+                            }
                         }
 
                         CardAnimator.Hit(monsterVisual, AttackColor);
@@ -260,43 +297,61 @@ public class AttackManager : MonoBehaviour
                         }
 
                         if (playerHPText != null) CardAnimator.Pulse(playerHPText.rectTransform, HealColor);
-
                         int healed = playerCurrentHP - before;
                         Debug.Log($"[힐] {card.cardName} → 체력 {healed} 회복!");
 
                         if (card.damageValue > 0)
                         {
+                            RunState rs = RunState.Instance;
+                            int currentGold = rs != null ? rs.gold : 0;
+
                             int currentActiveBuff = GetTotalActiveBuff();
                             int baseDamage = card.damageValue + currentActiveBuff;
-
-                            int relicAttackBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
+                            int relicAttackBonus = (rs != null) ? rs.GetTotalRelicBonus(StatBonusType.AttackBonus) : 0;
                             baseDamage += relicAttackBonus;
 
                             if (enemyElement != ElementType.None && card.bonusDamageAgainstElemental > 0)
-                            {
                                 baseDamage += card.bonusDamageAgainstElemental;
+
+                            // ★ [탐욕의 보주] 힐 공격 카드에도 위력 증가 적용
+                            float greedMultiplier = 1.0f;
+                            if (rs != null && rs.HasRelicEffect(StatBonusType.OrbOfGreed))
+                            {
+                                int goldStacks = currentGold / 100;
+                                if (goldStacks > 0)
+                                {
+                                    Transform hp = (gameManager != null && gameManager.handPanel != null) ? gameManager.handPanel
+                                                 : (GameManager.Instance != null ? GameManager.Instance.handPanel : null);
+                                    int handCount = hp != null ? hp.childCount : 0;
+                                    float ratePerStack = (handCount >= 6) ? 0.10f : 0.05f;
+                                    greedMultiplier += goldStacks * ratePerStack;
+                                }
                             }
 
                             float multiplier = GetElementMultiplier(card.elementType, enemyElement);
-                            int calculatedDamage = Mathf.RoundToInt(baseDamage * multiplier);
+                            int calculatedDamage = Mathf.RoundToInt(baseDamage * multiplier * greedMultiplier);
 
-                            // ★ [치명타 연산] 힐 공격 수치에도 치명타 연산 적용
                             bool isCrit = false;
-                            if (CriticalManager.Instance != null && RunState.Instance != null)
+                            if (CriticalManager.Instance != null && rs != null)
                             {
-                                calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, RunState.Instance.equippedRelics, out isCrit);
+                                calculatedDamage = CriticalManager.Instance.CalculateDamage(calculatedDamage, rs.equippedRelics, out isCrit);
+                            }
+
+                            // ★ [미다스의 왕관] 골드 500 이상 시 최종 피해량 +25% 적용
+                            if (rs != null && rs.HasRelicEffect(StatBonusType.MidasCrown) && currentGold >= 500)
+                            {
+                                calculatedDamage = Mathf.RoundToInt(calculatedDamage * 1.25f);
                             }
 
                             int finalDamage = Mathf.Max(0, calculatedDamage - enemyDefense);
+                            int hpBeforeHit = enemyCurrentHP;
+                            ApplyDamageToEnemy(finalDamage);
 
-                            if (GameManager.Instance != null)
+                            // ★ [현자의 변환석] 오버킬 추가 골드
+                            if (rs != null && rs.HasRelicEffect(StatBonusType.PhilosopherStone) && hpBeforeHit > 0 && enemyCurrentHP <= 0)
                             {
-                                GameManager.Instance.TakeEnemyDamage(finalDamage);
-                                enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
-                            }
-                            else
-                            {
-                                enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDamage);
+                                int overkillGold = Mathf.Max(0, finalDamage - hpBeforeHit);
+                                if (overkillGold > 0) rs.gold += overkillGold;
                             }
 
                             CardAnimator.Hit(monsterVisual, HolyColor);
@@ -309,7 +364,6 @@ public class AttackManager : MonoBehaviour
                     else if (card.cardType == CardType.Debuff)
                     {
                         int debuffValue = card.value;
-
                         int relicDebuffBonus = (RunState.Instance != null) ? RunState.Instance.GetTotalRelicBonus(StatBonusType.DebuffBonus) : 0;
                         debuffValue += relicDebuffBonus;
 
@@ -328,7 +382,6 @@ public class AttackManager : MonoBehaviour
                             card.dotDamagePerTurn,
                             card.dotDuration
                         ));
-
                         Debug.Log($"[상태이상 부여] {enemyName}에게 [{card.dotElementType}] 지속 피해 부여! (턴당 {card.dotDamagePerTurn} / {card.dotDuration}턴)");
                     }
 
@@ -347,21 +400,21 @@ public class AttackManager : MonoBehaviour
 
             for (int i = activeEnemyEffects.Count - 1; i >= 0; i--)
             {
-                var effect = activeEnemyEffects[i];
+                if (enemyCurrentHP <= 0) break;
 
+                var effect = activeEnemyEffects[i];
                 float multiplier = GetElementMultiplier(effect.element, enemyElement);
                 int calculatedDamage = Mathf.RoundToInt(effect.damagePerTurn * multiplier);
-
                 int finalDotDamage = Mathf.Max(0, calculatedDamage - enemyDefense);
 
-                if (GameManager.Instance != null)
+                int hpBeforeHit = enemyCurrentHP;
+                ApplyDamageToEnemy(finalDotDamage);
+
+                // ★ [현자의 변환석] 지속 피해로 처치 시에도 오버킬 골드 적용
+                if (RunState.Instance != null && RunState.Instance.HasRelicEffect(StatBonusType.PhilosopherStone) && hpBeforeHit > 0 && enemyCurrentHP <= 0)
                 {
-                    GameManager.Instance.TakeEnemyDamage(finalDotDamage);
-                    enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
-                }
-                else
-                {
-                    enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - finalDotDamage);
+                    int overkillGold = Mathf.Max(0, finalDotDamage - hpBeforeHit);
+                    if (overkillGold > 0) RunState.Instance.gold += overkillGold;
                 }
 
                 CardAnimator.Hit(monsterVisual, AttackColor);
@@ -369,7 +422,6 @@ public class AttackManager : MonoBehaviour
                 UpdateUI();
 
                 Debug.Log($"[지속 피해] {effect.effectName}의 [{effect.element}] 피해! -> {enemyName}(방어력 {enemyDefense})에게 최종 {finalDotDamage} 데미지! (남은 턴: {effect.remainingTurns})");
-
                 yield return new WaitForSeconds(0.4f);
 
                 if (effect.remainingTurns <= 0)
@@ -395,11 +447,7 @@ public class AttackManager : MonoBehaviour
             else
             {
                 int rawDamage = GetCurrentEnemyAttack();
-
-                // 1차 차감: 플레이어 고정 방어력 적용
                 int damageAfterDefense = Mathf.Max(0, rawDamage - playerDefense);
-
-                // 2차 차감: 이번 턴에 얻은 배리어(실드) 적용
                 int finalDamageToPlayer = Mathf.Max(0, damageAfterDefense - playerBarrier);
 
                 if (GameManager.Instance != null)
@@ -419,7 +467,7 @@ public class AttackManager : MonoBehaviour
             }
         }
 
-        // ★ 4. 턴 종료 처리: 사용 중인 버프 턴 수 차감 및 대기 버프 활성화
+        // 4. 턴 종료 처리: 사용 중인 버프 턴 수 차감 및 대기 버프 활성화
         for (int i = activeBuffs.Count - 1; i >= 0; i--)
         {
             activeBuffs[i].remainingTurns--;
@@ -447,36 +495,41 @@ public class AttackManager : MonoBehaviour
         }
 
         if (gameManager != null)
-        {
             gameManager.StartTurn();
-        }
         else if (GameManager.Instance != null)
-        {
             GameManager.Instance.StartTurn();
-        }
 
         isAttacking = false;
     }
 
-    // ★ [헬퍼 메서드] 현재 활성화된 총 공격 버프 수치 계산
+    private float elementMultOrMult(float a, float b) => a * b;
+
+    private void ApplyDamageToEnemy(int damage)
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.TakeEnemyDamage(damage);
+            enemyCurrentHP = (int)GameManager.Instance.enemyCurrentHP;
+        }
+        else
+        {
+            enemyCurrentHP = Mathf.Max(0, enemyCurrentHP - damage);
+        }
+    }
+
     public int GetTotalActiveBuff()
     {
         int total = 0;
         foreach (var buff in activeBuffs)
-        {
             if (buff != null) total += buff.buffValue;
-        }
         return total;
     }
 
-    // ★ [헬퍼 메서드] 다음 턴에 발동 예정인 총 버프 수치 계산
     public int GetTotalPendingBuff()
     {
         int total = 0;
         foreach (var buff in pendingBuffs)
-        {
             if (buff != null) total += buff.buffValue;
-        }
         return total;
     }
 
@@ -495,9 +548,7 @@ public class AttackManager : MonoBehaviour
 
         if ((attacker == ElementType.Light && defender == ElementType.Dark) ||
             (attacker == ElementType.Dark && defender == ElementType.Light))
-        {
             return 1.5f;
-        }
 
         if (attacker == ElementType.Ice && defender == ElementType.Grass) return 1.5f;
         if (attacker == ElementType.Ice && defender == ElementType.Fire) return 0.5f;
@@ -521,9 +572,7 @@ public class AttackManager : MonoBehaviour
             string statusTag = activeEnemyEffects.Count > 0 ? $" (상태이상 {activeEnemyEffects.Count}개)" : "";
 
             if (enemyStunTurns > 0)
-            {
                 statusTag += $" [행동불가 {enemyStunTurns}턴]";
-            }
 
             enemyHPText.text = $"{elementTag}{enemyName} HP: {enemyCurrentHP}/{enemyMaxHP}{statusTag}";
         }
